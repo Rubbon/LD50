@@ -28,12 +28,13 @@ int main(int argc, char* argv[]) {
 
 		//create renderer
 		//TODO - do this in a graphics function?
-		Graphics::renderer = SDL_CreateRenderer(Graphics::window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+		Graphics::renderer = SDL_CreateRenderer(Graphics::window, -1, SDL_RENDERER_ACCELERATED);
 		if (Graphics::renderer) {
 			SDL_SetRenderDrawColor(Graphics::renderer, 0, 0, 0, 255);
 			SDL_RenderSetLogicalSize(Graphics::renderer, Graphics::SCREEN_W, Graphics::SCREEN_H);
 			SDL_RenderSetIntegerScale(Graphics::renderer, SDL_TRUE);
 			SDL_SetRenderDrawBlendMode(Graphics::renderer, SDL_BLENDMODE_BLEND);
+			SDL_ShowCursor(false);
 		}
 
 		std::cout << "+-----------------------+\n| TITLE HERE - Ver 0    |\n|                       |\n| For LD50, 2022        |\n| By Robin Field        |\n| And Billy Hobson      |\n|                       |\n| Thanks for playing!   |\n+-----------------------+" << std::endl;

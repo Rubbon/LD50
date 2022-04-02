@@ -54,13 +54,10 @@ Entity* Level::AddEntity(int x, int y, unsigned short entityIndex) {
 
 
 
-float height[LEVEL_W * LEVEL_H];
-
-const int _noiseSeedSize = (LEVEL_W) * (LEVEL_H);
-float _noiseSeed[_noiseSeedSize];
 
 
-void Level::GenerateWorld() {
+
+void LevelGenerator::GenerateWorld(Level* level) {
 
 	const int w = LEVEL_W;
 	const int h = LEVEL_H;
@@ -113,7 +110,7 @@ void Level::GenerateWorld() {
 	
 	for (int i = 0; i < w * h; i++) {
 		if (height[i] > 0.33f && (height[i - 1] > 0.33f || height[i - w] > 0.33 || height[i + 1] > 0.33f || height[i + w] > 0.33f)) {
-			arrTiles[i].type = TT_LAND;
+			level->arrTiles[i].type = TT_LAND;
 		}
 	}
 	

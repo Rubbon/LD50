@@ -25,8 +25,15 @@ public:
 	Entity* AddEntity(int x, int y, unsigned short entityIndex);
 
 
-	void GenerateWorld();
+};
 
 
+class LevelGenerator {
+public:
+	float height[LEVEL_W * LEVEL_H];
 
+	const int _noiseSeedSize = LEVEL_W * LEVEL_H;
+	float _noiseSeed[LEVEL_W * LEVEL_H];
+
+	void GenerateWorld(Level* level);
 };

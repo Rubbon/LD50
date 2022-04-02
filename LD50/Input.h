@@ -44,3 +44,6 @@ private:
 
 
 };
+
+#define CURSOR_X Input::cursorX
+#define CURSOR_Y Input::cursorY
