@@ -6,8 +6,8 @@
 
 #define MAX_ENTITIES 512
 
-#define LEVEL_W 256
-#define LEVEL_H 256
+#define LEVEL_W 176
+#define LEVEL_H 176
 
 
 class Level {

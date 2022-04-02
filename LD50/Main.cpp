@@ -12,11 +12,16 @@ int main(int argc, char* argv[]) {
 		//set window scale to something appropriate
 		SDL_DisplayMode _dm = Graphics::GetDisplayInfo();
 
-		Graphics::WINDOW_W = _dm.w * 0.5;
-		Graphics::WINDOW_H = _dm.h * 0.5;
+		Graphics::SCREEN_SCALE = std::max((int)((_dm.h / SCREEN_H) * 0.5), 1);
 
-		SCREEN_W = Graphics::WINDOW_W / Graphics::SCREEN_SCALE;
-		SCREEN_H = Graphics::WINDOW_H / Graphics::SCREEN_SCALE;
+		Graphics::WINDOW_W = SCREEN_W * Graphics::SCREEN_SCALE;
+		Graphics::WINDOW_H = SCREEN_H * Graphics::SCREEN_SCALE;
+
+		//Graphics::WINDOW_W = _dm.w * 0.5;
+		//Graphics::WINDOW_H = _dm.h * 0.5;
+
+		//SCREEN_W = Graphics::WINDOW_W / Graphics::SCREEN_SCALE;
+		//SCREEN_H = Graphics::WINDOW_H / Graphics::SCREEN_SCALE;
 
 		//create window
 		Graphics::window = SDL_CreateWindow("LD50 UFO", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Graphics::WINDOW_W, Graphics::WINDOW_H, SDL_WINDOW_RESIZABLE);
@@ -75,7 +80,7 @@ int main(int argc, char* argv[]) {
 		//-----------------------------------------------------------------------------------------------------------------------------------------//
 		// DRAW
 		//---------------------------------------------------------------------------------------------------------------------------------------//
-		SDL_SetRenderDrawColor(Graphics::renderer, 0, 0, 0, 255);
+		SDL_SetRenderDrawColor(Graphics::renderer, 160, 160, 174, 255);
 		SDL_SetTextureColorMod(Graphics::tex_charSet, 255, 255, 255);
 		SDL_RenderClear(Graphics::renderer);
 

@@ -1,6 +1,6 @@
 #include "Level.h"
 #include <iostream>
-
+#include "SDL.h"
 
 
 
@@ -54,9 +54,9 @@ Entity* Level::AddEntity(int x, int y, unsigned short entityIndex) {
 
 
 
-int height[LEVEL_W * LEVEL_H];
+float height[LEVEL_W * LEVEL_H];
 
-const int _noiseSeedSize = 256 * 256;
+const int _noiseSeedSize = (LEVEL_W) * (LEVEL_H);
 float _noiseSeed[_noiseSeedSize];
 
 
@@ -65,6 +65,7 @@ void Level::GenerateWorld() {
 	const int w = LEVEL_W;
 	const int h = LEVEL_H;
 
+	srand(time(NULL)%16);
 
 	for (int i = 0; i < _noiseSeedSize; i++) {
 		_noiseSeed[i] = (float)rand() / (float)RAND_MAX;
@@ -76,7 +77,7 @@ void Level::GenerateWorld() {
 	for (ix = 0; ix < w; ix++) {
 		for (iy = 0; iy < h; iy++) {
 			float noise = 0.0f;
-			float scale = 2;
+			float scale = 1.5f;
 			float _scaleAcc = 0.0f;
 
 			for (o = 0; o < _octaves; o++) {
@@ -90,12 +91,12 @@ void Level::GenerateWorld() {
 				float blendX = (float)(ix - sample_x1) / (float)pitch;
 				float blendY = (float)(iy - sample_y1) / (float)pitch;
 
-				float sampleT = (6.0f - blendX) * _noiseSeed[(sample_y1 * w + sample_x1) % _noiseSeedSize] + blendX * _noiseSeed[(sample_y1 * w + sample_x2) % _noiseSeedSize];
-				float sampleB = (6.0f - blendX) * _noiseSeed[(sample_y2 * w + sample_x1) % _noiseSeedSize] + blendX * _noiseSeed[(sample_y2 * w + sample_x2) % _noiseSeedSize];
+				float sampleT = (1.0f - blendX) * _noiseSeed[(sample_y1 * w + sample_x1) % _noiseSeedSize] + blendX * _noiseSeed[(sample_y1 * w + sample_x2) % _noiseSeedSize];
+				float sampleB = (1.0f - blendX) * _noiseSeed[(sample_y2 * w + sample_x1) % _noiseSeedSize] + blendX * _noiseSeed[(sample_y2 * w + sample_x2) % _noiseSeedSize];
 
 				noise += (blendY * (sampleB - sampleT) + sampleT) * scale;
 				_scaleAcc += scale;
-				scale = scale * 1.5f; // bias
+				scale = scale * 0.75f; // bias
 				height[ix + iy * w] = noise / _scaleAcc;
 
 				//if (noise / _scaleAcc > 1) {
@@ -108,20 +109,27 @@ void Level::GenerateWorld() {
 		}
 	}
 
-	/*
-	for (int iy = 0; iy < h; iy++) {
-		std::cout << std::endl;
-		for (int ix = 0; ix < w; ix++) {
-			if (height[ix + iy * w] > 1) std::cout << "#";
-			else std::cout << "~";
 
-			//std::cout << height[ix + iy * 32];
+	
+	for (int i = 0; i < w * h; i++) {
+		if (height[i] > 0.33f && (height[i - 1] > 0.33f || height[i - w] > 0.33 || height[i + 1] > 0.33f || height[i + w] > 0.33f)) {
+			arrTiles[i].type = TT_LAND;
+		}
+	}
+	
+
+	/*
+	for (int ix = 0; ix < w; ix++) {
+		for (int iy = 0; iy < h; iy++) {
+			if (height[ix + iy * w] > 0.33f) {
+				arrTiles[((ix*2) + (iy*2) * LEVEL_W)].type = TT_LAND;
+				arrTiles[((1+ix*2) + (iy*2) * LEVEL_W)].type = TT_LAND;
+				arrTiles[((ix*2) + (1+iy*2) * LEVEL_W)].type = TT_LAND;
+				arrTiles[((1+ix*2) + (1+iy*2) * LEVEL_W)].type = TT_LAND;
+			}
 		}
 	}
 	*/
 
-	for (int i = 0; i < w * h; i++) {
-		if (height[i] > 2) arrTiles[i].type = TT_LAND;
-	}
 
 }

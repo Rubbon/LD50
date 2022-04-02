@@ -4,11 +4,11 @@
 #include <string>
 
 //screen base info
-int Graphics::SCREEN_W = 160;
-int Graphics::SCREEN_H = 90;
-int Graphics::WINDOW_W = 160;
-int Graphics::WINDOW_H = 90;
-int Graphics::SCREEN_SCALE = 1;
+int Graphics::SCREEN_W = 320;
+int Graphics::SCREEN_H = 240;
+int Graphics::WINDOW_W = 0;
+int Graphics::WINDOW_H = 0;
+int Graphics::SCREEN_SCALE = 4;
 bool Graphics::FULLSCREEN = false;
 
 SDL_Window* Graphics::window;
