@@ -3,7 +3,6 @@
 #include "SDL.h"
 
 
-
 Tile* Level::GetTile(int x, int y) {
 	return &arrTiles[x + y * LEVEL_W];
 }
@@ -61,6 +60,8 @@ void LevelGenerator::GenerateWorld(Level* level) {
 
 	const int w = LEVEL_W;
 	const int h = LEVEL_H;
+	int i;
+
 
 	srand(time(NULL)%16);
 
@@ -95,38 +96,55 @@ void LevelGenerator::GenerateWorld(Level* level) {
 				_scaleAcc += scale;
 				scale = scale * 0.75f; // bias
 				height[ix + iy * w] = noise / _scaleAcc;
-
-				//if (noise / _scaleAcc > 1) {
-				//	arrTiles[ix + iy * w].type = TT_LAND;
-				//}
-
 			}
 
 
 		}
 	}
 
+	//for positions we can successfully check to place stuff
+	std::vector<Pos> vPositionsWeCanCheck;
 
-	
-	for (int i = 0; i < w * h; i++) {
-		if (height[i] > 0.33f && (height[i - 1] > 0.33f || height[i - w] > 0.33 || height[i + 1] > 0.33f || height[i + w] > 0.33f)) {
+
+	//fill out tilemap
+	for (i = 0; i < w * h; i++) {
+		if (height[i] > 0.33f && ((height[i - 1] > 0.33f || height[i + 1] > 0.33f) && (height[i - w] > 0.33f || height[i + w] > 0.33f))) {
 			level->arrTiles[i].type = TT_LAND;
+
+			vPositionsWeCanCheck.push_back({ (short)(i % LEVEL_W), (short)(i / LEVEL_W) });
 		}
+
+		if (height[i] >= 0.36f && height[i] < 0.363f) level->arrTiles[i].type = TT_TREE;
+		//if (height[i] >= 0.34f && height[i] < 0.35f) level->arrTiles[i].type = TT_TREE;
+
 	}
 	
 
-	/*
-	for (int ix = 0; ix < w; ix++) {
-		for (int iy = 0; iy < h; iy++) {
-			if (height[ix + iy * w] > 0.33f) {
-				arrTiles[((ix*2) + (iy*2) * LEVEL_W)].type = TT_LAND;
-				arrTiles[((1+ix*2) + (iy*2) * LEVEL_W)].type = TT_LAND;
-				arrTiles[((ix*2) + (1+iy*2) * LEVEL_W)].type = TT_LAND;
-				arrTiles[((1+ix*2) + (1+iy*2) * LEVEL_W)].type = TT_LAND;
-			}
-		}
+
+
+	Pos _pos;
+	
+
+	//lets make some cities
+	int _cityAmt = (rand() % MAX_CITIES-4) + 4;
+
+	for (i = 0; i < _cityAmt; i++) {
+		//get a position to check
+		int _posi = rand()%vPositionsWeCanCheck.size();
+		_pos = vPositionsWeCanCheck[_posi];
+
+		//set city data
+		level->arrCities[i].flags = CF_ACTIVE;
+		level->arrCities[i].origin_x = _pos.x;
+		level->arrCities[i].origin_y = _pos.y;
+		level->arrCities[i].name = "BEEF WELLINGTON";
+
+		std::cout << "[GEN] added city at " << _pos.x << ", " << _pos.y << std::endl;
+
+		//remove the check position when done
+		vPositionsWeCanCheck.erase(vPositionsWeCanCheck.begin() + _posi);
 	}
-	*/
+
 
 
 }

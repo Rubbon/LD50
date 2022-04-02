@@ -2,6 +2,7 @@
 #include "Graphics.h"
 #include "Input.h"
 #include <string>
+#include <algorithm>
 
 bool RUN_GAME = false;
 Game GAME = {};
@@ -36,12 +37,6 @@ void Game::Tick() {
 	if (Input::KeyHeld(SDL_SCANCODE_UP)) CAMERA_Y-= _camSpd;
 	else if (Input::KeyHeld(SDL_SCANCODE_DOWN)) CAMERA_Y+= _camSpd;
 
-	if (CAMERA_X < 0) CAMERA_X = 0;
-	else if (CAMERA_X+SCREEN_W > LEVEL_W * 8) CAMERA_X = -SCREEN_W + LEVEL_W * 8;
-
-	if (CAMERA_Y < 0) CAMERA_Y = 0;
-	else if (CAMERA_Y+SCREEN_H > LEVEL_H * 8) CAMERA_Y = -SCREEN_H + LEVEL_H * 8;
-
 
 	if (draggingCam) {
 
@@ -69,6 +64,10 @@ void Game::Tick() {
 		}
 	}
 
+	//clamp camera in screen
+	CAMERA_X = std::clamp(CAMERA_X, 0, -SCREEN_W + LEVEL_W * 8);
+	CAMERA_Y = std::clamp(CAMERA_Y, 0, -SCREEN_H + LEVEL_H * 8);
+
 
 }
 
@@ -91,6 +90,17 @@ void Game::Draw() {
 			TileDraw((ix * 8) - CAMERA_X, (iy * 8) - CAMERA_Y, ix, iy, currentLevel.GetTile(ix, iy));
 		}
 	}
+
+
+	//cities draw their name
+	for (int i = 0; i < MAX_CITIES; i++) {
+
+		int _xx = ( - currentLevel.arrCities[i].name.length() * 4) + (currentLevel.arrCities[i].origin_x * 8) - CAMERA_X;
+
+		Graphics::DrawText(1 + _xx, 1 +(currentLevel.arrCities[i].origin_y * 8) - CAMERA_Y, currentLevel.arrCities[i].name, 1, {0, 0, 0});
+		Graphics::DrawText(_xx, (currentLevel.arrCities[i].origin_y * 8) - CAMERA_Y, currentLevel.arrCities[i].name, 1, {255, 227, 128});
+	}
+
 
 
 	//draw cursor

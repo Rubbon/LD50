@@ -22,8 +22,6 @@ enum EntityFlags {
 struct Entity {
 	int x;
 	int y;
-	int draw_x;
-	int draw_y;
 	unsigned char dir = DIR_NORTH;
 	unsigned char flags = EFL_DELETED;
 	unsigned char entityIndex;

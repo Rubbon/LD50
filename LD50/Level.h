@@ -5,6 +5,7 @@
 
 
 #define MAX_ENTITIES 512
+#define MAX_CITIES 8
 
 #define LEVEL_W 176
 #define LEVEL_H 176
@@ -19,6 +20,9 @@ public:
 	unsigned int entityIterator;
 	//all entities that are active in the level right now
 	std::vector<Entity*> vActiveEntities;
+
+	City arrCities[MAX_CITIES];
+
 
 	Tile* GetTile(int x, int y);
 

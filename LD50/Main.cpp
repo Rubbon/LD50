@@ -62,9 +62,21 @@ int main(int argc, char* argv[]) {
 
 		while (SDL_PollEvent(&sdlEvent)) {
 			switch (sdlEvent.type) {
-			case SDL_QUIT:
-				RUN_GAME = false;
+				case SDL_QUIT:
+					RUN_GAME = false;
 				break;
+				case SDL_WINDOWEVENT: {
+					switch (sdlEvent.window.event) {
+						case SDL_WINDOWEVENT_SIZE_CHANGED: {
+							std::cout << "WINDOW RESIZED!" << std::endl;
+							int _winW, _winH;
+							SDL_GetWindowSize(Graphics::window, &_winW, &_winH);
+							SCREEN_W = _winW / Graphics::SCREEN_SCALE;
+							SCREEN_H = _winH / Graphics::SCREEN_SCALE;
+							SDL_RenderSetLogicalSize(Graphics::renderer, SCREEN_W, SCREEN_H);
+						break; }
+					}
+				break; }
 			}
 		}
 

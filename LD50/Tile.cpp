@@ -10,6 +10,10 @@ void TileDraw(int dx, int dy, int tx, int ty, Tile* _tile) {
 		case TT_LAND:
 			DrawLand(dx, dy, tx, ty);
 		break;
+		case TT_TREE:
+			DrawLand(dx, dy, tx, ty);
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 8 + ((int)(tx - sin(ty)) % 2) * 8, 40, 8, 8});
+		break;
 	}
 }
 
