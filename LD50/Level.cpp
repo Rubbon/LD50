@@ -133,7 +133,7 @@ void LevelGenerator::GenerateWorld(Level* level) {
 		if (height[i] > 0.33f && ((height[i - 1] > 0.33f || height[i + 1] > 0.33f) && (height[i - w] > 0.33f || height[i + w] > 0.33f))) {
 			level->arrTiles[i].type = TT_LAND;
 
-			vPositionsWeCanCheck.push_back({ (short)(i % LEVEL_W), (short)(i / LEVEL_W) });
+			if (i % LEVEL_W > 6 && i % LEVEL_W < LEVEL_W - 6) vPositionsWeCanCheck.push_back({ (short)(i % LEVEL_W), (short)(i / LEVEL_W) });
 		}
 
 		if (height[i] >= 0.36f && height[i] < 0.363f) level->arrTiles[i].type = TT_TREE;
@@ -145,21 +145,31 @@ void LevelGenerator::GenerateWorld(Level* level) {
 
 
 	Pos _pos;
-	
+	Tile* _t;
 
 	//lets make some cities
-	int _cityAmt = (rand() % MAX_CITIES-4) + 4;
+	int _cityAmt = 4 + (rand() % MAX_CITIES - 4);
 
 	for (i = 0; i < _cityAmt; i++) {
 		//get a position to check
 		int _posi = rand()%vPositionsWeCanCheck.size();
 		_pos = vPositionsWeCanCheck[_posi];
 
+		_t = level->GetTile(_pos.x, _pos.y);
+
+		//abort if cant build here
+		if (_t->type == TT_CITYBLOCK_BIG || _t->type == TT_CITYBLOCK_SMALL) {
+			vPositionsWeCanCheck.erase(vPositionsWeCanCheck.begin() + _posi);
+			continue;
+		}
+
 		//set city data
 		level->arrCities[i].flags = CF_ACTIVE;
 		level->arrCities[i].origin_x = _pos.x;
 		level->arrCities[i].origin_y = _pos.y;
 		level->arrCities[i].name = "BEEF WELLINGTON";
+
+		PreGenerateCity(level, i);
 
 		std::cout << "[GEN] added city at " << _pos.x << ", " << _pos.y << std::endl;
 
@@ -168,5 +178,57 @@ void LevelGenerator::GenerateWorld(Level* level) {
 	}
 
 
+
+}
+
+
+
+void LevelGenerator::PreGenerateCity(Level* level, int city_i) {
+	int _growthAmt = 8 + rand() % 16;
+
+	City* _city = &level->arrCities[city_i];
+	Tile* _t;
+
+	int _placeX = _city->origin_x;
+	int _placeY = _city->origin_y;
+
+	int _maxTries = 64; // for safety
+
+
+	for (int i = 0; i < _growthAmt*2; i++) {
+		
+		//safety
+		if (_maxTries <= 0) return;
+
+		_t = level->GetTile(_placeX, _placeY);
+
+		if (_t->type == TT_LAND) {
+
+			//type
+			TileType _cityBlockType = TT_CITYBLOCK_BIG;
+			if (i > _growthAmt) _cityBlockType = TT_CITYBLOCK_SMALL;
+
+
+			_t->type = _cityBlockType;
+			_t->owner = city_i;
+			_maxTries++;
+
+			//reset to start
+			_placeX = _city->origin_x;
+			_placeY = _city->origin_y;
+
+		} else {
+			//move
+			_placeX += (rand() % 3) - 1;
+			_placeY += (rand() % 3) - 1;
+			if (_placeX == 0 && _placeY == 0) {
+				_placeX = -1;
+				_placeY = 1;
+			}
+		}
+
+		_maxTries--;
+
+	}
 
 }

@@ -14,6 +14,13 @@ void TileDraw(int dx, int dy, int tx, int ty, Tile* _tile) {
 			DrawLand(dx, dy, tx, ty);
 			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 8 + ((int)(tx - sin(ty)) % 2) * 8, 40, 8, 8});
 		break;
+		case TT_CITYBLOCK_BIG:
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 8 + ((int)(tx + sin(ty-tx)) % 3) * 8, 48, 8, 8 });
+		break;
+		case TT_CITYBLOCK_SMALL:
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 8 + ((int)(tx + sin(ty-tx)) % 3) * 8, 56, 8, 8 });
+		break;
+
 	}
 }
 

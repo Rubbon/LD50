@@ -7,7 +7,8 @@ enum TileType {
 	TT_WATER,
 	TT_LAND,
 	TT_TREE,
-
+	TT_CITYBLOCK_BIG,
+	TT_CITYBLOCK_SMALL,
 };
 
 
@@ -45,4 +46,4 @@ struct City {
 	short origin_y;
 	std::string name;
 	std::vector<Pos> myTiles;
-};;
+};
