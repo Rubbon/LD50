@@ -40,4 +40,7 @@ public:
 	float _noiseSeed[LEVEL_W * LEVEL_H];
 
 	void GenerateWorld(Level* level);
+
+	void PreGenerateCity(Level* level, int cityIndex);
+
 };
