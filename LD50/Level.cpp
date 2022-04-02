@@ -1,5 +1,6 @@
 #include "Level.h"
 #include <iostream>
+#include <fstream>
 #include "SDL.h"
 
 
@@ -57,6 +58,27 @@ Entity* Level::AddEntity(int x, int y, unsigned short entityIndex) {
 
 
 void LevelGenerator::GenerateWorld(Level* level) {
+
+	//city names
+	std::vector<std::string> prefixes;
+	std::vector<std::string> suffixes;
+	std::fstream townstxt;
+	townstxt.open("res/towns.txt", std::ios::in);
+	if (townstxt.is_open()) {
+		std::string _line;
+		bool _endOfPref = false;
+		while (std::getline(townstxt, _line)) {
+			if (_line == "") _endOfPref = true;
+			if (!_endOfPref) prefixes.push_back(_line);
+			else suffixes.push_back(_line);
+		}
+		townstxt.close();
+	}
+	else std::cout << "no townstxt" << std::endl;
+
+	for (int i = 0; i < prefixes.size(); i++) std::cout << prefixes[i] << std::endl;
+	std::cout << "NOW SUFFIXES" << std::endl;
+	for (int i = 0; i < suffixes.size(); i++) std::cout << suffixes[i] << std::endl;
 
 	const int w = LEVEL_W;
 	const int h = LEVEL_H;
