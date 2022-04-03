@@ -139,7 +139,10 @@ void LevelGenerator::GenerateWorld(Level* level) {
 		std::string _line;
 		bool _endOfPref = false;
 		while (std::getline(townstxt, _line)) {
-			if (_line == "") _endOfPref = true;
+			if (_line == "") {
+				_endOfPref = true;
+				continue;
+			}
 			if (!_endOfPref) prefixes.push_back(_line);
 			else suffixes.push_back(_line);
 		}
