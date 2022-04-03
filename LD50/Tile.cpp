@@ -176,6 +176,9 @@ Tile* BuildTileAt(int x, int y, TileType _type) {
 
 		break;
 	}
+
+	return _tile;
+
 }
 
 
