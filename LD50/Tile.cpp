@@ -276,7 +276,7 @@ void City::expandTick() {
 						myTiles.push_back({ (short)_placeX, (short)_placeY });
 						break;
 					}
-					else if (_t->type == TT_CITYBLOCK_BIG && _popCount>100000) {
+					else if (_t->type == TT_CITYBLOCK_BIG && _popCount>160000) {
 						if (!(flags & CF_HASBANK)) {
 							flags|= CF_HASBANK;
 							_t = BuildTileAt(_placeX, _placeY, TT_CITY_BANK);
