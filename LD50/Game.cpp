@@ -29,7 +29,11 @@ void Game::Tick() {
 	//reset cursor state first thing
 	cursorState = CS_POINTER;
 
-	int _camSpd = 8;
+	int _camSpd = 4;
+
+	if (Input::KeyHeld(SDL_SCANCODE_LSHIFT) || Input::KeyHeld(SDL_SCANCODE_RSHIFT)) {
+		_camSpd = 8;
+	}
 
 	if (Input::KeyHeld(SDL_SCANCODE_LEFT)) CAMERA_X-= _camSpd;
 	else if (Input::KeyHeld(SDL_SCANCODE_RIGHT)) CAMERA_X+= _camSpd;
@@ -131,7 +135,7 @@ void Game::DrawUi() {
 		if (_xx <= 8) continue;
 
 		Graphics::DrawText(_xx + 1, 9, _txt, 1, {0, 0, 0});
-		Graphics::DrawText(_xx, 8, _txt, 1, { 255, 64, 64 });
+		Graphics::DrawText(_xx, 8, _txt, 1, C_XRED);
 	}
 
 	//side bearings
@@ -150,13 +154,13 @@ void Game::DrawUi() {
 		if (_yy <= 8) continue;
 
 		Graphics::DrawText(_xx + 1, _yy + 1, _txt, 1, { 0, 0, 0 });
-		Graphics::DrawText(_xx, _yy, _txt, 1, { 80, 80, 255 });
+		Graphics::DrawText(_xx, _yy, _txt, 1, C_YBLUE);
 	}
 
 	//x y notifier
 	Graphics::DrawRect({ 0, 8, 24, 8 }, {0,0,0,255});
-	Graphics::DrawText(8, 8, "X", 1, {255, 64, 64});
-	Graphics::DrawText(16, 8, "Y", 1, { 80, 80, 255 });
+	Graphics::DrawText(8, 8, "X", 1, C_XRED);
+	Graphics::DrawText(16, 8, "Y", 1, C_YBLUE);
 
 
 
