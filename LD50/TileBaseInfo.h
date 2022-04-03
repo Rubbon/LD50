@@ -34,14 +34,14 @@ const TileInfo arrTileInfo[] = {
 		/* NAME */			"City", // small
 		/* BASE_HP */		6,
 		/* BUILD_SPR */		{8, 64, 16, 16},
-		/* BUILD_TIME */	1,
+		/* BUILD_TIME */	1280,
 		/* FLAGS */			0x00,
 	},
 	{
 		/* NAME */			"City", // big
 		/* BASE_HP */		6,
 		/* BUILD_SPR */		{8, 64, 16, 16},
-		/* BUILD_TIME */	1,
+		/* BUILD_TIME */	3000,
 		/* FLAGS */			0x00,
 	},
 	{
@@ -76,7 +76,7 @@ const TileInfo arrTileInfo[] = {
 		/* NAME */			"Bank",
 		/* BASE_HP */		10,
 		/* BUILD_SPR */		{8, 64, 16, 16},
-		/* BUILD_TIME */	1000,
+		/* BUILD_TIME */	5000,
 		/* FLAGS */			0x00,
 	},
 	{

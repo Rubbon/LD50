@@ -205,7 +205,7 @@ void City::expandTick() {
 		if (_curTile->owner != index) {
 			//check if city has been gooped by aliens
 			myTiles.erase(myTiles.begin() + i);
-			timer = 1;
+			timer = 10;
 		}
 		if (_curTile->type == TT_CITYBLOCK_SMALL) _popCount += (4000 + (int)rand() % 999);
 		else if (_curTile->type == TT_CITYBLOCK_BIG) _popCount += (10000 + (int)rand() % 9999);
@@ -229,9 +229,7 @@ void City::expandTick() {
 			if (_t->type == TT_LAND) {
 				TileType _cityBlockType = TT_CITYBLOCK_BIG;
 				if (i > myTiles.size()) _cityBlockType = TT_CITYBLOCK_SMALL;
-
-				_t->type = TT_CONSTRUCTION_SITE;
-				_t->ref = _cityBlockType;
+				_t = BuildTileAt(_placeX,_placeY, _cityBlockType);
 				_t->owner = index;
 				break;
 			}
@@ -246,15 +244,13 @@ void City::expandTick() {
 				_chance = (int)rand() % 10;
 				if (_chance > 7) {
 					if (_t->type == TT_CITYBLOCK_SMALL) { 
-						_t->type = TT_CONSTRUCTION_SITE;
-						_t->ref = TT_CITYBLOCK_BIG; 
+						_t = BuildTileAt(_placeX, _placeY, TT_CITYBLOCK_BIG);
 						_t->owner = index;
 						myTiles.push_back({ (short)_placeX, (short)_placeY });
 						break;
 					}
 					else if (_t->type == TT_CITYBLOCK_BIG && !_hasBank && _popCount>50000) {
-						_t->type = TT_CONSTRUCTION_SITE;
-						_t->ref = TT_CITY_BANK;
+						_t = BuildTileAt(_placeX, _placeY, TT_CITY_BANK);
 						_t->owner = index;
 						myTiles.push_back({ (short)_placeX, (short)_placeY });
 						break;
@@ -262,6 +258,6 @@ void City::expandTick() {
 				}
 			}
 		}
-		timer = 1;
+		timer = 4;
 	}
 }
