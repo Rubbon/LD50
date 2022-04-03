@@ -56,7 +56,8 @@ struct City {
 	short origin_y;
 	std::string name;
 	std::vector<Pos> myTiles;
-	int timer;
+	int timer = 12;
+	int friendliness = 8;
 	void expandTick();
 };
 

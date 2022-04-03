@@ -62,6 +62,7 @@ void City::expandTick() {
 	//check if city has been gooped by aliens
 	for (int i = 0; i < myTiles.size(); i++) {
 		if (GAME.currentLevel.GetTile(myTiles[i].x, myTiles[i].y)->owner != index) myTiles.erase(myTiles.begin() + i);
+		friendliness--;
 		timer = 20;
 	}
 	
