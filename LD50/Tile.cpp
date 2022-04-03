@@ -127,7 +127,7 @@ bool CheckIfCanBuildTile(int x, int y, TileType _type) {
 
 
 
-void BuildTileAt(int x, int y, TileType _type) {
+Tile* BuildTileAt(int x, int y, TileType _type) {
 
 	Tile* _tile;
 

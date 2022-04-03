@@ -10,7 +10,7 @@ enum EntityName {
 
 enum EntityFlags {
 	EFL_DELETED = 0x01,
-	// = 0x02,
+	EFL_AIR = 0x02,
 	// = 0x04,
 	// = 0x08,
 	// = 0x10,

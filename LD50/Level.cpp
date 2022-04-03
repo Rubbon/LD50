@@ -142,6 +142,25 @@ Entity* Level::AddEntity(int x, int y, unsigned short entityIndex) {
 	//return &arrEntities[entityIterator];
 }
 
+Chunk* Level::GetChunkAtTilePos(int x, int y) {
+	return &arrChunks[(x / CHUNK_SIZE) + (y / CHUNK_SIZE) * (LEVEL_W / CHUNK_SIZE)];
+}
+
+
+
+Entity* Level::GetEntityAtTile(int x, int y, unsigned char neededFlags) {
+	Chunk* _chunk = GetChunkAtTilePos(x, y);
+	for (int i = 0; i < _chunk->lsEntities.size(); i++) {
+		//skip if doesn't have required flags
+		if (!(_chunk->lsEntities[i]->flags & neededFlags)) continue;
+
+		if (_chunk->lsEntities[i]->x >> 3 == x && _chunk->lsEntities[i]->y >> 3 == y) {
+			return _chunk->lsEntities[i];
+		}
+	}
+}
+
+
 
 void Level::RemoveEntityFromChunk(Entity* ent, Chunk* _chunk) {
 	auto _posInChunk = std::find(_chunk->lsEntities.begin(), _chunk->lsEntities.end(), ent);

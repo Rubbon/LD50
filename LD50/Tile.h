@@ -57,7 +57,7 @@ extern void TileDraw(int dx, int dy, int tx, int ty, Tile* _tile);
 
 extern void DrawLand(int dx, int dy, int tx = 0, int ty = 0);
 
-extern void BuildTileAt(int x, int y, TileType _type);
+extern Tile* BuildTileAt(int x, int y, TileType _type);
 //ran when the tile has been fully built and has been spawned unto the world
 extern void TileOnBuilt(int x, int y, Tile* _tile);
 
@@ -74,6 +74,8 @@ struct Pos {
 
 enum CityFlags {
 	CF_ACTIVE = 0x01,
+	CF_FOUND = 0x02,
+
 };
 
 //cities

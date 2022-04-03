@@ -12,7 +12,7 @@ void E_UfoInit(Entity* ent) {
 
 void E_UfoTick(Entity* ent) {
 
-	ent->z = -8 + sin((GAME_TICK + ent->id)*0.05f) * 2;
+	ent->z = -6 + sin((GAME_TICK + ent->id)*0.05f) * 2;
 
 	//move to target pos
 	if (ent->x < ent->target_x) ent->x++;
@@ -23,37 +23,65 @@ void E_UfoTick(Entity* ent) {
 
 	switch (ent->state) {
 		case ES_RECON:
-			if (ent->x == ent->target_x && ent->y == ent->target_y) {
+			if (ent->substate != 2 && ent->x == ent->target_x && ent->y == ent->target_y) {
+
+
+				//report what we see
+				if (ent->wait == 0 && ent->substate == 0) {
+					Tile* _tile = LEVEL.GetTile(ent->x >> 3, ent->y >> 3);
+
+					switch (_tile->type) {
+						case TT_CITYBLOCK_BIG: case TT_CITYBLOCK_SMALL: case TT_CITY_BANK:
+							std::cout << "FOUND CITY " << std::endl;
+							LEVEL.arrCities[_tile->owner].flags |= CF_FOUND;
+							ent->substate = 1;
+						break;
+						case TT_HQ_TL: case TT_HQ_TR: case TT_HQ_BL: case TT_HQ_BR:
+							std::cout << "FOUND HQ " << std::endl;
+							GAME.alienMastermind.foundHqPos = {(short)(ent->x >> 3), (short)(ent->y >> 3)};
+							ent->substate = 1;
+						break;
+					}
+
+				}
+
 
 				ent->wait++;
 
 				if (ent->wait >= 80) {
 					ent->wait = 0;
-					ent->substate++;
+					ent->ticker++;
 
 					int _xDir = 1;
-					if (ent->substate / RECON_SPACE_SIZE % 2 != 0) _xDir = -1;
+					if (ent->ticker / RECON_SPACE_SIZE % 2 != 0) _xDir = -1;
 				
 					//move
-					if (ent->substate % RECON_SPACE_SIZE == 0) ent->target_y += 8;
+					if (ent->ticker % RECON_SPACE_SIZE == 0) ent->target_y += 8;
 					else  ent->target_x += 8 * _xDir;
 					
 					//we're done searching
-					if (ent->substate >= RECON_SPACE_SIZE * RECON_SPACE_SIZE) {
-						
+					if (ent->ticker >= RECON_SPACE_SIZE * RECON_SPACE_SIZE) {
+						ent->substate = 2;
 					}
 
 				}
 
 			}
 		break;
+
+		case ES_ATTACKER:
+
+			//if we're at destination, consider moving around a little
+
+		break;
+
 	}
 }
 
 
 void E_UfoDraw(Entity* ent) {
 	//shadow
-	Graphics::DrawSpr(TEX_CHARS, {ent->x - 4 - CAMERA_X, ent->y - 1 - CAMERA_Y, 8, 3 }, {0, 157, 8, 3});
+	Graphics::DrawSpr(TEX_CHARS, {ent->x - 6 - ent->z - CAMERA_X, ent->y + 1 - CAMERA_Y, 8, 3 }, {0, 157, 8, 3});
 	//me
 	Graphics::DrawSpr(TEX_CHARS, {ent->x - 4 -CAMERA_X, ent->y - 4 + ent->z - CAMERA_Y, 8, 5 }, {0, 152, 8, 5});
 }

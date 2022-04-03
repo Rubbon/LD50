@@ -56,6 +56,10 @@ public:
 	void RemoveEntityFromChunk(Entity* entity, Chunk* _chunk);
 	void AddEntityToChunk(Entity* entity);
 	//Chunk* GetChunkAtRealPos(int x, int y);
+	Chunk* GetChunkAtTilePos(int x, int y);
+
+	Entity* GetEntityAtTile(int x, int y, unsigned char neededFlags = 0x00);
+
 
 };
 
