@@ -22,6 +22,10 @@ void TileDraw(int dx, int dy, int tx, int ty, Tile* _tile) {
 			DrawLand(dx, dy, tx, ty);
 			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 8 + ((int)(tx + sin(ty-tx)) % 3) * 8, 56, 8, 8 });
 		break;
+		case TT_CITY_BANK:
+			DrawLand(dx, dy, tx, ty);
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 56, 48, 8, 8 });
+		break;
 
 	}
 }

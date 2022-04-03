@@ -9,12 +9,21 @@ enum TileType {
 	TT_TREE,
 	TT_CITYBLOCK_BIG,
 	TT_CITYBLOCK_SMALL,
+
+	TT_HQ_TL,
+	TT_HQ_TR,
+	TT_HQ_BL,
+	TT_HQ_BR,
+
+	TT_CITY_BANK,
+
 };
 
 
 struct Tile {
 	TileType type = TT_WATER;
 	unsigned char owner = 0;
+	unsigned char hp = 0;
 };
 
 
@@ -42,6 +51,7 @@ enum CityFlags {
 //cities
 struct City {
 	unsigned char flags = 0x00;
+	unsigned char index = 0;
 	short origin_x;
 	short origin_y;
 	std::string name;
@@ -49,3 +59,12 @@ struct City {
 	int timer;
 	void expandTick();
 };
+
+/*
+//player HQ
+struct Hq {
+	unsigned char flags = 0x00;
+	short origin_x;
+	short origin_y;
+};
+*/

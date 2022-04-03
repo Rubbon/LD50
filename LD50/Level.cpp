@@ -183,6 +183,7 @@ void LevelGenerator::GenerateWorld(Level* level) {
 		level->arrCities[i].origin_x = _pos.x;
 		level->arrCities[i].origin_y = _pos.y;
 		level->arrCities[i].name = GetCityName();
+		level->arrCities[i].index = i;
 
 		PreGenerateCity(level, i);
 

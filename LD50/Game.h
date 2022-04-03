@@ -4,6 +4,9 @@
 #include "SDL.h"
 #include "Level.h"
 
+const SDL_Colour C_XRED = { 255, 64, 64 };
+const SDL_Colour C_YBLUE = { 104, 170, 255 };
+
 
 enum CursorState {
 	CS_POINTER,
