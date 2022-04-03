@@ -199,7 +199,6 @@ void City::expandTick() {
 	//std::cout << timer << std::endl;
 	
 	int _popCount = 0;
-	bool _hasBank = false;
 	for (int i = 0; i < myTiles.size(); i++) {
 		Tile* _curTile = GAME.currentLevel.GetTile(myTiles[i].x, myTiles[i].y);
 		if (_curTile->owner != index) {
@@ -211,7 +210,6 @@ void City::expandTick() {
 		else if (_curTile->type == TT_CITYBLOCK_BIG) _popCount += (10000 + (int)rand() % 9999);
 		else if (_curTile->type == TT_CITY_BANK) {
 			_popCount += (10000 + (int)rand() % 9999);
-			_hasBank = true;
 		}
 		friendliness--;
 		
@@ -242,18 +240,21 @@ void City::expandTick() {
 				}
 				//chance to upgrade existing city tile
 				_chance = (int)rand() % 10;
-				if (_chance > 7) {
+				if (_chance > 1) {
 					if (_t->type == TT_CITYBLOCK_SMALL) { 
 						_t = BuildTileAt(_placeX, _placeY, TT_CITYBLOCK_BIG);
 						_t->owner = index;
 						myTiles.push_back({ (short)_placeX, (short)_placeY });
 						break;
 					}
-					else if (_t->type == TT_CITYBLOCK_BIG && !_hasBank && _popCount>50000) {
-						_t = BuildTileAt(_placeX, _placeY, TT_CITY_BANK);
-						_t->owner = index;
-						myTiles.push_back({ (short)_placeX, (short)_placeY });
-						break;
+					else if (_t->type == TT_CITYBLOCK_BIG && _popCount>100000) {
+						if (!(flags & CF_HASBANK)) {
+							flags|= CF_HASBANK;
+							_t = BuildTileAt(_placeX, _placeY, TT_CITY_BANK);
+							_t->owner = index;
+							myTiles.push_back({ (short)_placeX, (short)_placeY });
+							break;
+						}
 					}
 				}
 			}

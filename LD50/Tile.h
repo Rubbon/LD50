@@ -75,7 +75,7 @@ struct Pos {
 enum CityFlags {
 	CF_ACTIVE = 0x01,
 	CF_FOUND = 0x02,
-
+	CF_HASBANK = 0x04,
 };
 
 //cities
