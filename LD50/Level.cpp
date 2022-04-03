@@ -112,7 +112,7 @@ void LevelGenerator::GenerateWorld(Level* level) {
 		if (height[i] > 0.33f && ((height[i - 1] > 0.33f || height[i + 1] > 0.33f) && (height[i - w] > 0.33f || height[i + w] > 0.33f))) {
 			level->arrTiles[i].type = TT_LAND;
 
-			if (i % LEVEL_W > 6 && i % LEVEL_W < LEVEL_W - 6) vPositionsWeCanCheck.push_back({ (short)(i % LEVEL_W), (short)(i / LEVEL_W) });
+			if (i % LEVEL_W > 6 && i % LEVEL_W < LEVEL_W - 6 && i / LEVEL_H > 4 && i / LEVEL_H < LEVEL_H-4) vPositionsWeCanCheck.push_back({ (short)(i % LEVEL_W), (short)(i / LEVEL_W) });
 		}
 
 		if (height[i] >= 0.36f && height[i] < 0.363f) level->arrTiles[i].type = TT_TREE;
@@ -163,6 +163,7 @@ void LevelGenerator::GenerateWorld(Level* level) {
 		//abort if cant build here
 		if (_t->type == TT_CITYBLOCK_BIG || _t->type == TT_CITYBLOCK_SMALL) {
 			vPositionsWeCanCheck.erase(vPositionsWeCanCheck.begin() + _posi);
+			i--;
 			continue;
 		}
 

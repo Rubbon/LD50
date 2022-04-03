@@ -92,7 +92,7 @@ void Game::Draw() {
 	}
 
 
-	//cities draw their name
+	//cities draw their name TODO - DON'T DRAW WHEN OUTSIDE SCREEN
 	for (int i = 0; i < MAX_CITIES; i++) {
 
 		int _xx = ( - currentLevel.arrCities[i].name.length() * 4) + (currentLevel.arrCities[i].origin_x * 8) - CAMERA_X;
@@ -103,6 +103,30 @@ void Game::Draw() {
 
 
 
+
+
+
+	//draw ui at end
+	DrawUi();
+
+}
+
+
+
+
+void Game::DrawUi() {
+
+	//bearings
+	int _camBearingX = (CAMERA_X >> 3) / 10;
+	int _xBearingAmt = SCREEN_W / 80;
+
+
+	for (int i = 1; i < _xBearingAmt+1; i++) {
+		Graphics::DrawText(1 + (_camBearingX * 8) * 10 + (i * 80) - CAMERA_X, 9, std::to_string((_camBearingX + i) * 10), 1, {0, 0, 0});
+		Graphics::DrawText((_camBearingX * 8) * 10 + (i * 80) - CAMERA_X, 8, std::to_string((_camBearingX + i) * 10), 1, {255, 64, 64});
+	}
+
+
 	//draw cursor
 	switch (cursorState) {
 		case CS_POINTER:
@@ -110,11 +134,10 @@ void Game::Draw() {
 			Graphics::DrawSpr(TEX_CHARS, { CURSOR_X, CURSOR_Y, 8, 8 }, { 0, 248, 8, 8 });
 		break;
 		case CS_DRAG:
-			Graphics::DrawSpr(TEX_CHARS, { CURSOR_X-8 + 2, CURSOR_Y-8 + 2, 16, 16 }, { 8, 240, 16, 16 }, { 0, 0, 0, 255 });
-			Graphics::DrawSpr(TEX_CHARS, { CURSOR_X-8, CURSOR_Y-8, 16, 16 }, { 8, 240, 16, 16 });
+			Graphics::DrawSpr(TEX_CHARS, { CURSOR_X - 8 + 2, CURSOR_Y - 8 + 2, 16, 16 }, { 8, 240, 16, 16 }, { 0, 0, 0, 255 });
+			Graphics::DrawSpr(TEX_CHARS, { CURSOR_X - 8, CURSOR_Y - 8, 16, 16 }, { 8, 240, 16, 16 });
 		break;
 	}
-
 
 }
 
