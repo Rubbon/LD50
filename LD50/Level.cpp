@@ -1,5 +1,6 @@
 #include "Level.h"
 #include <iostream>
+#include <fstream>
 #include "SDL.h"
 
 
@@ -128,6 +129,27 @@ void LevelGenerator::GenerateWorld(Level* level) {
 	//lets make some cities
 	int _cityAmt = 4 + (rand() % MAX_CITIES - 4);
 
+
+	//city names
+	std::vector<std::string> prefixes;
+	std::vector<std::string> suffixes;
+	std::fstream townstxt;
+	townstxt.open("res/towns.txt", std::ios::in);
+	if (townstxt.is_open()) {
+		std::string _line;
+		bool _endOfPref = false;
+		while (std::getline(townstxt, _line)) {
+			if (_line == "") _endOfPref = true;
+			if (!_endOfPref) prefixes.push_back(_line);
+			else suffixes.push_back(_line);
+		}
+		townstxt.close();
+	}
+	else std::cout << "No towns.txt found!" << std::endl;
+
+	//for (int i = 0; i < prefixes.size(); i++) std::cout << prefixes[i] << std::endl;
+	//for (int i = 0; i < suffixes.size(); i++) std::cout << suffixes[i] << std::endl;
+
 	for (i = 0; i < _cityAmt; i++) {
 		//get a position to check
 		int _posi = rand()%vPositionsWeCanCheck.size();
@@ -146,7 +168,9 @@ void LevelGenerator::GenerateWorld(Level* level) {
 		level->arrCities[i].flags = CF_ACTIVE;
 		level->arrCities[i].origin_x = _pos.x;
 		level->arrCities[i].origin_y = _pos.y;
-		level->arrCities[i].name = "BEEF WELLINGTON";
+		std::string _cityName;
+		_cityName = prefixes[(int)rand() % prefixes.size()]+suffixes[(int)rand() % suffixes.size()];
+		level->arrCities[i].name = _cityName;
 
 		PreGenerateCity(level, i);
 
