@@ -75,6 +75,12 @@ void DrawLand(int dx, int dy, int tx, int ty) {
 
 }
 
+void CheckIfCanBuildTile(int x, int y, TileType _type) {
+	switch (_type) {
+		default: break;
+	}
+}
+
 
 
 void BuildTileAt(int x, int y, TileType _type) {

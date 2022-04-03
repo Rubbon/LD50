@@ -49,6 +49,7 @@ extern void DrawLand(int dx, int dy, int tx = 0, int ty = 0);
 
 extern void BuildTileAt(int x, int y, TileType _type);
 
+extern void CheckIfCanBuildTile(int x, int y, TileType _type);
 
 
 
