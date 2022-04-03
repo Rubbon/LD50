@@ -80,12 +80,39 @@ void Level::Draw() {
 
 
 	//sort entities so they draw in the right order
-	std::sort(vActiveEntities.begin(), vActiveEntities.end(), EntitySorter());
+	//std::sort(vActiveEntities.begin(), vActiveEntities.end(), EntitySorter());
 
+
+	//old - draws All entities
 	//draw active entities
-	for (i = 0; i < vActiveEntities.size(); i++) {
-		arrEntityFuncs[vActiveEntities[i]->entityIndex].Draw(vActiveEntities[i]);
+	//for (i = 0; i < vActiveEntities.size(); i++) {
+	//	arrEntityFuncs[vActiveEntities[i]->entityIndex].Draw(vActiveEntities[i]);
+	//}
+
+
+	//draw entities in viewable chunks
+	_ctx /= CHUNK_SIZE;
+	_cty /= CHUNK_SIZE;
+	Chunk* _chunk;
+
+	for (ix = _ctx; ix <= 1 + _ctx + (Graphics::SCREEN_W >> 3) / CHUNK_SIZE; ix++) {
+		if (ix < 0 || ix >= LEVEL_W / CHUNK_SIZE) continue;
+		for (iy = _cty; iy <= 1 + _cty + (Graphics::SCREEN_H >> 3) / CHUNK_SIZE; iy++) {
+			if (iy < 0 || iy >= LEVEL_H / CHUNK_SIZE) continue;
+			
+			_chunk = &arrChunks[ix + iy * (LEVEL_W / CHUNK_SIZE)];
+
+			//sort entities so they draw in the right order (might cause chunk border rendering issues)
+			std::sort(_chunk->lsEntities.begin(), _chunk->lsEntities.end(), EntitySorter());
+
+			for (i = 0; i < _chunk->lsEntities.size(); i++) {
+				arrEntityFuncs[_chunk->lsEntities[i]->entityIndex].Draw(_chunk->lsEntities[i]);
+			}
+
+		}
 	}
+
+
 
 }
 
@@ -158,6 +185,7 @@ Entity* Level::GetEntityAtTile(int x, int y, unsigned char neededFlags) {
 			return _chunk->lsEntities[i];
 		}
 	}
+	return NULL;
 }
 
 
