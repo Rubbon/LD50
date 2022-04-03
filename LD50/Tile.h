@@ -17,6 +17,7 @@ enum TileType {
 	TT_HQ_BR,
 
 	TT_CITY_BANK,
+	TT_CONSTRUCTION_SITE,
 
 };
 
@@ -38,6 +39,7 @@ struct TileInfo {
 	std::string name = "NAME ME";
 	unsigned char baseHp = 0;
 	SDL_Rect buildSpr;
+	unsigned short buildTime = 0;
 };
 
 
@@ -49,7 +51,7 @@ extern void DrawLand(int dx, int dy, int tx = 0, int ty = 0);
 
 extern void BuildTileAt(int x, int y, TileType _type);
 
-extern void CheckIfCanBuildTile(int x, int y, TileType _type);
+extern bool CheckIfCanBuildTile(int x, int y, TileType _type);
 
 
 

@@ -75,10 +75,11 @@ void DrawLand(int dx, int dy, int tx, int ty) {
 
 }
 
-void CheckIfCanBuildTile(int x, int y, TileType _type) {
+bool CheckIfCanBuildTile(int x, int y, TileType _type) {
 	switch (_type) {
-		default: break;
+		default: if (LEVEL.GetTile(x, y)->type == TT_LAND) return true; break;
 	}
+	return false;
 }
 
 
