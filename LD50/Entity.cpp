@@ -34,7 +34,7 @@ void SortEntityIntoCorrectChunk(Entity* _ent) {
 		LEVEL.AddEntityToChunk(_ent);
 
 		//todo - remove me
-		std::cout << "SORTED ENTITY #" << _ent->id << " INTO CHUNK " << _ent->currentChunk << std::endl;
+		//std::cout << "SORTED ENTITY #" << _ent->id << " INTO CHUNK " << _ent->currentChunk << std::endl;
 
 	}
 }
