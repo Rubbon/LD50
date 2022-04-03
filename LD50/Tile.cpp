@@ -86,22 +86,25 @@ void BuildTileAt(int x, int y, TileType _type) {
 
 
 void City::expandTick() {
-	//check if city has been gooped by aliens
+	std::cout << timer << std::endl;
+	
 	int _popCount = 0;
 	bool _hasBank = false;
 	for (int i = 0; i < myTiles.size(); i++) {
 		Tile* _curTile = GAME.currentLevel.GetTile(myTiles[i].x, myTiles[i].y);
 		if (_curTile->owner != index) {
+			//check if city has been gooped by aliens
 			myTiles.erase(myTiles.begin() + i);
-			if (_curTile->type == TT_CITYBLOCK_SMALL) _popCount += (4000 + (int)rand() % 999);
-			else if (_curTile->type==TT_CITYBLOCK_BIG) _popCount += (10000 + (int)rand() % 9999);
-			else if (_curTile->type == TT_CITY_BANK) {
-				_popCount += (10000 + (int)rand() % 9999);
-				_hasBank = true;
-			}
+			timer = 1;
+		}
+		if (_curTile->type == TT_CITYBLOCK_SMALL) _popCount += (4000 + (int)rand() % 999);
+		else if (_curTile->type == TT_CITYBLOCK_BIG) _popCount += (10000 + (int)rand() % 9999);
+		else if (_curTile->type == TT_CITY_BANK) {
+			_popCount += (10000 + (int)rand() % 9999);
+			_hasBank = true;
 		}
 		friendliness--;
-		timer = 20;
+		
 	}
 	
 	if (timer > 0) timer--;
@@ -119,6 +122,7 @@ void City::expandTick() {
 
 				_t->type = _cityBlockType;
 				_t->owner = index;
+				break;
 			}
 			else {
 				_placeX += (rand() % 3) - 1;
@@ -133,11 +137,14 @@ void City::expandTick() {
 					if (_t->type == TT_CITYBLOCK_SMALL) { 
 						_t->type = TT_CITYBLOCK_BIG; 
 						_t->owner = index;
+						myTiles.push_back({ (short)_placeX, (short)_placeY });
+						break;
 					}
-					else if (_t->type == TT_CITYBLOCK_BIG && !_hasBank) {
+					else if (_t->type == TT_CITYBLOCK_BIG && !_hasBank && _popCount>) {
 						_t->type = TT_CITY_BANK;
 						_t->owner = index;
-						//myTiles.push_back(_t);
+						myTiles.push_back({ (short)_placeX, (short)_placeY });
+						break;
 					}
 				}
 			}
