@@ -33,6 +33,7 @@ struct Entity {
 
 	short target_x;
 	short target_y;
+	Entity* target_entity;
 
 	short hp = 0;
 

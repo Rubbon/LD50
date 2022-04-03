@@ -1,7 +1,8 @@
 #include "EnemyEntities.h"
 #include "Graphics.h"
 #include "Game.h"
-
+#include "TileBaseInfo.h"
+#include <algorithm>
 
 
 
@@ -70,8 +71,44 @@ void E_UfoTick(Entity* ent) {
 		break;
 
 		case ES_ATTACKER:
+			
+			Tile* _tile = LEVEL.GetTile(ent->x >> 3, ent->y >> 3);
 
-			//if we're at destination, consider moving around a little
+			//if we're at destination, consider moving around a little - or shoot if something is near
+			if (ent->x == ent->target_x && ent->y == ent->target_y) {
+
+				if (ent->wait <= 0) {
+
+					//there's a unit to attack!
+
+
+					//there's a tile to attack!
+					if (GET_TILE_INFO(_tile->type).flags & TIF_HUMAN) {
+						ent->wait += 32;
+						break;
+					}
+
+					//think about moving
+					int _moveX = (ent->x >> 3) + (rand() % 5) - 2;
+					int _moveY = (ent->y >> 3) + (rand() % 5) - 2;
+
+					if (LEVEL.GetEntityAtTile(_moveX, _moveY, EFL_AIR) == NULL) {
+
+						ent->target_x = std::clamp((int)ent->target_x, 0, LEVEL_W*8);
+						ent->target_y = std::clamp((int)ent->target_y, 0, LEVEL_H*8);
+
+						ent->target_x = _moveX*8;
+						ent->target_y = _moveY*8;
+						ent->wait += 80 + rand() % 64;
+					}
+				}
+
+				ent->wait--;
+
+			}
+			
+
+
 
 		break;
 
@@ -80,8 +117,11 @@ void E_UfoTick(Entity* ent) {
 
 
 void E_UfoDraw(Entity* ent) {
+
+	TileType _tileAtFeet = LEVEL.GetTile(ent->x >> 3, ent->y >> 3)->type;
+
 	//shadow
-	Graphics::DrawSpr(TEX_CHARS, {ent->x - 6 - ent->z - CAMERA_X, ent->y + 1 - CAMERA_Y, 8, 3 }, {0, 157, 8, 3});
+	if (_tileAtFeet == TT_LAND || _tileAtFeet == TT_WATER) Graphics::DrawSpr(TEX_CHARS, {ent->x - 6 - ent->z - CAMERA_X, ent->y + 1 - CAMERA_Y, 8, 3 }, {0, 157, 8, 3});
 	//me
 	Graphics::DrawSpr(TEX_CHARS, {ent->x - 4 -CAMERA_X, ent->y - 4 + ent->z - CAMERA_Y, 8, 5 }, {0, 152, 8, 5});
 }

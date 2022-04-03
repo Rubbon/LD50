@@ -48,7 +48,6 @@ void AlienMastermind::TryDoingRecon() {
 
 	//rcon
 	if (reconTick <= 0) {
-		std::cout << "RECON TICK" << std::endl;
 
 		//check if we need to make a new recon unit
 		if (_reconUnit == NULL || (_reconUnit->flags & EFL_DELETED) || _reconUnit->state != ES_RECON) {

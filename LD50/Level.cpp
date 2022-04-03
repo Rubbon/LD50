@@ -185,6 +185,7 @@ Entity* Level::GetEntityAtTile(int x, int y, unsigned char neededFlags) {
 			return _chunk->lsEntities[i];
 		}
 	}
+	return NULL;
 }
 
 

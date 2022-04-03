@@ -35,56 +35,56 @@ const TileInfo arrTileInfo[] = {
 		/* BASE_HP */		6,
 		/* BUILD_SPR */		{8, 64, 16, 16},
 		/* BUILD_TIME */	1280,
-		/* FLAGS */			0x00,
+		/* FLAGS */			TIF_HUMAN,
 	},
 	{
 		/* NAME */			"City", // big
 		/* BASE_HP */		6,
 		/* BUILD_SPR */		{8, 64, 16, 16},
 		/* BUILD_TIME */	3000,
-		/* FLAGS */			0x00,
+		/* FLAGS */			TIF_HUMAN,
 	},
 	{
 		/* NAME */			"HQ", //tl
 		/* BASE_HP */		16,
 		/* BUILD_SPR */		{8, 64, 16, 16},
 		/* BUILD_TIME */	128,
-		/* FLAGS */			0x00,
+		/* FLAGS */			TIF_HUMAN,
 	},
 	{
 		/* NAME */			"HQ", //tr
 		/* BASE_HP */		16,
 		/* BUILD_SPR */		{8, 64, 16, 16},
 		/* BUILD_TIME */	128,
-		/* FLAGS */			0x00,
+		/* FLAGS */			TIF_HUMAN,
 	},
 	{
 		/* NAME */			"HQ", //bl
 		/* BASE_HP */		16,
 		/* BUILD_SPR */		{8, 64, 16, 16},
 		/* BUILD_TIME */	128,
-		/* FLAGS */			0x00,
+		/* FLAGS */			TIF_HUMAN,
 	},
 	{
 		/* NAME */			"HQ", //br
 		/* BASE_HP */		16,
 		/* BUILD_SPR */		{8, 64, 16, 16},
 		/* BUILD_TIME */	128,
-		/* FLAGS */			0x00,
+		/* FLAGS */			TIF_HUMAN,
 	},
 	{
 		/* NAME */			"Bank",
 		/* BASE_HP */		10,
 		/* BUILD_SPR */		{8, 64, 16, 16},
 		/* BUILD_TIME */	5000,
-		/* FLAGS */			0x00,
+		/* FLAGS */			TIF_HUMAN,
 	},
 	{
 		/* NAME */			"Construction Site",
 		/* BASE_HP */		4,
 		/* BUILD_SPR */		{},
 		/* BUILD_TIME */	0,
-		/* FLAGS */			TIF_TICKABLE,
+		/* FLAGS */			TIF_TICKABLE | TIF_HUMAN,
 	},
 
 

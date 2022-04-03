@@ -44,7 +44,8 @@ int main(int argc, char* argv[]) {
 
 	GAME.Init();
 	Graphics::LoadGfx();
-
+	Sound::InitSoundDevice();
+	Sound::LoadGameAudio();
 
 	SDL_Event sdlEvent;
 
@@ -58,7 +59,7 @@ int main(int argc, char* argv[]) {
 		frameStart = SDL_GetTicks();
 
 		Input::Tick();
-		//Sound::Tick();
+		Sound::Tick();
 
 		while (SDL_PollEvent(&sdlEvent)) {
 			switch (sdlEvent.type) {
@@ -125,10 +126,8 @@ int main(int argc, char* argv[]) {
 
 	//Cleanup stuff that won't free itself
 	Graphics::CleanGfx();
-	//Sound::CleanupSoundDevice();
+	Sound::CleanupSoundDevice();
 	//Game::Cleanup();
-	//Server::StopServer();
-	//Client::StopClient();
 	SDL_DestroyWindow(Graphics::window);
 	SDL_DestroyRenderer(Graphics::renderer);
 	SDL_Quit();
