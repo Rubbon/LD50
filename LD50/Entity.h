@@ -43,6 +43,11 @@ struct Entity {
 	char state;
 	short substate;
 
+	//generic values
+	short wait;
+	short ticker;
+
+
 };
 
 
@@ -81,3 +86,5 @@ extern const EntityFunctions arrEntityFuncs[];
 
 //long winded function for making sure entities are in the right chunks
 extern void SortEntityIntoCorrectChunk(Entity* _ent);
+
+extern short GetChunkIndexAtEntityPos(int x, int y);
