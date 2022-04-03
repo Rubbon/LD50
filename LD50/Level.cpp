@@ -12,7 +12,7 @@ void Level::Tick() {
 
 	//city tick
 	if (GAME_TICK % 60 == 0) {
-		arrCities[cityTick].expandTick();
+		if (arrCities[cityTick].flags & CF_ACTIVE) arrCities[cityTick].expandTick();
 		cityTick++;
 		if (cityTick >= MAX_CITIES) cityTick = 0;
 	}
