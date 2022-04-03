@@ -54,3 +54,9 @@ void DrawLand(int dx, int dy, int tx, int ty) {
 
 }
 
+void City::expandTick() {
+	//check if city has been gooped by aliens
+	for (int i = 0; i < myTiles.size(); i++) {
+		if (GAME.currentLevel.GetTile(myTiles[i].x,myTiles[i].y)->type==TT_LAND) myTiles;
+	}
+}
