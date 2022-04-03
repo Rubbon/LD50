@@ -61,6 +61,10 @@ void DrawLand(int dx, int dy, int tx, int ty) {
 void City::expandTick() {
 	//check if city has been gooped by aliens
 	for (int i = 0; i < myTiles.size(); i++) {
-		if (GAME.currentLevel.GetTile(myTiles[i].x,myTiles[i].y)->type==TT_LAND) myTiles;
+		if (GAME.currentLevel.GetTile(myTiles[i].x, myTiles[i].y)->owner != index) myTiles.erase(myTiles.begin() + i);
+		timer = 20;
 	}
+	
+	if (timer > 0) timer--;
+	else timer = 12;
 }
