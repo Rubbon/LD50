@@ -230,7 +230,7 @@ void City::expandTick() {
 					_placeX = -1;
 					_placeY = 1;
 				}
-				//chance to existing city tile
+				//chance to upgrade existing city tile
 				_chance = (int)rand() % 10;
 				if (_chance > 7) {
 					if (_t->type == TT_CITYBLOCK_SMALL) { 
@@ -239,7 +239,7 @@ void City::expandTick() {
 						myTiles.push_back({ (short)_placeX, (short)_placeY });
 						break;
 					}
-					else if (_t->type == TT_CITYBLOCK_BIG && !_hasBank && _popCount>1000) {
+					else if (_t->type == TT_CITYBLOCK_BIG && !_hasBank && _popCount>50000) {
 						_t->type = TT_CITY_BANK;
 						_t->owner = index;
 						myTiles.push_back({ (short)_placeX, (short)_placeY });
