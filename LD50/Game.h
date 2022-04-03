@@ -10,6 +10,9 @@ enum CursorState {
 	CS_DRAG,
 };
 
+enum GameState {
+	GS_PLAY,
+};
 
 
 class Game {
@@ -18,10 +21,13 @@ public:
 	Level currentLevel = {};
 	unsigned char cursorState = CS_POINTER;
 
+	GameState state = GS_PLAY;
+
 	void Init();
 	void Tick();
 	void Draw();
 
+	void DrawUi();
 
 };
 
