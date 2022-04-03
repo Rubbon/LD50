@@ -63,7 +63,7 @@ void Game::Tick() {
 	TickCamMovement();
 
 	//alien mastermind thinks
-	alienMastermind.Tick();
+	if (GAME_TICK % 2 == 0) alienMastermind.Tick();
 
 
 }

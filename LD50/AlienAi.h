@@ -7,17 +7,27 @@
 #define RECON_SPACE_SIZE 8
 
 
+
+struct AlienParty {
+	std::vector<Entity*> vEntities;
+	short gather_x = 0;
+	short gather_y = 0;
+
+	void TellEntitiesToGather();
+
+};
+
+
 class AlienMastermind {
 public:
-	std::vector<Entity*> vActiveAlienUnits;
+	//std::vector<Entity*> vActiveAlienUnits;
 
 	short warStage = 0;
 
+	std::vector<AlienParty> vAttackParties;
 
 	//areas recon found that have something in them
 	std::vector<Pos> vAreasOfInterest;
-	//cities we've found
-	std::vector<unsigned char> vFoundCities;
 	//if we've found hq
 	Pos foundHqPos = {-1, -1};
 
@@ -28,5 +38,7 @@ public:
 
 
 	void Tick();
+
+	void TryDoingRecon();
 
 };
