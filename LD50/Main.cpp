@@ -25,6 +25,7 @@ int main(int argc, char* argv[]) {
 
 		//create window
 		Graphics::window = SDL_CreateWindow("LD50 UFO", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Graphics::WINDOW_W, Graphics::WINDOW_H, SDL_WINDOW_RESIZABLE);
+		SDL_SetWindowMinimumSize(Graphics::window, 320, 240);
 
 		//create renderer
 		//TODO - do this in a graphics function?
@@ -73,6 +74,13 @@ int main(int argc, char* argv[]) {
 							std::cout << "WINDOW RESIZED!" << std::endl;
 							int _winW, _winH;
 							SDL_GetWindowSize(Graphics::window, &_winW, &_winH);
+
+							//make sure its not too wide
+							if (_winW > _winH * 3) {
+								_winW = _winH * 3;
+								SDL_SetWindowSize(Graphics::window, _winW, _winH);
+							}
+
 							Graphics::SCREEN_SCALE = _winH / 240;
 							std::cout << "SCREEN SCALE IS NOW " << Graphics::SCREEN_SCALE << std::endl;
 							Graphics::WINDOW_W = _winW;

@@ -65,7 +65,9 @@ extern void TileOnBuilt(int x, int y, Tile* _tile);
 
 extern bool CheckIfCanBuildTile(int x, int y, TileType _type);
 
+extern void HurtTile(int dmg, int x, int y, Tile* _tile);
 
+extern void OnTileDestroy(int x, int y, Tile* _tile);
 
 
 struct Pos {

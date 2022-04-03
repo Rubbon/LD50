@@ -194,6 +194,23 @@ void TileOnBuilt(int x, int y, Tile* _tile) {
 }
 
 
+void HurtTile(int dmg, int x, int y, Tile* _tile) {
+	_tile->hp -= dmg;
+	if (_tile->hp <= 0) OnTileDestroy(x, y, _tile);
+}
+
+
+
+void OnTileDestroy(int x, int y, Tile* _tile) {
+
+}
+
+
+
+
+
+
+
 
 void City::expandTick() {
 	//std::cout << timer << std::endl;
