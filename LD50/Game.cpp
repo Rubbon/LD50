@@ -21,10 +21,8 @@ void Game::Init() {
 	CAMERA_Y = (LEVEL_H * 4) - SCREEN_H / 2;
 
 
-	//state = GS_BUILD_HQ;
-	//tileToBuild = TT_HQ_TL;
-
-
+	state = GS_BUILD_HQ;
+	tileToBuild = TT_HQ_TL;
 }
 
 
@@ -43,17 +41,44 @@ void Game::Tick() {
 	currentLevel.Tick();
 
 
+	
+	hovered_tile_x = (CURSOR_X + CAMERA_X) >> 3;
+	hovered_tile_y = (CURSOR_Y + CAMERA_Y) >> 3;
+
+	//building tile
+	if (tileToBuild != TT_NONE) {
+		cursorState = CS_BUILD_TILE;
+
+
+		if (Input::MousePressed(MB_LEFT)) {
+			BuildTileAt(hovered_tile_x, hovered_tile_y, tileToBuild);
+			tileToBuild = TT_NONE;
+		}
+
+	}
+
+
+	TickCamMovement();
+
+
+}
+
+
+
+
+void Game::TickCamMovement() {
+
 	int _camSpd = 4;
 
 	if (Input::KeyHeld(SDL_SCANCODE_LSHIFT) || Input::KeyHeld(SDL_SCANCODE_RSHIFT)) {
 		_camSpd = 8;
 	}
 
-	if (Input::KeyHeld(SDL_SCANCODE_LEFT)) CAMERA_X-= _camSpd;
-	else if (Input::KeyHeld(SDL_SCANCODE_RIGHT)) CAMERA_X+= _camSpd;
+	if (Input::KeyHeld(SDL_SCANCODE_LEFT)) CAMERA_X -= _camSpd;
+	else if (Input::KeyHeld(SDL_SCANCODE_RIGHT)) CAMERA_X += _camSpd;
 
-	if (Input::KeyHeld(SDL_SCANCODE_UP)) CAMERA_Y-= _camSpd;
-	else if (Input::KeyHeld(SDL_SCANCODE_DOWN)) CAMERA_Y+= _camSpd;
+	if (Input::KeyHeld(SDL_SCANCODE_UP)) CAMERA_Y -= _camSpd;
+	else if (Input::KeyHeld(SDL_SCANCODE_DOWN)) CAMERA_Y += _camSpd;
 
 
 	if (draggingCam) {
@@ -86,13 +111,8 @@ void Game::Tick() {
 	CAMERA_X = std::clamp(CAMERA_X, 0, -SCREEN_W + LEVEL_W * 8);
 	CAMERA_Y = std::clamp(CAMERA_Y, 0, -SCREEN_H + LEVEL_H * 8);
 
-
-	if (tileToBuild != TT_NONE) cursorState = CS_BUILD_TILE;
-
-	hovered_tile_x = (CURSOR_X + CAMERA_X) >> 3;
-	hovered_tile_y = (CURSOR_Y + CAMERA_Y) >> 3;
-
 }
+
 
 
 void Game::Draw() {
@@ -133,7 +153,6 @@ void Game::Draw() {
 	DrawUi();
 
 }
-
 
 
 

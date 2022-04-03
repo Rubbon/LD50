@@ -13,7 +13,10 @@
 
 class Level {
 public:
+
+	//tiles
 	Tile arrTiles[LEVEL_W * LEVEL_H] = {};
+	std::vector<Pos> vTilesToTick;
 
 	//entities
 	Entity arrEntities[MAX_ENTITIES];
@@ -26,6 +29,7 @@ public:
 	void Tick();
 
 	Tile* GetTile(int x, int y);
+	Tile* GetTile(Pos pos);
 
 	Entity* AddEntity(int x, int y, unsigned short entityIndex);
 };

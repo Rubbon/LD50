@@ -42,6 +42,8 @@ public:
 	void Tick();
 	void Draw();
 
+	void TickCamMovement();
+
 	void DrawUi();
 
 };

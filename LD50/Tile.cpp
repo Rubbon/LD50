@@ -1,18 +1,44 @@
 #include "Tile.h"
 #include "Graphics.h"
 #include "Game.h"
+#include "TileBaseInfo.h"
+
+
+
+
+
+void TileTick(int x, int y, Tile* _tile) {
+	switch (_tile->type) {
+		default: return;
+		case TT_CONSTRUCTION_SITE:
+			if (_tile->timer < GET_TILE_INFO(_tile->ref).buildTime) {
+				_tile->timer++;
+			} else {
+				_tile->timer = 0;
+				_tile->type = (TileType) _tile->ref;
+				_tile->ref = 0;
+				_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
+			}
+		break;
+	}
+}
+
+
+
 
 void TileDraw(int dx, int dy, int tx, int ty, Tile* _tile) {
 	switch (_tile->type) {
 		case TT_WATER:
-			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 8, 0, 8, 8 });
+			//Graphics::DrawSpr(TEX_CHARS, { dx + (GAME_TICK/40) % 8, dy, 8, 8 }, { 8, 0, 8, 8 });
+			Graphics::DrawSpr(TEX_CHARS, { dx + 3 + (int)(sin(ty + GAME_TICK*0.01f)*6), dy, 8, 8 }, { 8, 0, 8, 8 });
 		break;
 		case TT_LAND:
 			DrawLand(dx, dy, tx, ty);
 		break;
 		case TT_TREE:
 			DrawLand(dx, dy, tx, ty);
-			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 8 + ((int)(tx - sin(ty)) % 2) * 8, 40, 8, 8});
+			//Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 8 + ((int)(tx - sin(ty)) % 2) * 8, 40, 8, 8});
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 8 + (ty%2) * 8, 40, 8, 8});
 		break;
 		case TT_CITYBLOCK_BIG:
 			DrawLand(dx, dy, tx, ty);
@@ -42,6 +68,15 @@ void TileDraw(int dx, int dy, int tx, int ty, Tile* _tile) {
 		case TT_HQ_BR:
 			DrawLand(dx, dy, tx, ty);
 			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 16, 72, 8, 8 });
+		break;
+		
+		case TT_CONSTRUCTION_SITE:
+			DrawLand(dx, dy, tx, ty);
+
+			int _tick = (float)_tile->timer / GET_TILE_INFO(_tile->ref).buildTime * 4;
+			if (_tick > 3) _tick = 3;
+
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 8 + _tick * 8, 80, 8, 8 });
 		break;
 
 	}
@@ -77,7 +112,12 @@ void DrawLand(int dx, int dy, int tx, int ty) {
 
 bool CheckIfCanBuildTile(int x, int y, TileType _type) {
 	switch (_type) {
-		default: if (LEVEL.GetTile(x, y)->type == TT_LAND) return true; break;
+		default: 
+			if (LEVEL.GetTile(x, y)->type == TT_LAND) return true; 
+		return false;
+
+
+
 	}
 	return false;
 }
@@ -85,8 +125,60 @@ bool CheckIfCanBuildTile(int x, int y, TileType _type) {
 
 
 void BuildTileAt(int x, int y, TileType _type) {
+
+	Tile* _tile;
+
 	switch (_type) {
-		
+		default: 
+			_tile = LEVEL.GetTile(x, y);
+			_tile->type = TT_CONSTRUCTION_SITE;
+			_tile->ref = _type;
+			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
+			_tile->owner = 0;
+			LEVEL.vTilesToTick.push_back({(short)x, (short)y});
+		break;
+		case TT_HQ_TL:
+			//tl
+			_tile = LEVEL.GetTile(x, y);
+			_tile->type = TT_CONSTRUCTION_SITE;
+			_tile->ref = _type;
+			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
+			_tile->owner = 0;
+			//tr
+			_tile = LEVEL.GetTile(x + 1, y);
+			_tile->type = TT_CONSTRUCTION_SITE;
+			_tile->ref = TT_HQ_TR;
+			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
+			_tile->owner = 0;
+			//bl
+			_tile = LEVEL.GetTile(x, y + 1);
+			_tile->type = TT_CONSTRUCTION_SITE;
+			_tile->ref = TT_HQ_BL;
+			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
+			_tile->owner = 0;
+			//br
+			_tile = LEVEL.GetTile(x + 1, y + 1);
+			_tile->type = TT_CONSTRUCTION_SITE;
+			_tile->ref = TT_HQ_BR;
+			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
+			_tile->owner = 0;
+
+			//dont look atr this its horrible \/
+			LEVEL.vTilesToTick.push_back({ (short)x,		(short)y });
+			LEVEL.vTilesToTick.push_back({ (short)(x + 1),	(short)y });
+			LEVEL.vTilesToTick.push_back({ (short)x,		(short)(y + 1) });
+			LEVEL.vTilesToTick.push_back({ (short)(x + 1),	(short)(y + 1) });
+
+			GAME.state = GS_PLAY;
+
+		break;
+	}
+}
+
+
+void TileOnBuilt(int x, int y, Tile* _tile) {
+	switch (_tile->type) {
+	
 	}
 }
 
@@ -147,7 +239,7 @@ void City::expandTick() {
 						myTiles.push_back({ (short)_placeX, (short)_placeY });
 						break;
 					}
-					else if (_t->type == TT_CITYBLOCK_BIG && !_hasBank && _popCount>) {
+					else if (_t->type == TT_CITYBLOCK_BIG && !_hasBank && _popCount>1000) {
 						_t->type = TT_CITY_BANK;
 						_t->owner = index;
 						myTiles.push_back({ (short)_placeX, (short)_placeY });

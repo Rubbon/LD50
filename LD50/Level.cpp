@@ -3,10 +3,9 @@
 #include <fstream>
 #include "SDL.h"
 #include "Game.h"
-
+#include "TileBaseInfo.h"
 
 unsigned char cityTick = 0;
-
 
 void Level::Tick() {
 
@@ -17,6 +16,19 @@ void Level::Tick() {
 		if (cityTick >= MAX_CITIES) cityTick = 0;
 	}
 
+	//tile tick
+	for (int i = 0; i < vTilesToTick.size(); i++) {
+		//remove if not tickable anymore
+		if (!(GET_TILE_INFO(GetTile(vTilesToTick[i])->type).flags & TIF_TICKABLE)) {
+			vTilesToTick.erase(vTilesToTick.begin() + i);
+			i--;
+			continue;
+		}
+
+		TileTick(vTilesToTick[i].x, vTilesToTick[i].y, GetTile(vTilesToTick[i]));
+
+	}
+
 }
 
 
@@ -25,6 +37,9 @@ Tile* Level::GetTile(int x, int y) {
 	return &arrTiles[x + y * LEVEL_W];
 }
 
+Tile* Level::GetTile(Pos pos) {
+	return &arrTiles[pos.x + pos.y * LEVEL_W];
+}
 
 
 
@@ -116,7 +131,7 @@ void LevelGenerator::GenerateWorld(Level* level) {
 	int i;
 
 
-	srand(time(NULL)%16);
+	srand(time(NULL)%32);
 
 	for (int i = 0; i < _noiseSeedSize; i++) {
 		_noiseSeed[i] = (float)rand() / (float)RAND_MAX;

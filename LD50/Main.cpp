@@ -71,6 +71,10 @@ int main(int argc, char* argv[]) {
 							std::cout << "WINDOW RESIZED!" << std::endl;
 							int _winW, _winH;
 							SDL_GetWindowSize(Graphics::window, &_winW, &_winH);
+							Graphics::SCREEN_SCALE = _winH / 240;
+							std::cout << "SCREEN SCALE IS NOW " << Graphics::SCREEN_SCALE << std::endl;
+							Graphics::WINDOW_W = _winW;
+							Graphics::WINDOW_H = _winH;
 							SCREEN_W = _winW / Graphics::SCREEN_SCALE;
 							SCREEN_H = _winH / Graphics::SCREEN_SCALE;
 							SDL_RenderSetLogicalSize(Graphics::renderer, SCREEN_W, SCREEN_H);

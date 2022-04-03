@@ -29,27 +29,37 @@ enum TileType {
 
 struct Tile {
 	TileType type = TT_WATER;
+	unsigned short ref = 0;	  // these are kinda just generic values to use how you feel
+	short timer = 0; // ^
 	unsigned char owner = 0;
 	unsigned char hp = 0;
 };
 
 
+enum TileInfoFlags {
+	TIF_TICKABLE = 0x01,
+};
 
 struct TileInfo {
 	std::string name = "NAME ME";
 	unsigned char baseHp = 0;
 	SDL_Rect buildSpr;
 	unsigned short buildTime = 0;
+	unsigned char flags = 0x00;
 };
 
 
 //extern void OnTileDestroy(int tx = 0, int ty = 0);
+
+extern void TileTick(int x, int y, Tile* _tile);
 
 extern void TileDraw(int dx, int dy, int tx, int ty, Tile* _tile);
 
 extern void DrawLand(int dx, int dy, int tx = 0, int ty = 0);
 
 extern void BuildTileAt(int x, int y, TileType _type);
+//ran when the tile has been fully built and has been spawned unto the world
+extern void TileOnBuilt(int x, int y, Tile* _tile);
 
 extern bool CheckIfCanBuildTile(int x, int y, TileType _type);
 
