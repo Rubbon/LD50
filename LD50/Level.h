@@ -27,8 +27,6 @@ public:
 	Tile* GetTile(int x, int y);
 
 	Entity* AddEntity(int x, int y, unsigned short entityIndex);
-
-
 };
 
 
@@ -43,4 +41,5 @@ public:
 
 	void PreGenerateCity(Level* level, int cityIndex);
 
+	std::string GetCityName();
 };

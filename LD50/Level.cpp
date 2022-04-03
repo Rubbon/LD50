@@ -52,7 +52,42 @@ Entity* Level::AddEntity(int x, int y, unsigned short entityIndex) {
 	//return &arrEntities[entityIterator];
 }
 
+std::string LevelGenerator::GetCityName() {
 
+	//city names
+	std::vector<std::string> prefixes;
+	std::vector<std::string> suffixes;
+	std::fstream townstxt;
+	townstxt.open("res/towns.txt", std::ios::in);
+	if (townstxt.is_open()) {
+		std::string _line;
+		bool _endOfPref = false;
+		while (std::getline(townstxt, _line)) {
+			if (_line == "") {
+				_endOfPref = true;
+				continue;
+			}
+			if (!_endOfPref) prefixes.push_back(_line);
+			else suffixes.push_back(_line);
+		}
+		townstxt.close();
+	}
+	else {
+		std::cout << "No towns.txt found!" << std::endl;
+		prefixes.push_back("There's no towns.txt file, ");
+		suffixes.push_back("dummy.");
+		suffixes.push_back("idjit.");
+		suffixes.push_back("buffoon.");
+		suffixes.push_back("clown.");
+	}
+
+	//for (int i = 0; i < prefixes.size(); i++) std::cout << prefixes[i] << std::endl;
+	//for (int i = 0; i < suffixes.size(); i++) std::cout << suffixes[i] << std::endl;
+
+	std::string _cityName;
+	_cityName = prefixes[(int)rand() % prefixes.size()] + suffixes[(int)rand() % suffixes.size()];
+	return _cityName;
+}
 
 
 
@@ -129,30 +164,6 @@ void LevelGenerator::GenerateWorld(Level* level) {
 	//lets make some cities
 	int _cityAmt = 4 + (rand() % MAX_CITIES - 4);
 
-
-	//city names
-	std::vector<std::string> prefixes;
-	std::vector<std::string> suffixes;
-	std::fstream townstxt;
-	townstxt.open("res/towns.txt", std::ios::in);
-	if (townstxt.is_open()) {
-		std::string _line;
-		bool _endOfPref = false;
-		while (std::getline(townstxt, _line)) {
-			if (_line == "") {
-				_endOfPref = true;
-				continue;
-			}
-			if (!_endOfPref) prefixes.push_back(_line);
-			else suffixes.push_back(_line);
-		}
-		townstxt.close();
-	}
-	else std::cout << "No towns.txt found!" << std::endl;
-
-	//for (int i = 0; i < prefixes.size(); i++) std::cout << prefixes[i] << std::endl;
-	//for (int i = 0; i < suffixes.size(); i++) std::cout << suffixes[i] << std::endl;
-
 	for (i = 0; i < _cityAmt; i++) {
 		//get a position to check
 		int _posi = rand()%vPositionsWeCanCheck.size();
@@ -171,9 +182,7 @@ void LevelGenerator::GenerateWorld(Level* level) {
 		level->arrCities[i].flags = CF_ACTIVE;
 		level->arrCities[i].origin_x = _pos.x;
 		level->arrCities[i].origin_y = _pos.y;
-		std::string _cityName;
-		_cityName = prefixes[(int)rand() % prefixes.size()]+suffixes[(int)rand() % suffixes.size()];
-		level->arrCities[i].name = _cityName;
+		level->arrCities[i].name = GetCityName();
 
 		PreGenerateCity(level, i);
 
