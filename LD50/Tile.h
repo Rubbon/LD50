@@ -89,11 +89,13 @@ struct City {
 	void expandTick();
 };
 
-/*
+
+
+
+
 //player HQ
 struct Hq {
 	unsigned char flags = 0x00;
-	short origin_x;
-	short origin_y;
+	short origin_x = -1;
+	short origin_y = -1;
 };
-*/

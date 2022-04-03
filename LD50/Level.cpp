@@ -4,8 +4,11 @@
 #include "SDL.h"
 #include "Game.h"
 #include "TileBaseInfo.h"
+#include <algorithm>
+#include "Graphics.h"
 
 unsigned char cityTick = 0;
+int  i;
 
 void Level::Tick() {
 
@@ -17,7 +20,7 @@ void Level::Tick() {
 	}
 
 	//tile tick
-	for (int i = 0; i < vTilesToTick.size(); i++) {
+	for (i = 0; i < vTilesToTick.size(); i++) {
 		//remove if not tickable anymore
 		if (!(GET_TILE_INFO(GetTile(vTilesToTick[i])->type).flags & TIF_TICKABLE)) {
 			vTilesToTick.erase(vTilesToTick.begin() + i);
@@ -27,6 +30,61 @@ void Level::Tick() {
 
 		TileTick(vTilesToTick[i].x, vTilesToTick[i].y, GetTile(vTilesToTick[i]));
 
+	}
+
+	//tick active entities
+	for (i = 0; i < vActiveEntities.size(); i++) {
+		//remove from active entity list if deleted
+		if (vActiveEntities[i]->flags & EFL_DELETED) {
+			vActiveEntities.erase(vActiveEntities.begin() + i);
+			i--;
+			continue;
+		}
+
+		//add entities to chunks (depending on how slow, might do this less often)
+		SortEntityIntoCorrectChunk(vActiveEntities[i]);
+
+		arrEntityFuncs[vActiveEntities[i]->entityIndex].Tick(vActiveEntities[i]);
+	}
+
+}
+
+
+
+void Level::Draw() {
+
+
+	//draw current world tiles
+	int _ctx = CAMERA_X >> 3;
+	int _cty = CAMERA_Y >> 3;
+	int ix, iy;
+
+	//draw tiles
+	for (ix = _ctx; ix <= 1 + _ctx + Graphics::SCREEN_W / 8; ix++) {
+		if (ix < 0 || ix >= LEVEL_W) continue;
+		for (iy = _cty; iy <= 1 + _cty + Graphics::SCREEN_H / 8; iy++) {
+			if (iy < 0 || iy >= LEVEL_H) continue;
+			TileDraw((ix * 8) - CAMERA_X, (iy * 8) - CAMERA_Y, ix, iy, GetTile(ix, iy));
+		}
+	}
+
+
+	//cities draw their name TODO - DON'T DRAW WHEN OUTSIDE SCREEN
+	for (int i = 0; i < MAX_CITIES; i++) {
+
+		int _xx = (-arrCities[i].name.length() * 4) + (arrCities[i].origin_x * 8) - CAMERA_X;
+
+		Graphics::DrawText(1 + _xx, 1 + (arrCities[i].origin_y * 8) - CAMERA_Y, arrCities[i].name, 1, { 0, 0, 0, 255 });
+		Graphics::DrawText(_xx, (arrCities[i].origin_y * 8) - CAMERA_Y, arrCities[i].name, 1, { 255, 227, 128, 255 });
+	}
+
+
+	//sort entities so they draw in the right order
+	std::sort(vActiveEntities.begin(), vActiveEntities.end(), EntitySorter());
+
+	//draw active entities
+	for (i = 0; i < vActiveEntities.size(); i++) {
+		arrEntityFuncs[vActiveEntities[i]->entityIndex].Draw(vActiveEntities[i]);
 	}
 
 }
@@ -53,10 +111,10 @@ Entity* Level::AddEntity(int x, int y, unsigned short entityIndex) {
 	_entity.flags &= ~EFL_DELETED;
 
 	//run init function
-	//arrEntityFuncs[entityIndex].Init(&_entity);
+	arrEntityFuncs[entityIndex].Init(&_entity);
 
 	//find a slot we can put this entity in
-	for (int i = entityIterator; i < MAX_ENTITIES; i++) {
+	for (i = entityIterator; i < MAX_ENTITIES; i++) {
 		if (arrEntities[i].flags & EFL_DELETED) {
 			_entity.id = i;
 			arrEntities[i] = _entity;
@@ -67,7 +125,7 @@ Entity* Level::AddEntity(int x, int y, unsigned short entityIndex) {
 	}
 
 	//if we can't find a slot this way, go the other way
-	for (int i = 0; i < entityIterator; i++) {
+	for (i = 0; i < entityIterator; i++) {
 		if (arrEntities[i].flags & EFL_DELETED) {
 			_entity.id = i;
 			arrEntities[i] = _entity;
@@ -83,6 +141,19 @@ Entity* Level::AddEntity(int x, int y, unsigned short entityIndex) {
 
 	//return &arrEntities[entityIterator];
 }
+
+
+void Level::RemoveEntityFromChunk(Entity* ent, Chunk* _chunk) {
+	auto _posInChunk = std::find(_chunk->lsEntities.begin(), _chunk->lsEntities.end(), ent);
+	if (_posInChunk != std::end(_chunk->lsEntities)) _chunk->lsEntities.erase(_posInChunk);
+}
+
+
+void Level::AddEntityToChunk(Entity* ent) {
+	arrChunks[ent->currentChunk].lsEntities.push_back(ent);
+}
+
+
 
 std::string LevelGenerator::GetCityName() {
 
@@ -128,7 +199,6 @@ void LevelGenerator::GenerateWorld(Level* level) {
 
 	const int w = LEVEL_W;
 	const int h = LEVEL_H;
-	int i;
 
 
 	srand(time(NULL)%32);

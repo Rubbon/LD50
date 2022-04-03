@@ -10,6 +10,15 @@
 #define LEVEL_W 176
 #define LEVEL_H 176
 
+#define CHUNK_SIZE 16
+
+
+
+//for quick entity-entity action
+struct Chunk {
+	std::vector<Entity*> lsEntities;
+};
+
 
 class Level {
 public:
@@ -18,20 +27,36 @@ public:
 	Tile arrTiles[LEVEL_W * LEVEL_H] = {};
 	std::vector<Pos> vTilesToTick;
 
+	//chunks
+	Chunk arrChunks[(LEVEL_W/CHUNK_SIZE) * (LEVEL_H/CHUNK_SIZE)];
+
 	//entities
 	Entity arrEntities[MAX_ENTITIES];
 	unsigned int entityIterator;
 	//all entities that are active in the level right now
 	std::vector<Entity*> vActiveEntities;
 
+	std::vector<Entity*> vActivePlayerUnits;
+
+	Hq playerHq = {};
+
+
+
 	City arrCities[MAX_CITIES];
 
 	void Tick();
+	void Draw();
 
 	Tile* GetTile(int x, int y);
 	Tile* GetTile(Pos pos);
 
 	Entity* AddEntity(int x, int y, unsigned short entityIndex);
+
+
+	void RemoveEntityFromChunk(Entity* entity, Chunk* _chunk);
+	void AddEntityToChunk(Entity* entity);
+	//Chunk* GetChunkAtRealPos(int x, int y);
+
 };
 
 

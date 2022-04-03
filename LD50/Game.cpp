@@ -51,14 +51,19 @@ void Game::Tick() {
 
 
 		if (Input::MousePressed(MB_LEFT)) {
-			BuildTileAt(hovered_tile_x, hovered_tile_y, tileToBuild);
-			tileToBuild = TT_NONE;
+			if (CheckIfCanBuildTile(hovered_tile_x, hovered_tile_y, tileToBuild)) {
+				BuildTileAt(hovered_tile_x, hovered_tile_y, tileToBuild);
+				tileToBuild = TT_NONE;
+			}
 		}
 
 	}
 
 
 	TickCamMovement();
+
+	//alien mastermind thinks
+	alienMastermind.Tick();
 
 
 }
@@ -111,6 +116,13 @@ void Game::TickCamMovement() {
 	CAMERA_X = std::clamp(CAMERA_X, 0, -SCREEN_W + LEVEL_W * 8);
 	CAMERA_Y = std::clamp(CAMERA_Y, 0, -SCREEN_H + LEVEL_H * 8);
 
+
+	//press space to jump to hq
+	if (Input::KeyPressed(SDL_SCANCODE_SPACE)) {
+		CAMERA_X = currentLevel.playerHq.origin_x * 8 + 8 - SCREEN_W/2;
+		CAMERA_Y = currentLevel.playerHq.origin_y * 8 + 8 - SCREEN_H/2;
+	}
+
 }
 
 
@@ -120,33 +132,7 @@ void Game::Draw() {
 
 	Graphics::DrawRect({0, 0, SCREEN_W, SCREEN_H}, { 192, 231, 247, 255});
 
-	//draw current world tiles
-	int _ctx = CAMERA_X >> 3;
-	int _cty = CAMERA_Y >> 3;
-	int ix, iy;
-
-	//draw tiles
-	for (ix = _ctx; ix <= 1 + _ctx + Graphics::SCREEN_W / 8; ix++) {
-		if (ix < 0 || ix >= LEVEL_W) continue;
-		for (iy = _cty; iy <= 1 + _cty + Graphics::SCREEN_H / 8; iy++) {
-			if (iy < 0 || iy >= LEVEL_H) continue;
-			TileDraw((ix * 8) - CAMERA_X, (iy * 8) - CAMERA_Y, ix, iy, currentLevel.GetTile(ix, iy));
-		}
-	}
-
-
-	//cities draw their name TODO - DON'T DRAW WHEN OUTSIDE SCREEN
-	for (int i = 0; i < MAX_CITIES; i++) {
-
-		int _xx = ( - currentLevel.arrCities[i].name.length() * 4) + (currentLevel.arrCities[i].origin_x * 8) - CAMERA_X;
-
-		Graphics::DrawText(1 + _xx, 1 +(currentLevel.arrCities[i].origin_y * 8) - CAMERA_Y, currentLevel.arrCities[i].name, 1, {0, 0, 0, 255});
-		Graphics::DrawText(_xx, (currentLevel.arrCities[i].origin_y * 8) - CAMERA_Y, currentLevel.arrCities[i].name, 1, {255, 227, 128, 255});
-	}
-
-
-
-
+	currentLevel.Draw();
 
 
 	//draw ui at end
@@ -213,7 +199,12 @@ void Game::DrawUi() {
 			Graphics::DrawSpr(TEX_CHARS, { CURSOR_X - 8, CURSOR_Y - 8, 16, 16 }, { 8, 240, 16, 16 });
 		break;
 		case CS_BUILD_TILE:
-			Graphics::DrawSpr(TEX_CHARS, { -CAMERA_X + hovered_tile_x * 8, -CAMERA_Y + hovered_tile_y * 8, GET_TILE_INFO(tileToBuild).buildSpr.w, GET_TILE_INFO(tileToBuild).buildSpr.h }, GET_TILE_INFO(tileToBuild).buildSpr, { 255, 255, 255, (Uint8)(160 + sin(GAME_TICK/20) * 90) });
+			SDL_Colour _col = {255, 255, 255, (Uint8)(160 + sin(GAME_TICK / 20) * 90) };
+			if (!CheckIfCanBuildTile(hovered_tile_x, hovered_tile_y, tileToBuild)) {
+				_col.g = 0;
+				_col.b = 0;
+			} 
+			Graphics::DrawSpr(TEX_CHARS, { -CAMERA_X + hovered_tile_x * 8, -CAMERA_Y + hovered_tile_y * 8, GET_TILE_INFO(tileToBuild).buildSpr.w, GET_TILE_INFO(tileToBuild).buildSpr.h }, GET_TILE_INFO(tileToBuild).buildSpr, _col);
 		break;
 	}
 

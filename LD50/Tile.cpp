@@ -18,6 +18,7 @@ void TileTick(int x, int y, Tile* _tile) {
 				_tile->type = (TileType) _tile->ref;
 				_tile->ref = 0;
 				_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
+				TileOnBuilt(x, y, _tile);
 			}
 		break;
 	}
@@ -115,7 +116,9 @@ bool CheckIfCanBuildTile(int x, int y, TileType _type) {
 		default: 
 			if (LEVEL.GetTile(x, y)->type == TT_LAND) return true; 
 		return false;
-
+		case TT_HQ_TL:
+			if (LEVEL.GetTile(x, y)->type == TT_LAND && LEVEL.GetTile(x+1, y)->type == TT_LAND && LEVEL.GetTile(x, y + 1)->type == TT_LAND && LEVEL.GetTile(x + 1, y + 1)->type == TT_LAND) return true;
+		return false;
 
 
 	}
@@ -178,7 +181,12 @@ void BuildTileAt(int x, int y, TileType _type) {
 
 void TileOnBuilt(int x, int y, Tile* _tile) {
 	switch (_tile->type) {
-	
+		case TT_HQ_TL:
+			//set hq to here
+			LEVEL.playerHq.origin_x = x;
+			LEVEL.playerHq.origin_y = y;
+			LEVEL.playerHq.flags |= CF_ACTIVE;
+		break;
 	}
 }
 

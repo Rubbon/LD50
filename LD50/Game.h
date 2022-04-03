@@ -3,6 +3,7 @@
 #include <vector>
 #include "SDL.h"
 #include "Level.h"
+#include "AlienAi.h"
 
 const SDL_Colour C_XRED = { 255, 64, 64 };
 const SDL_Colour C_YBLUE = { 104, 170, 255 };
@@ -31,6 +32,9 @@ public:
 
 	//building tiles
 	TileType tileToBuild = TT_NONE;
+
+	//alien ai controller
+	AlienMastermind alienMastermind = {};
 
 
 	int hovered_tile_x = 0;
