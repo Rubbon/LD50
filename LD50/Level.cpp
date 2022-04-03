@@ -2,6 +2,23 @@
 #include <iostream>
 #include <fstream>
 #include "SDL.h"
+#include "Game.h"
+
+
+unsigned char cityTick = 0;
+
+
+void Level::Tick() {
+
+	//city tick
+	if (GAME_TICK % 60 == 0) {
+		arrCities[cityTick].expandTick();
+		cityTick++;
+		if (cityTick >= MAX_CITIES) cityTick = 0;
+	}
+
+}
+
 
 
 Tile* Level::GetTile(int x, int y) {

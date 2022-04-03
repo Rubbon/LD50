@@ -23,6 +23,7 @@ public:
 
 	City arrCities[MAX_CITIES];
 
+	void Tick();
 
 	Tile* GetTile(int x, int y);
 

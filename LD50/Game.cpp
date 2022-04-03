@@ -29,6 +29,11 @@ void Game::Tick() {
 	//reset cursor state first thing
 	cursorState = CS_POINTER;
 
+	gameTick++;
+
+	currentLevel.Tick();
+
+
 	int _camSpd = 4;
 
 	if (Input::KeyHeld(SDL_SCANCODE_LSHIFT) || Input::KeyHeld(SDL_SCANCODE_RSHIFT)) {

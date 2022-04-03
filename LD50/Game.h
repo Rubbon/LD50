@@ -11,9 +11,11 @@ const SDL_Colour C_YBLUE = { 104, 170, 255 };
 enum CursorState {
 	CS_POINTER,
 	CS_DRAG,
+	CS_NOCURSOR,
 };
 
 enum GameState {
+	GS_BUILD_HQ,
 	GS_PLAY,
 };
 
@@ -24,7 +26,9 @@ public:
 	Level currentLevel = {};
 	unsigned char cursorState = CS_POINTER;
 
-	GameState state = GS_PLAY;
+	GameState state = GS_BUILD_HQ;
+
+	int gameTick = 0;
 
 	void Init();
 	void Tick();
@@ -38,3 +42,5 @@ public:
 
 extern bool RUN_GAME;
 extern Game GAME;
+
+#define GAME_TICK GAME.gameTick
