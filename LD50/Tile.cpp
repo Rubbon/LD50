@@ -60,12 +60,61 @@ void DrawLand(int dx, int dy, int tx, int ty) {
 
 void City::expandTick() {
 	//check if city has been gooped by aliens
+	int _popCount = 0;
+	bool _hasBank = false;
 	for (int i = 0; i < myTiles.size(); i++) {
-		if (GAME.currentLevel.GetTile(myTiles[i].x, myTiles[i].y)->owner != index) myTiles.erase(myTiles.begin() + i);
+		Tile* _curTile = GAME.currentLevel.GetTile(myTiles[i].x, myTiles[i].y);
+		if (_curTile->owner != index) {
+			myTiles.erase(myTiles.begin() + i);
+			if (_curTile->type == TT_CITYBLOCK_SMALL) _popCount += (4000 + (int)rand() % 999);
+			else if (_curTile->type==TT_CITYBLOCK_BIG) _popCount += (10000 + (int)rand() % 9999);
+			else if (_curTile->type == TT_CITY_BANK) {
+				_popCount += (10000 + (int)rand() % 9999);
+				_hasBank = true;
+			}
+		}
 		friendliness--;
 		timer = 20;
 	}
 	
 	if (timer > 0) timer--;
-	else timer = 12;
+	else {
+		//time to grow
+		Tile* _t;
+		int _placeX = origin_x;
+		int _placeY = origin_y;
+		int _chance;
+		for (int i = 0; i < myTiles.size() * 2; i++) {
+			_t = LEVEL.GetTile(_placeX, _placeY);
+			if (_t->type == TT_LAND) {
+				TileType _cityBlockType = TT_CITYBLOCK_BIG;
+				if (i > myTiles.size()) _cityBlockType = TT_CITYBLOCK_SMALL;
+
+				_t->type = _cityBlockType;
+				_t->owner = index;
+			}
+			else {
+				_placeX += (rand() % 3) - 1;
+				_placeY += (rand() % 3) - 1;
+				if (_placeX == 0 && _placeY == 0) {
+					_placeX = -1;
+					_placeY = 1;
+				}
+				//chance to existing city tile
+				_chance = (int)rand() % 10;
+				if (_chance > 7) {
+					if (_t->type == TT_CITYBLOCK_SMALL) { 
+						_t->type = TT_CITYBLOCK_BIG; 
+						_t->owner = index;
+					}
+					else if (_t->type == TT_CITYBLOCK_BIG && !_hasBank) {
+						_t->type = TT_CITY_BANK;
+						_t->owner = index;
+						//myTiles.push_back(_t);
+					}
+				}
+			}
+		}
+		timer = 1;
+	}
 }
