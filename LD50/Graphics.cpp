@@ -68,6 +68,7 @@ SDL_Texture* Graphics::LoadTexture(std::string file) {
 
 void Graphics::DrawSpr(SDL_Texture* tex, SDL_Rect drawRect, SDL_Rect srcRect, SDL_Color colour, SDL_RendererFlip flip, double angle, SDL_Point origin) {
 	SDL_SetTextureColorMod(tex, colour.r, colour.g, colour.b);
+	SDL_SetTextureAlphaMod(tex, colour.a);
 	SDL_RenderCopyEx(renderer, tex, &srcRect, &drawRect, NULL, NULL, flip);
 }
 

@@ -244,6 +244,7 @@ void LevelGenerator::PreGenerateCity(Level* level, int city_i) {
 
 			_t->type = _cityBlockType;
 			_t->owner = city_i;
+			_city->myTiles.push_back({ (short)_placeX, (short)_placeY});
 			_maxTries++;
 
 			//reset to start

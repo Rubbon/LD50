@@ -12,6 +12,7 @@ enum CursorState {
 	CS_POINTER,
 	CS_DRAG,
 	CS_NOCURSOR,
+	CS_BUILD_TILE,
 };
 
 enum GameState {
@@ -26,7 +27,14 @@ public:
 	Level currentLevel = {};
 	unsigned char cursorState = CS_POINTER;
 
-	GameState state = GS_BUILD_HQ;
+	GameState state = GS_PLAY;
+
+	//building tiles
+	TileType tileToBuild = TT_NONE;
+
+
+	int hovered_tile_x = 0;
+	int hovered_tile_y = 0;
 
 	int gameTick = 0;
 

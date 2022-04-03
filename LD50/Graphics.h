@@ -44,9 +44,9 @@ public:
 
 	//drawing functions
 
-	static void DrawSpr(SDL_Texture* tex, SDL_Rect drawRect, SDL_Rect srcRect, SDL_Color colour = {255, 255, 255}, SDL_RendererFlip flip = SDL_FLIP_NONE, double angle = 0, SDL_Point origin = { 0,0 });
+	static void DrawSpr(SDL_Texture* tex, SDL_Rect drawRect, SDL_Rect srcRect, SDL_Color colour = {255, 255, 255, 255}, SDL_RendererFlip flip = SDL_FLIP_NONE, double angle = 0, SDL_Point origin = { 0,0 });
 
-	static void DrawText(int x, int y, std::string txt, float scale, SDL_Color _col = {255,255,255});
+	static void DrawText(int x, int y, std::string txt, float scale, SDL_Color _col = {255,255,255,255});
 	static void DrawTextBg(int x, int y, std::string txt, float scale, SDL_Color _bgCol, SDL_Color _fgCol);
 
 	static void DrawRect(SDL_Rect rect, SDL_Color colour);
