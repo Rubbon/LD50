@@ -38,6 +38,7 @@ int main(int argc, char* argv[]) {
 		}
 
 		std::cout << "+-----------------------+\n| TITLE HERE - Ver 0    |\n|                       |\n| For LD50, 2022        |\n| By Robin Field        |\n| And Billy Hobson      |\n|                       |\n| Thanks for playing!   |\n+-----------------------+" << std::endl;
+		std::cout << std::endl << std::endl << std::endl;
 		RUN_GAME = true;
 	}
 

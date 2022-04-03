@@ -66,8 +66,8 @@ void AlienMastermind::TryDoingRecon() {
 		}
 
 		//find a cool pos to recon
-		searchLocation.x = rand() % (LEVEL_W / RECON_SPACE_SIZE);
-		searchLocation.y = rand() % (LEVEL_H / RECON_SPACE_SIZE);
+		searchLocation.x = 1 + rand() % (LEVEL_W / RECON_SPACE_SIZE) - 2;
+		searchLocation.y = 1 + rand() % (LEVEL_H / RECON_SPACE_SIZE) - 2;
 
 		//cheating, for setting the pos
 		//searchLocation.x = (GAME.hovered_tile_x / RECON_SPACE_SIZE);

@@ -84,7 +84,10 @@ void E_UfoTick(Entity* ent) {
 
 					//there's a tile to attack!
 					if (GET_TILE_INFO(_tile->type).flags & TIF_HUMAN) {
-						ent->wait += 32;
+
+
+
+						ent->wait += 160 + rand() % 128;
 						break;
 					}
 
@@ -99,7 +102,7 @@ void E_UfoTick(Entity* ent) {
 
 						ent->target_x = _moveX*8;
 						ent->target_y = _moveY*8;
-						ent->wait += 80 + rand() % 64;
+						ent->wait += 128 + rand() % 128;
 					}
 				}
 
