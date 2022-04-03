@@ -193,7 +193,7 @@ void TileOnBuilt(int x, int y, Tile* _tile) {
 
 
 void City::expandTick() {
-	std::cout << timer << std::endl;
+	//std::cout << timer << std::endl;
 	
 	int _popCount = 0;
 	bool _hasBank = false;
@@ -227,7 +227,8 @@ void City::expandTick() {
 				TileType _cityBlockType = TT_CITYBLOCK_BIG;
 				if (i > myTiles.size()) _cityBlockType = TT_CITYBLOCK_SMALL;
 
-				_t->type = _cityBlockType;
+				_t->type = TT_CONSTRUCTION_SITE;
+				_t->ref = _cityBlockType;
 				_t->owner = index;
 				break;
 			}
@@ -242,13 +243,15 @@ void City::expandTick() {
 				_chance = (int)rand() % 10;
 				if (_chance > 7) {
 					if (_t->type == TT_CITYBLOCK_SMALL) { 
-						_t->type = TT_CITYBLOCK_BIG; 
+						_t->type = TT_CONSTRUCTION_SITE;
+						_t->ref = TT_CITYBLOCK_BIG; 
 						_t->owner = index;
 						myTiles.push_back({ (short)_placeX, (short)_placeY });
 						break;
 					}
 					else if (_t->type == TT_CITYBLOCK_BIG && !_hasBank && _popCount>50000) {
-						_t->type = TT_CITY_BANK;
+						_t->type = TT_CONSTRUCTION_SITE;
+						_t->ref = TT_CITY_BANK;
 						_t->owner = index;
 						myTiles.push_back({ (short)_placeX, (short)_placeY });
 						break;
