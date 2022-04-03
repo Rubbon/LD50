@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include "SDL.h"
 
 enum TileType {
 	TT_NONE,
@@ -20,6 +21,11 @@ enum TileType {
 };
 
 
+//get tile as bit for comparing buildables
+#define TILE_BIT(_t) (1 << ((_t)-1))
+#define TILE_BIT_NONE 1 << ((TT_NONE)-1)
+
+
 struct Tile {
 	TileType type = TT_WATER;
 	unsigned char owner = 0;
@@ -28,11 +34,20 @@ struct Tile {
 
 
 
+struct TileInfo {
+	std::string name = "NAME ME";
+	unsigned char baseHp = 0;
+	SDL_Rect buildSpr;
+};
+
+
+//extern void OnTileDestroy(int tx = 0, int ty = 0);
+
 extern void TileDraw(int dx, int dy, int tx, int ty, Tile* _tile);
 
 extern void DrawLand(int dx, int dy, int tx = 0, int ty = 0);
 
-
+extern void BuildTileAt(int x, int y, TileType _type);
 
 
 

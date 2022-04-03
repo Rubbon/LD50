@@ -95,6 +95,7 @@ int main(int argc, char* argv[]) {
 		//---------------------------------------------------------------------------------------------------------------------------------------//
 		SDL_SetRenderDrawColor(Graphics::renderer, 160, 160, 174, 255);
 		SDL_SetTextureColorMod(Graphics::tex_charSet, 255, 255, 255);
+		SDL_SetTextureAlphaMod(Graphics::tex_charSet, 255);
 		SDL_RenderClear(Graphics::renderer);
 
 		GAME.Draw();

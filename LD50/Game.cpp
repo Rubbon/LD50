@@ -3,6 +3,7 @@
 #include "Input.h"
 #include <string>
 #include <algorithm>
+#include "TileBaseInfo.h"
 
 bool RUN_GAME = false;
 Game GAME = {};
@@ -15,6 +16,14 @@ void Game::Init() {
 	LevelGenerator _gen = {};
 
 	_gen.GenerateWorld(&currentLevel);
+
+	CAMERA_X = (LEVEL_W * 4) - SCREEN_W / 2;
+	CAMERA_Y = (LEVEL_H * 4) - SCREEN_H / 2;
+
+
+	//state = GS_BUILD_HQ;
+	//tileToBuild = TT_HQ_TL;
+
 
 }
 
@@ -78,6 +87,11 @@ void Game::Tick() {
 	CAMERA_Y = std::clamp(CAMERA_Y, 0, -SCREEN_H + LEVEL_H * 8);
 
 
+	if (tileToBuild != TT_NONE) cursorState = CS_BUILD_TILE;
+
+	hovered_tile_x = (CURSOR_X + CAMERA_X) >> 3;
+	hovered_tile_y = (CURSOR_Y + CAMERA_Y) >> 3;
+
 }
 
 
@@ -106,8 +120,8 @@ void Game::Draw() {
 
 		int _xx = ( - currentLevel.arrCities[i].name.length() * 4) + (currentLevel.arrCities[i].origin_x * 8) - CAMERA_X;
 
-		Graphics::DrawText(1 + _xx, 1 +(currentLevel.arrCities[i].origin_y * 8) - CAMERA_Y, currentLevel.arrCities[i].name, 1, {0, 0, 0});
-		Graphics::DrawText(_xx, (currentLevel.arrCities[i].origin_y * 8) - CAMERA_Y, currentLevel.arrCities[i].name, 1, {255, 227, 128});
+		Graphics::DrawText(1 + _xx, 1 +(currentLevel.arrCities[i].origin_y * 8) - CAMERA_Y, currentLevel.arrCities[i].name, 1, {0, 0, 0, 255});
+		Graphics::DrawText(_xx, (currentLevel.arrCities[i].origin_y * 8) - CAMERA_Y, currentLevel.arrCities[i].name, 1, {255, 227, 128, 255});
 	}
 
 
@@ -178,6 +192,9 @@ void Game::DrawUi() {
 		case CS_DRAG:
 			Graphics::DrawSpr(TEX_CHARS, { CURSOR_X - 8 + 2, CURSOR_Y - 8 + 2, 16, 16 }, { 8, 240, 16, 16 }, { 0, 0, 0, 255 });
 			Graphics::DrawSpr(TEX_CHARS, { CURSOR_X - 8, CURSOR_Y - 8, 16, 16 }, { 8, 240, 16, 16 });
+		break;
+		case CS_BUILD_TILE:
+			Graphics::DrawSpr(TEX_CHARS, { -CAMERA_X + hovered_tile_x * 8, -CAMERA_Y + hovered_tile_y * 8, GET_TILE_INFO(tileToBuild).buildSpr.w, GET_TILE_INFO(tileToBuild).buildSpr.h }, GET_TILE_INFO(tileToBuild).buildSpr, { 255, 255, 255, (Uint8)(160 + sin(GAME_TICK/20) * 90) });
 		break;
 	}
 

@@ -21,7 +21,7 @@ include_directories(
 
 
 # Add source to this project's executable.
-add_executable (Ld50 "Main.cpp"  "Graphics.h" "Graphics.cpp" "Input.h" "Input.cpp" "Sound.h" "Sound.cpp" "Game.h" "Game.cpp" "Level.h" "Level.cpp" "Entity.h" "Entity.cpp" "Tile.h" "Tile.cpp")
+add_executable (Ld50 "Main.cpp"  "Graphics.h" "Graphics.cpp" "Input.h" "Input.cpp" "Sound.h" "Sound.cpp" "Game.h" "Game.cpp" "Level.h" "Level.cpp" "Entity.h" "Entity.cpp" "Tile.h" "Tile.cpp" "TileBaseInfo.h")
 
 
 #link the libraries

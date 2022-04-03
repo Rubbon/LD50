@@ -27,6 +27,23 @@ void TileDraw(int dx, int dy, int tx, int ty, Tile* _tile) {
 			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 56, 48, 8, 8 });
 		break;
 
+		case TT_HQ_TL:
+			DrawLand(dx, dy, tx, ty);
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 8, 64, 8, 8 });
+		break;
+		case TT_HQ_TR:
+			DrawLand(dx, dy, tx, ty);
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 16 + ((GAME_TICK/12)%4)*8, 64, 8, 8 });
+		break;
+		case TT_HQ_BL:
+			DrawLand(dx, dy, tx, ty);
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 8, 72, 8, 8 });
+		break;
+		case TT_HQ_BR:
+			DrawLand(dx, dy, tx, ty);
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 16, 72, 8, 8 });
+		break;
+
 	}
 }
 
@@ -57,6 +74,16 @@ void DrawLand(int dx, int dy, int tx, int ty) {
 
 
 }
+
+
+
+void BuildTileAt(int x, int y, TileType _type) {
+	switch (_type) {
+		
+	}
+}
+
+
 
 void City::expandTick() {
 	//check if city has been gooped by aliens
