@@ -117,14 +117,47 @@ void Game::Draw() {
 void Game::DrawUi() {
 
 	//bearings
-	int _camBearingX = (CAMERA_X >> 3) / 10;
-	int _xBearingAmt = SCREEN_W / 80;
+	int _camBearingPos = (CAMERA_X >> 3) / 10;
+	int _bearingAmt = SCREEN_W / 80;
+	int _xx, _yy;
+	std::string _txt;
 
+	//top bearings
+	for (int i = 1; i < _bearingAmt +1; i++) {
 
-	for (int i = 1; i < _xBearingAmt+1; i++) {
-		Graphics::DrawText(1 + (_camBearingX * 8) * 10 + (i * 80) - CAMERA_X, 9, std::to_string((_camBearingX + i) * 10), 1, {0, 0, 0});
-		Graphics::DrawText((_camBearingX * 8) * 10 + (i * 80) - CAMERA_X, 8, std::to_string((_camBearingX + i) * 10), 1, {255, 64, 64});
+		_txt = std::to_string((_camBearingPos + i) * 10);
+
+		_xx = -_txt.length() * 4 + (_camBearingPos * 8) * 10 + (i * 80) - CAMERA_X;
+		if (_xx <= 8) continue;
+
+		Graphics::DrawText(_xx + 1, 9, _txt, 1, {0, 0, 0});
+		Graphics::DrawText(_xx, 8, _txt, 1, { 255, 64, 64 });
 	}
+
+	//side bearings
+	_camBearingPos = (CAMERA_Y >> 3) / 10;
+	_bearingAmt = SCREEN_H / 80;
+
+	//side bearings
+	for (int i = 1; i < _bearingAmt + 1; i++) {
+
+		_txt = std::to_string((_camBearingPos + i) * 10);
+
+		_xx = 8;
+		if (_txt.length() >= 3) _xx = 0;
+
+		_yy = -4 + (_camBearingPos * 8) * 10 + (i * 80) - CAMERA_Y;
+		if (_yy <= 8) continue;
+
+		Graphics::DrawText(_xx + 1, _yy + 1, _txt, 1, { 0, 0, 0 });
+		Graphics::DrawText(_xx, _yy, _txt, 1, { 80, 80, 255 });
+	}
+
+	//x y notifier
+	Graphics::DrawRect({ 0, 8, 24, 8 }, {0,0,0,255});
+	Graphics::DrawText(8, 8, "X", 1, {255, 64, 64});
+	Graphics::DrawText(16, 8, "Y", 1, { 80, 80, 255 });
+
 
 
 	//draw cursor
