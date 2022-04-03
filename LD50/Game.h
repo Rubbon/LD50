@@ -44,3 +44,4 @@ extern bool RUN_GAME;
 extern Game GAME;
 
 #define GAME_TICK GAME.gameTick
+#define LEVEL GAME.currentLevel
