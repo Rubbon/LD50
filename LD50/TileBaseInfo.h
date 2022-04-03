@@ -86,7 +86,13 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_TIME */	0,
 		/* FLAGS */			TIF_TICKABLE | TIF_HUMAN,
 	},
-
+	{
+		/* NAME */			"Crater",
+		/* BASE_HP */		0,
+		/* BUILD_SPR */		{},
+		/* BUILD_TIME */	0,
+		/* FLAGS */			0x00,
+	},
 
 };
 

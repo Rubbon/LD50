@@ -18,6 +18,7 @@ enum TileType {
 
 	TT_CITY_BANK,
 	TT_CONSTRUCTION_SITE,
+	TT_CRATER,
 
 };
 
@@ -32,7 +33,7 @@ struct Tile {
 	unsigned short ref = 0;	  // these are kinda just generic values to use how you feel
 	short timer = 0; // ^
 	unsigned char owner = 0;
-	unsigned char hp = 0;
+	short hp = 0;
 };
 
 

@@ -71,13 +71,18 @@ void TileDraw(int dx, int dy, int tx, int ty, Tile* _tile) {
 			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 16, 72, 8, 8 });
 		break;
 		
-		case TT_CONSTRUCTION_SITE:
+		case TT_CONSTRUCTION_SITE: {
 			DrawLand(dx, dy, tx, ty);
 
 			int _tick = (float)_tile->timer / GET_TILE_INFO(_tile->ref).buildTime * 4;
 			if (_tick > 3) _tick = 3;
 
 			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 8 + _tick * 8, 80, 8, 8 });
+		break; }
+
+		case TT_CRATER:
+			DrawLand(dx, dy, tx, ty);
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 8, 32, 8, 8 });
 		break;
 
 	}
@@ -114,7 +119,7 @@ void DrawLand(int dx, int dy, int tx, int ty) {
 bool CheckIfCanBuildTile(int x, int y, TileType _type) {
 	switch (_type) {
 		default: 
-			if (LEVEL.GetTile(x, y)->type == TT_LAND) return true; 
+			if (LEVEL.GetTile(x, y)->type == TT_LAND || LEVEL.GetTile(x, y)->type == TT_CRATER) return true;
 		return false;
 		case TT_HQ_TL:
 			if (LEVEL.GetTile(x, y)->type == TT_LAND && LEVEL.GetTile(x+1, y)->type == TT_LAND && LEVEL.GetTile(x, y + 1)->type == TT_LAND && LEVEL.GetTile(x + 1, y + 1)->type == TT_LAND) return true;
@@ -196,6 +201,7 @@ void TileOnBuilt(int x, int y, Tile* _tile) {
 
 void HurtTile(int dmg, int x, int y, Tile* _tile) {
 	_tile->hp -= dmg;
+
 	if (_tile->hp <= 0) OnTileDestroy(x, y, _tile);
 }
 
@@ -203,6 +209,12 @@ void HurtTile(int dmg, int x, int y, Tile* _tile) {
 
 void OnTileDestroy(int x, int y, Tile* _tile) {
 
+	switch (_tile->type) {
+		default:
+			_tile->type = TT_CRATER;
+			_tile->owner = 0;
+		break;
+	}
 }
 
 

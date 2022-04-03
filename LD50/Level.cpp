@@ -308,24 +308,34 @@ void LevelGenerator::GenerateWorld(Level* level) {
 
 
 	Pos _pos;
-	Tile* _t;
+	Tile* _t;	
+	int _posi;
 
 	//lets make some cities
-	int _cityAmt = 4 + (rand() % MAX_CITIES - 4);
+	int _cityAmt = 4 + rand() % (MAX_CITIES - 4);
 
 	for (i = 0; i < _cityAmt; i++) {
-		//get a position to check
-		int _posi = rand()%vPositionsWeCanCheck.size();
-		_pos = vPositionsWeCanCheck[_posi];
 
-		_t = level->GetTile(_pos.x, _pos.y);
+		//find a good spot to put the city
+		bool _foundAdequateSpot = false;
 
-		//abort if cant build here
-		if (_t->type == TT_CITYBLOCK_BIG || _t->type == TT_CITYBLOCK_SMALL) {
-			vPositionsWeCanCheck.erase(vPositionsWeCanCheck.begin() + _posi);
-			i--;
-			continue;
+		while (!_foundAdequateSpot) {
+
+			//get a position to check
+			_posi = rand() % vPositionsWeCanCheck.size();
+			_pos = vPositionsWeCanCheck[_posi];
+
+			_t = level->GetTile(_pos.x, _pos.y);
+
+			//abort if cant build here
+			if (_t->type == TT_CITYBLOCK_BIG || _t->type == TT_CITYBLOCK_SMALL) {
+				vPositionsWeCanCheck.erase(vPositionsWeCanCheck.begin() + _posi);
+			} else {
+				_foundAdequateSpot = true;
+			}
+
 		}
+
 
 		//set city data
 		level->arrCities[i].flags = CF_ACTIVE;
@@ -349,7 +359,7 @@ void LevelGenerator::GenerateWorld(Level* level) {
 
 
 void LevelGenerator::PreGenerateCity(Level* level, int city_i) {
-	int _growthAmt = 8 + rand() % 16;
+	int _growthAmt = 8 + rand() % 32;
 
 	City* _city = &level->arrCities[city_i];
 	Tile* _t;

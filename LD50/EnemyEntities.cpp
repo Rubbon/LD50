@@ -87,13 +87,26 @@ void E_UfoTick(Entity* ent) {
 
 						HurtTile(1, ent->x >> 3, ent->y >> 3, _tile);
 
-						ent->wait += 160 + rand() % 128;
+						ent->wait += 80 + rand() % 64;
 						break;
 					}
 
-					//think about moving
-					int _moveX = (ent->x >> 3) + (rand() % 5) - 2;
-					int _moveY = (ent->y >> 3) + (rand() % 5) - 2;
+					int _moveX = -1;
+					int _moveY = -1;
+
+					//think about moving to nearby tile
+					for (int i = 0; i < 3 + rand() % 5; i++) {
+						_moveX = (ent->x >> 3) + (rand() % 6) - 3;
+						_moveY = (ent->y >> 3) + (rand() % 6) - 3;
+						//stop trying cause we found a tile to attack
+						if (GET_TILE_INFO(LEVEL.GetTile(_moveX, _moveY)->type).flags & TIF_HUMAN) break;
+					}
+
+					//think about moving randomly
+					if (_moveX == -1) {
+						_moveX = (ent->x >> 3) + (rand() % 5) - 2;
+						_moveY = (ent->y >> 3) + (rand() % 5) - 2;
+					}
 
 					if (LEVEL.GetEntityAtTile(_moveX, _moveY, EFL_AIR) == NULL) {
 
