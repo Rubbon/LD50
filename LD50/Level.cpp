@@ -337,7 +337,7 @@ void LevelGenerator::GenerateWorld(Level* level) {
 	int _posi;
 
 	//lets make some cities
-	int _cityAmt = 4 + rand() % (MAX_CITIES - 4);
+	int _cityAmt = 5 + rand() % (MAX_CITIES - 5);
 
 	for (i = 0; i < _cityAmt; i++) {
 

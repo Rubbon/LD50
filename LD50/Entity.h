@@ -64,6 +64,7 @@ enum FxGibState {
 	FXS_BOUNCE_ON_LAND = 0x01,
 	FXS_DESTROY_ON_LAND = 0x02,
 	FXS_DRAW_SHADOW = 0x04,
+	FXS_HAS_GRAVITY = 0x08,
 };
 
 Entity* SpawnFx(int x, int y, int z, int lifetime, unsigned char stateFlags = 0x00);

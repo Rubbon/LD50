@@ -96,32 +96,73 @@ const TileInfo arrTileInfo[] = {
 	{
 		/* NAME */			"Factory", //tl
 		/* BASE_HP */		0,
-		/* BUILD_SPR */		{},
+		/* BUILD_SPR */		{48, 64, 16, 16},
 		/* BUILD_TIME */	256,
 		/* FLAGS */			TIF_HUMAN,
 	},
 	{
 		/* NAME */			"Factory", //tr
 		/* BASE_HP */		0,
-		/* BUILD_SPR */		{},
+		/* BUILD_SPR */		{48, 64, 16, 16},
 		/* BUILD_TIME */	256,
 		/* FLAGS */			TIF_HUMAN,
 	},
 	{
 		/* NAME */			"Factory", //bl
 		/* BASE_HP */		0,
-		/* BUILD_SPR */		{},
+		/* BUILD_SPR */		{48, 64, 16, 16},
 		/* BUILD_TIME */	256,
 		/* FLAGS */			TIF_HUMAN,
 	},
 	{
 		/* NAME */			"Factory", //br
 		/* BASE_HP */		0,
-		/* BUILD_SPR */		{},
+		/* BUILD_SPR */		{48, 64, 16, 16},
 		/* BUILD_TIME */	256,
 		/* FLAGS */			TIF_HUMAN,
 	},
-
+	{
+		/* NAME */			"Airfield", //tl
+		/* BASE_HP */		0,
+		/* BUILD_SPR */		{0, 128, 16, 16},
+		/* BUILD_TIME */	256,
+		/* FLAGS */			TIF_HUMAN,
+	},
+	{
+		/* NAME */			"Airfield", //tr
+		/* BASE_HP */		0,
+		/* BUILD_SPR */		{0, 128, 16, 16},
+		/* BUILD_TIME */	256,
+		/* FLAGS */			TIF_HUMAN,
+	},
+	{
+		/* NAME */			"Airfield", //bl
+		/* BASE_HP */		0,
+		/* BUILD_SPR */		{0, 128, 16, 16},
+		/* BUILD_TIME */	256,
+		/* FLAGS */			TIF_HUMAN,
+	},
+	{
+		/* NAME */			"Airfield", //br
+		/* BASE_HP */		0,
+		/* BUILD_SPR */		{0, 128, 16, 16},
+		/* BUILD_TIME */	256,
+		/* FLAGS */			TIF_HUMAN,
+	},
+	{
+		/* NAME */			"Anti Air Gun",
+		/* BASE_HP */		4,
+		/* BUILD_SPR */		{0, 96, 8, 8},
+		/* BUILD_TIME */	256,
+		/* FLAGS */			TIF_HUMAN | TIF_TICKABLE,
+	},
+	{
+		/* NAME */			"Wall",
+		/* BASE_HP */		4,
+		/* BUILD_SPR */		{64, 96, 8, 8},
+		/* BUILD_TIME */	256,
+		/* FLAGS */			TIF_HUMAN,
+	},
 
 };
 

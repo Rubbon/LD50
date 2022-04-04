@@ -75,8 +75,8 @@ void Game::Tick() {
 	if (state == GS_BUILD || state == GS_BUILD_HQ) TickCamMovement();
 
 	//clamp camera in screen
-	CAMERA_X = std::clamp(CAMERA_X, 0, -SCREEN_W + LEVEL_W * 8);
-	CAMERA_Y = std::clamp(CAMERA_Y, 0, -SCREEN_H + LEVEL_H * 8);
+	CAMERA_X = std::clamp(CAMERA_X, -16, -SCREEN_W + 16 + LEVEL_W * 8);
+	CAMERA_Y = std::clamp(CAMERA_Y, -16, -SCREEN_H + 16 + LEVEL_H * 8);
 
 	//alien mastermind thinks
 	if (GAME_TICK % 2 == 0) alienMastermind.Tick();
@@ -130,9 +130,15 @@ void Game::TickCamMovement() {
 
 
 	//press space to jump to hq
-	if (Input::KeyPressed(SDL_SCANCODE_SPACE)) {
-		CAMERA_X = currentLevel.playerHq.origin_x * 8 + 8 - SCREEN_W/2;
-		CAMERA_Y = currentLevel.playerHq.origin_y * 8 + 8 - SCREEN_H/2;
+	//if (Input::KeyPressed(SDL_SCANCODE_SPACE)) {
+	//	CAMERA_X = currentLevel.playerHq.origin_x * 8 + 8 - SCREEN_W/2;
+	//	CAMERA_Y = currentLevel.playerHq.origin_y * 8 + 8 - SCREEN_H/2;
+	//}
+
+	//make sure we're not too far away from our build focus
+	if (playerJet != NULL) {
+		CAMERA_X = std::clamp(CAMERA_X, playerJet->x - SCREEN_W/2 - 96, playerJet->x - SCREEN_W/2 + 96);
+		CAMERA_Y = std::clamp(CAMERA_Y, playerJet->y - SCREEN_H/2 - 80, playerJet->y - SCREEN_H/2 + 80);	
 	}
 
 }
@@ -226,6 +232,13 @@ void Game::DrawUi() {
 	//Graphics::DrawText(0, 0, "X", 1, C_XRED);
 	//Graphics::DrawText(8, 8, "Y", 1, C_YBLUE);
 
+
+	//build UI
+	if (state == GS_BUILD) {
+		for (int i = 0; i < 4; i++) {
+			Graphics::DrawSpr(TEX_CHARS, {SCREEN_W - 16 - (4 * 24) + i * 24, SCREEN_H-24, 24, 24}, {0, 216, 24, 24});
+		}
+	}
 
 
 	//draw cursor

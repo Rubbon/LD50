@@ -27,10 +27,22 @@ enum GameState {
 class Game {
 public:
 
+
 	Level currentLevel = {};
 	unsigned char cursorState = CS_POINTER;
 
 	GameState state = GS_PLAY;
+
+	//build menu
+	char bm_selected_opt = -1;
+	char bm_hover = -1;
+
+	char bm_options[4] = {
+		TT_AA_GUN,
+		TT_AIRFIELD_TL,
+		TT_FACTORY_TL,
+		TT_WALL,
+	};
 
 	//building tiles
 	TileType tileToBuild = TT_NONE;
