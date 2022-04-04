@@ -10,6 +10,8 @@
 unsigned char cityTick = 0;
 int  i;
 
+Tile _noTile = {TT_NONE};
+
 void Level::Tick() {
 
 	//city tick
@@ -32,17 +34,26 @@ void Level::Tick() {
 
 	}
 
+	//force mpty chnks for freedom
+	//for (i = 0; i < (LEVEL_W / CHUNK_SIZE) * (LEVEL_H / CHUNK_SIZE); i++) {
+	//	arrChunks[i].lsEntities.clear();
+	//}
+
 	//tick active entities
 	for (i = 0; i < vActiveEntities.size(); i++) {
 		//remove from active entity list if deleted
 		if (vActiveEntities[i]->flags & EFL_DELETED) {
+			//remove from any chunk its in
+			//if (vActiveEntities[i]->currentChunk != -1) LEVEL.RemoveEntityFromChunk(vActiveEntities[i], &LEVEL.arrChunks[vActiveEntities[i]->currentChunk]);
+			//remove from active duty
 			vActiveEntities.erase(vActiveEntities.begin() + i);
-			i--;
 			continue;
 		}
 
 		//add entities to chunks (depending on how slow, might do this less often)
 		SortEntityIntoCorrectChunk(vActiveEntities[i]);
+		//vActiveEntities[i]->currentChunk = GetChunkIndexAtEntityPos(vActiveEntities[i]->x, vActiveEntities[i]->y);
+		//AddEntityToChunk(vActiveEntities[i]);
 
 		arrEntityFuncs[vActiveEntities[i]->entityIndex].Tick(vActiveEntities[i]);
 	}
@@ -119,6 +130,7 @@ void Level::Draw() {
 
 
 Tile* Level::GetTile(int x, int y) {
+	if (x > LEVEL_W || x < 0 || y > LEVEL_H || y < 0) return &_noTile;
 	return &arrTiles[x + y * LEVEL_W];
 }
 
@@ -190,9 +202,20 @@ Entity* Level::GetEntityAtTile(int x, int y, unsigned char neededFlags) {
 
 
 
-void Level::RemoveEntityFromChunk(Entity* ent, Chunk* _chunk) {
-	auto _posInChunk = std::find(_chunk->lsEntities.begin(), _chunk->lsEntities.end(), ent);
-	if (_posInChunk != std::end(_chunk->lsEntities)) _chunk->lsEntities.erase(_posInChunk);
+void Level::RemoveEntityFromChunk(Entity* ent) {
+	//auto _posInChunk = std::find(_chunk->lsEntities.begin(), _chunk->lsEntities.end(), ent);
+	//if (_posInChunk != std::end(_chunk->lsEntities)) _chunk->lsEntities.erase(_posInChunk);
+
+	if (ent->currentChunk < 0 || ent->currentChunk >= (LEVEL_W / CHUNK_SIZE) * (LEVEL_H / CHUNK_SIZE)) return;
+
+	//doing it my own way to aovid crashes?
+	for (int i = 0; i < arrChunks[ent->currentChunk].lsEntities.size(); i++) {
+		if (arrChunks[ent->currentChunk].lsEntities[i]->id == ent->id) {
+			arrChunks[ent->currentChunk].lsEntities.erase(arrChunks[ent->currentChunk].lsEntities.begin() + i);
+			return;
+		}
+	}
+
 }
 
 

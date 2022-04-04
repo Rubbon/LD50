@@ -4,7 +4,7 @@
 #include "Tile.h"
 
 
-#define MAX_ENTITIES 512
+#define MAX_ENTITIES 1024
 #define MAX_CITIES 8
 
 #define LEVEL_W 176
@@ -53,7 +53,7 @@ public:
 	Entity* AddEntity(int x, int y, unsigned short entityIndex);
 
 
-	void RemoveEntityFromChunk(Entity* entity, Chunk* _chunk);
+	void RemoveEntityFromChunk(Entity* entity);
 	void AddEntityToChunk(Entity* entity);
 	//Chunk* GetChunkAtRealPos(int x, int y);
 	Chunk* GetChunkAtTilePos(int x, int y);

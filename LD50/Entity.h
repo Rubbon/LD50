@@ -1,9 +1,10 @@
 #pragma once
-
+#include "SDL.h"
 
 enum EntityName {
 	ENT_UFO,
 	ENT_WALKER,
+	ENT_FX,
 
 };
 
@@ -30,6 +31,8 @@ struct Entity {
 
 	short currentChunk = -1;
 
+	//float mx, my, mz;
+	char mx, my, mz;
 
 	short target_x;
 	short target_y;
@@ -39,7 +42,8 @@ struct Entity {
 
 	//animation
 	unsigned char animFrame = 0;
-
+	SDL_Rect animSpr = {};
+	SDL_Colour blend = {255, 255, 255, 255};
 
 	char state;
 	short substate;
@@ -47,9 +51,22 @@ struct Entity {
 	//generic values
 	short wait;
 	short ticker;
+	//float f;
 
 
 };
+
+
+//FX FUNCTIONS
+enum FxGibState {
+	FXS_BOUNCE_ON_LAND = 0x01,
+	FXS_DESTROY_ON_LAND = 0x02,
+	FXS_DRAW_SHADOW = 0x04,
+};
+
+Entity* SpawnFx(int x, int y, int z, int lifetime, unsigned char stateFlags = 0x00);
+void SetFxMotion(Entity* ent, float xspd, float yspd, float zspd);
+void SetFxSpr(Entity* ent, SDL_Rect sprRect, SDL_Colour blend = {255, 255, 255, 255});
 
 
 
@@ -89,3 +106,5 @@ extern const EntityFunctions arrEntityFuncs[];
 extern void SortEntityIntoCorrectChunk(Entity* _ent);
 
 extern short GetChunkIndexAtEntityPos(int x, int y);
+
+extern void DeleteEntity(Entity* ent);

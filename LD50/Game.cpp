@@ -40,7 +40,6 @@ void Game::Tick() {
 
 	currentLevel.Tick();
 
-
 	
 	hovered_tile_x = (CURSOR_X + CAMERA_X) >> 3;
 	hovered_tile_y = (CURSOR_Y + CAMERA_Y) >> 3;
@@ -134,7 +133,6 @@ void Game::Draw() {
 
 	currentLevel.Draw();
 
-
 	//draw ui at end
 	DrawUi();
 
@@ -143,6 +141,16 @@ void Game::Draw() {
 
 
 void Game::DrawUi() {
+
+	//border?
+	Graphics::DrawRect({ 0, 0, SCREEN_W, 16 }, { 160, 160, 174, 255 });
+	Graphics::DrawRect({ 0, SCREEN_H-16, SCREEN_W, 16 }, { 160, 160, 174, 255 });
+
+	int _borderW = std::max(((SCREEN_W / 20) >> 3) * 8, 16);
+
+	Graphics::DrawRect({ 0, 16, _borderW, SCREEN_H-16 }, { 160, 160, 174, 255 });
+	Graphics::DrawRect({ SCREEN_W- _borderW, 16, _borderW, SCREEN_H-16 }, { 160, 160, 174, 255 });
+
 
 	//bearings
 	int _camBearingPos = (CAMERA_X >> 3) / 10;
@@ -156,7 +164,7 @@ void Game::DrawUi() {
 		_txt = std::to_string((_camBearingPos + i) * 10);
 
 		_xx = -_txt.length() * 4 + (_camBearingPos * 8) * 10 + (i * 80) - CAMERA_X;
-		if (_xx <= 8) continue;
+		if (_xx < _borderW || _xx > SCREEN_W-16-_borderW) continue;
 
 		Graphics::DrawText(_xx + 1, 9, _txt, 1, {0, 0, 0});
 		Graphics::DrawText(_xx, 8, _txt, 1, C_XRED);
@@ -171,8 +179,8 @@ void Game::DrawUi() {
 
 		_txt = std::to_string((_camBearingPos + i) * 10);
 
-		_xx = 8;
-		if (_txt.length() >= 3) _xx = 0;
+		_xx = 0;//8;
+		//if (_txt.length() >= 3) _xx = 0;
 
 		_yy = -4 + (_camBearingPos * 8) * 10 + (i * 80) - CAMERA_Y;
 		if (_yy <= 8) continue;
@@ -182,9 +190,13 @@ void Game::DrawUi() {
 	}
 
 	//x y notifier
-	Graphics::DrawRect({ 0, 8, 24, 8 }, {0,0,0,255});
-	Graphics::DrawText(8, 8, "X", 1, C_XRED);
-	Graphics::DrawText(16, 8, "Y", 1, C_YBLUE);
+	//Graphics::DrawRect({ 0, 8, 24, 8 }, {0,0,0,255});
+	//Graphics::DrawText(8, 8, "X", 1, C_XRED);
+	//Graphics::DrawText(16, 8, "Y", 1, C_YBLUE);
+
+	//Graphics::DrawRect({ 0, 0, _borderW, 16 }, { 160, 160, 174, 255 });
+	//Graphics::DrawText(0, 0, "X", 1, C_XRED);
+	//Graphics::DrawText(8, 8, "Y", 1, C_YBLUE);
 
 
 

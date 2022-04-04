@@ -44,6 +44,15 @@ void E_UfoTick(Entity* ent) {
 						break;
 					}
 
+					if (ent->substate != 0) break;
+
+					//report places of interest
+					if (GET_TILE_INFO(_tile->type).flags & TIF_HUMAN) {
+						std::cout << "FOUND PLACE OF INTEREST " << std::endl;
+						GAME.alienMastermind.vAreasOfInterest.push_back({(short)(ent->x >> 3), (short)(ent->y >> 3)});
+					}
+
+
 				}
 
 
@@ -84,6 +93,9 @@ void E_UfoTick(Entity* ent) {
 
 					//there's a tile to attack!
 					if (GET_TILE_INFO(_tile->type).flags & TIF_HUMAN) {
+
+						Entity* _fx = SpawnFx(ent->x + 2, ent->y - 4, 0, 8);
+						SetFxSpr(_fx, { 0, 144, 8, 8 }, {32, 225, 32, 255});
 
 						HurtTile(1, ent->x >> 3, ent->y >> 3, _tile);
 

@@ -52,7 +52,7 @@ void AlienMastermind::TryDoingRecon() {
 		//check if we need to make a new recon unit
 		if (_reconUnit == NULL || (_reconUnit->flags & EFL_DELETED) || _reconUnit->state != ES_RECON) {
 			//make one for now
-			_ent = LEVEL.AddEntity((rand() % 2) * LEVEL_W*8, 2 + rand() % (LEVEL_H - 4) * 8, ENT_UFO);
+			_ent = LEVEL.AddEntity((rand() % 2) * LEVEL_W*8, 8 + rand() % (LEVEL_H/2) * 8, ENT_UFO);
 			//vActiveAlienUnits.push_back(_ent);
 			_reconUnit = _ent;
 			_reconUnit->state = ES_RECON;
@@ -66,8 +66,8 @@ void AlienMastermind::TryDoingRecon() {
 		}
 
 		//find a cool pos to recon
-		searchLocation.x = 1 + rand() % (LEVEL_W / RECON_SPACE_SIZE) - 2;
-		searchLocation.y = 1 + rand() % (LEVEL_H / RECON_SPACE_SIZE) - 2;
+		searchLocation.x = 1 + rand() % ((LEVEL_W / RECON_SPACE_SIZE) - 2);
+		searchLocation.y = 1 + rand() % ((LEVEL_H / RECON_SPACE_SIZE) - 2);
 
 		//cheating, for setting the pos
 		//searchLocation.x = (GAME.hovered_tile_x / RECON_SPACE_SIZE);

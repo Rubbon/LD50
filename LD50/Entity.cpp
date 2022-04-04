@@ -1,5 +1,6 @@
 #include "Entity.h"
 #include "EnemyEntities.h"
+#include "MiscEntities.h"
 #include "Game.h"
 #include <iostream>
 
@@ -7,6 +8,7 @@ const EntityFunctions arrEntityFuncs[] = {
 	//Init, Tick, Draw, onhurt, onhurtother
 	{ E_UfoInit, E_UfoTick, E_UfoDraw }, // ufo
 	{ E_WalkerInit, E_WalkerTick, E_WalkerDraw }, // walker
+	{ FxInit, FxTick, FxDraw }, // fx
 
 };
 
@@ -24,10 +26,33 @@ void NoFunc(Entity* _entity_1, Entity* _entity_2) {
 
 
 
+//FX FUNCTIONS
+Entity* SpawnFx(int x, int y, int z, int lifetime, unsigned char stateFlags) {
+	Entity* _returnEnt = LEVEL.AddEntity(x, y, ENT_FX);
+	_returnEnt->z = z;
+	_returnEnt->state = stateFlags;
+	_returnEnt->hp = lifetime;
+	return _returnEnt;
+}
+
+void SetFxMotion(Entity* ent, float xspd, float yspd, float zspd) {
+	ent->mx = xspd;
+	ent->my = yspd;
+	ent->mz = zspd;
+}
+
+void SetFxSpr(Entity* ent, SDL_Rect sprRect, SDL_Colour blend) {
+	ent->animSpr = sprRect;
+	ent->blend = blend;
+}
+
+
+
+
 void SortEntityIntoCorrectChunk(Entity* _ent) {
 	if (GetChunkIndexAtEntityPos(_ent->x, _ent->y) != _ent->currentChunk) {
 		//remove from old, add to new
-		LEVEL.RemoveEntityFromChunk(_ent, &LEVEL.arrChunks[_ent->currentChunk]);
+		LEVEL.RemoveEntityFromChunk(_ent);// , &LEVEL.arrChunks[_ent->currentChunk]);
 
 		//set chunk to the new one
 		_ent->currentChunk = GetChunkIndexAtEntityPos(_ent->x, _ent->y);
@@ -42,6 +67,11 @@ void SortEntityIntoCorrectChunk(Entity* _ent) {
 
 short GetChunkIndexAtEntityPos(int x, int y) {
 	return ((x>>3) / CHUNK_SIZE) + ((y>>3) / CHUNK_SIZE) * (LEVEL_W / CHUNK_SIZE);
-}
+};
 
-;
+
+
+void DeleteEntity(Entity* ent) {
+	if (ent->currentChunk != -1) LEVEL.RemoveEntityFromChunk(ent);
+	ent->flags |= EFL_DELETED;
+}
