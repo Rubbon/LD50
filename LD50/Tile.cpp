@@ -551,6 +551,7 @@ void City::expandTick() {
 		if (_curTile->owner != index) {
 			//check if city has been gooped by aliens
 			myTiles.erase(myTiles.begin() + i);
+			friendliness--;
 			timer = 10;
 		}
 		if (_curTile->type == TT_CITYBLOCK_SMALL) _popCount += (4000 + (int)rand() % 999);
@@ -558,8 +559,6 @@ void City::expandTick() {
 		else if (_curTile->type == TT_CITY_BANK) {
 			_popCount += (10000 + (int)rand() % 9999);
 		}
-		friendliness--;
-		
 	}
 	
 	if (timer > 0) timer--;
