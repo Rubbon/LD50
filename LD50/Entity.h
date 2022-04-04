@@ -5,6 +5,8 @@ enum EntityName {
 	ENT_UFO,
 	ENT_WALKER,
 	ENT_FX,
+	ENT_PLAYERJET,
+	ENT_JETBULLET,
 
 };
 
@@ -12,8 +14,8 @@ enum EntityName {
 enum EntityFlags {
 	EFL_DELETED = 0x01,
 	EFL_AIR = 0x02,
-	// = 0x04,
-	// = 0x08,
+	EFL_ALIEN = 0x04,
+	EFL_HUMAN = 0x08,
 	// = 0x10,
 	// = 0x20,
 	// = 0x40,
@@ -31,8 +33,8 @@ struct Entity {
 
 	short currentChunk = -1;
 
-	//float mx, my, mz;
-	char mx, my, mz;
+	float fx, fy;
+	float mx, my, mz;
 
 	short target_x;
 	short target_y;
@@ -108,3 +110,5 @@ extern void SortEntityIntoCorrectChunk(Entity* _ent);
 extern short GetChunkIndexAtEntityPos(int x, int y);
 
 extern void DeleteEntity(Entity* ent);
+
+extern int GetSprOffsetOnAngle(float angle);

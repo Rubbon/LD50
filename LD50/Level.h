@@ -50,7 +50,7 @@ public:
 	Tile* GetTile(int x, int y);
 	Tile* GetTile(Pos pos);
 
-	Entity* AddEntity(int x, int y, unsigned short entityIndex);
+	Entity* AddEntity(int x, int y, unsigned short entityIndex, bool runInit = true);
 
 
 	void RemoveEntityFromChunk(Entity* entity);

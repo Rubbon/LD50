@@ -174,6 +174,12 @@ void Graphics::DrawRect(SDL_Rect rect, SDL_Color colour) {
 }
 
 
+void Graphics::DrawLine(int x1, int y1, int x2, int y2, SDL_Colour colour) {
+	SDL_SetRenderDrawColor(renderer, colour.r, colour.g, colour.b, colour.a);
+	SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
+}
+
+
 
 SDL_DisplayMode Graphics::GetDisplayInfo(int displayIndex) {
 	SDL_DisplayMode _displayMode;

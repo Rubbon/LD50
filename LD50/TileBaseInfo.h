@@ -21,7 +21,7 @@ const TileInfo arrTileInfo[] = {
 		/* BASE_HP */		0,
 		/* BUILD_SPR */		{},
 		/* BUILD_TIME */	0,
-		/* FLAGS */			0x00,
+		/* FLAGS */			TIF_WALKABLE,
 	},
 	{
 		/* NAME */			"Tree",
@@ -91,8 +91,37 @@ const TileInfo arrTileInfo[] = {
 		/* BASE_HP */		0,
 		/* BUILD_SPR */		{},
 		/* BUILD_TIME */	0,
-		/* FLAGS */			0x00,
+		/* FLAGS */			TIF_WALKABLE,
 	},
+	{
+		/* NAME */			"Factory", //tl
+		/* BASE_HP */		0,
+		/* BUILD_SPR */		{},
+		/* BUILD_TIME */	256,
+		/* FLAGS */			TIF_HUMAN,
+	},
+	{
+		/* NAME */			"Factory", //tr
+		/* BASE_HP */		0,
+		/* BUILD_SPR */		{},
+		/* BUILD_TIME */	256,
+		/* FLAGS */			TIF_HUMAN,
+	},
+	{
+		/* NAME */			"Factory", //bl
+		/* BASE_HP */		0,
+		/* BUILD_SPR */		{},
+		/* BUILD_TIME */	256,
+		/* FLAGS */			TIF_HUMAN,
+	},
+	{
+		/* NAME */			"Factory", //br
+		/* BASE_HP */		0,
+		/* BUILD_SPR */		{},
+		/* BUILD_TIME */	256,
+		/* FLAGS */			TIF_HUMAN,
+	},
+
 
 };
 

@@ -71,9 +71,9 @@ void Level::Draw() {
 	int ix, iy;
 
 	//draw tiles
-	for (ix = _ctx; ix <= 1 + _ctx + Graphics::SCREEN_W / 8; ix++) {
+	for (ix = _ctx + 1; ix <= _ctx + Graphics::SCREEN_W / 8; ix++) {
 		if (ix < 0 || ix >= LEVEL_W) continue;
-		for (iy = _cty; iy <= 1 + _cty + Graphics::SCREEN_H / 8; iy++) {
+		for (iy = _cty + 1; iy <= _cty + Graphics::SCREEN_H / 8; iy++) {
 			if (iy < 0 || iy >= LEVEL_H) continue;
 			TileDraw((ix * 8) - CAMERA_X, (iy * 8) - CAMERA_Y, ix, iy, GetTile(ix, iy));
 		}
@@ -142,15 +142,17 @@ Tile* Level::GetTile(Pos pos) {
 
 
 
-Entity* Level::AddEntity(int x, int y, unsigned short entityIndex) {
+Entity* Level::AddEntity(int x, int y, unsigned short entityIndex, bool runInit) {
 	Entity _entity = {};
 	_entity.x = x;
 	_entity.y = y;
+	_entity.fx = _entity.x;
+	_entity.fy = _entity.y;
 	_entity.entityIndex = entityIndex;
 	_entity.flags &= ~EFL_DELETED;
 
 	//run init function
-	arrEntityFuncs[entityIndex].Init(&_entity);
+	if (runInit) arrEntityFuncs[entityIndex].Init(&_entity);
 
 	//find a slot we can put this entity in
 	for (i = entityIterator; i < MAX_ENTITIES; i++) {
@@ -376,6 +378,50 @@ void LevelGenerator::GenerateWorld(Level* level) {
 	}
 
 
+	//gen some factories
+
+	int _factoryAmt = 4 + rand() % (MAX_CITIES - 4);
+
+	for (i = 0; i < _factoryAmt; i++) {
+		//get a position to check
+		_posi = rand() % vPositionsWeCanCheck.size();
+		_pos = vPositionsWeCanCheck[_posi];
+
+		_t = level->GetTile(_pos.x, _pos.y);
+
+		//abort if cant build here
+		if (_t->type == TT_CITYBLOCK_BIG || _t->type == TT_CITYBLOCK_SMALL) {
+			vPositionsWeCanCheck.erase(vPositionsWeCanCheck.begin() + _posi);
+			i --;
+			continue;
+		}
+
+		//don't build if gonna build on top of something
+		if (GET_TILE_INFO(level->GetTile(_pos.x + 1, _pos.y)->type).flags & TIF_HUMAN || GET_TILE_INFO(level->GetTile(_pos.x + 1, _pos.y + 1)->type).flags & TIF_HUMAN || GET_TILE_INFO(level->GetTile(_pos.x, _pos.y + 1)->type).flags & TIF_HUMAN) {
+			continue;
+		}
+
+
+		//spawqn factory
+		_t->type = TT_FACTORY_TL;
+		_t->hp = GET_TILE_INFO(TT_FACTORY_TL).baseHp;
+
+		_t = level->GetTile(_pos.x + 1, _pos.y);
+		_t->type = TT_FACTORY_TR;
+		_t->hp = GET_TILE_INFO(TT_FACTORY_TR).baseHp;
+
+		_t = level->GetTile(_pos.x, _pos.y + 1);
+		_t->type = TT_FACTORY_BL;
+		_t->hp = GET_TILE_INFO(TT_FACTORY_BL).baseHp;
+
+		_t = level->GetTile(_pos.x + 1, _pos.y + 1);
+		_t->type = TT_FACTORY_BR;
+		_t->hp = GET_TILE_INFO(TT_FACTORY_BR).baseHp;
+
+
+		//remove the check position when done
+		vPositionsWeCanCheck.erase(vPositionsWeCanCheck.begin() + _posi);
+	}
 
 }
 

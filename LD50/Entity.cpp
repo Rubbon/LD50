@@ -3,12 +3,15 @@
 #include "MiscEntities.h"
 #include "Game.h"
 #include <iostream>
+#include "PlayerEntities.h"
 
 const EntityFunctions arrEntityFuncs[] = {
 	//Init, Tick, Draw, onhurt, onhurtother
 	{ E_UfoInit, E_UfoTick, E_UfoDraw }, // ufo
 	{ E_WalkerInit, E_WalkerTick, E_WalkerDraw }, // walker
 	{ FxInit, FxTick, FxDraw }, // fx
+	{ PlayerJetInit, PlayerJetTick, PlayerJetDraw }, // player
+	{ JetBulletInit, JetBulletTick, JetBulletDraw }, // jet bullet
 
 };
 
@@ -74,4 +77,31 @@ short GetChunkIndexAtEntityPos(int x, int y) {
 void DeleteEntity(Entity* ent) {
 	if (ent->currentChunk != -1) LEVEL.RemoveEntityFromChunk(ent);
 	ent->flags |= EFL_DELETED;
+}
+
+
+
+int GetSprOffsetOnAngle(float angle) {
+
+	angle = abs(round(angle * 180 / M_PI));
+
+	if (angle < 22.5) { // ->
+		return 0;
+	}
+	else
+	if (angle < 50) {   // \  
+		return 1;
+	}
+	else
+	if (angle < 128) {  // |
+		return 2;
+	}
+	else
+	if (angle < 150) { //  /
+		return 3;
+	}
+	else {				// <-
+		return 4;
+	}
+
 }

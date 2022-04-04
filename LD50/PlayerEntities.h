@@ -1,4 +1,5 @@
 #pragma once
+#include "Entity.h"
 
 enum UnitStates {
 	US_ATTACKER,
@@ -7,3 +8,13 @@ enum UnitStates {
 };
 
 
+
+
+void PlayerJetInit(Entity* ent);
+void PlayerJetTick(Entity* ent);
+void PlayerJetDraw(Entity* ent);
+
+
+void JetBulletInit(Entity* ent);
+void JetBulletTick(Entity* ent);
+void JetBulletDraw(Entity* ent);

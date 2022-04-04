@@ -51,6 +51,8 @@ public:
 
 	static void DrawRect(SDL_Rect rect, SDL_Color colour);
 
+	static void DrawLine(int x1, int y1, int x2, int y2, SDL_Colour colour = {255, 255, 255, 255});
+
 private:
 
 	static SDL_Texture* LoadTexture(std::string file);	

@@ -6,7 +6,7 @@
 #include "AlienAi.h"
 
 const SDL_Colour C_XRED = { 255, 64, 64 };
-const SDL_Colour C_YBLUE = { 104, 170, 255 };
+const SDL_Colour C_YBLUE = { 32, 32, 255 };
 
 
 enum CursorState {
@@ -14,11 +14,13 @@ enum CursorState {
 	CS_DRAG,
 	CS_NOCURSOR,
 	CS_BUILD_TILE,
+	CS_CROSSHAIR,
 };
 
 enum GameState {
 	GS_BUILD_HQ,
 	GS_PLAY,
+	GS_BUILD,
 };
 
 
@@ -35,6 +37,9 @@ public:
 
 	//alien ai controller
 	AlienMastermind alienMastermind = {};
+
+
+	Entity* playerJet = NULL;
 
 
 	int hovered_tile_x = 0;

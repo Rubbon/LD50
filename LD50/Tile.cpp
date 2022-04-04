@@ -85,6 +85,25 @@ void TileDraw(int dx, int dy, int tx, int ty, Tile* _tile) {
 			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 8, 32, 8, 8 });
 		break;
 
+
+		case TT_FACTORY_TL:
+			DrawLand(dx, dy, tx, ty);
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 48, 64, 8, 8 });
+		break;
+		case TT_FACTORY_TR:
+			DrawLand(dx, dy, tx, ty);
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 56, 64, 8, 8 });
+		break;
+		case TT_FACTORY_BL:
+			DrawLand(dx, dy, tx, ty);
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 48, 72, 8, 8 });
+		break;
+		case TT_FACTORY_BR:
+			DrawLand(dx, dy, tx, ty);
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 56, 72, 8, 8 });
+		break;
+
+
 	}
 }
 
@@ -178,6 +197,7 @@ Tile* BuildTileAt(int x, int y, TileType _type) {
 			LEVEL.vTilesToTick.push_back({ (short)(x + 1),	(short)(y + 1) });
 
 			GAME.state = GS_PLAY;
+			//GAME.state = GS_BUILD;
 
 		break;
 	}

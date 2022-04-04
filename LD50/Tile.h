@@ -20,6 +20,12 @@ enum TileType {
 	TT_CONSTRUCTION_SITE,
 	TT_CRATER,
 
+	TT_FACTORY_TL,
+	TT_FACTORY_TR,
+	TT_FACTORY_BL,
+	TT_FACTORY_BR,
+
+
 };
 
 
@@ -41,6 +47,7 @@ enum TileInfoFlags {
 	TIF_TICKABLE = 0x01,
 	TIF_ALIEN = 0x02,
 	TIF_HUMAN = 0x04,
+	TIF_WALKABLE = 0x08,
 };
 
 struct TileInfo {
