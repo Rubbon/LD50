@@ -104,6 +104,16 @@ void TileDraw(int dx, int dy, int tx, int ty, Tile* _tile) {
 		break;
 
 
+		case TT_RAIL_STATION_H:
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 88, 88, 8, 8 });
+		break;
+
+		case TT_RAIL_TRACK:
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 104 + _tile->timer*8, 88, 8, 8 });
+		break;
+
+
+
 	}
 }
 
@@ -219,6 +229,24 @@ void TileOnBuilt(int x, int y, Tile* _tile) {
 			LEVEL.playerHq.origin_y = y;
 			LEVEL.playerHq.flags |= CF_ACTIVE;
 		break;
+
+		case TT_RAIL_TRACK: {
+
+			Tile* _tile_l = LEVEL.GetTile(x - 1, y);
+			Tile* _tile_r = LEVEL.GetTile(x - 1, y);
+			Tile* _tile_u = LEVEL.GetTile(x - 1, y);
+			Tile* _tile_d = LEVEL.GetTile(x - 1, y);
+
+			//check for above tile to connect to
+			if (_tile_u->type = TT_RAIL_TRACK) {
+				if (_tile_u->timer == TRS_H) {
+					_tile->timer = TRS_H;
+				}
+			}
+
+
+		break; }
+
 	}
 }
 

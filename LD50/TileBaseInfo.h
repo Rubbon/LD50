@@ -193,6 +193,31 @@ const TileInfo arrTileInfo[] = {
 		/* FLAGS */			TIF_HUMAN,
 		/* BUILDCOST */		0,
 	},
+	{
+		/* NAME */			"Rail Station", // H
+		/* BASE_HP */		6,
+		/* BUILD_SPR */		{88, 88, 8, 8},
+		/* BUILD_TIME */	256,
+		/* FLAGS */			TIF_HUMAN | TIF_RAIL,
+		/* BUILDCOST */		0,
+	},
+	{
+		/* NAME */			"Rail Station", // V
+		/* BASE_HP */		6,
+		/* BUILD_SPR */		{88, 88, 8, 8},
+		/* BUILD_TIME */	256,
+		/* FLAGS */			TIF_HUMAN | TIF_RAIL,
+		/* BUILDCOST */		0,
+	},
+	{
+		/* NAME */			"Rail", // H
+		/* BASE_HP */		3,
+		/* BUILD_SPR */		{104, 88, 8, 8},
+		/* BUILD_TIME */	256,
+		/* FLAGS */			TIF_HUMAN | TIF_RAIL,
+		/* BUILDCOST */		0,
+	},
+
 
 };
 

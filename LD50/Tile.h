@@ -36,9 +36,15 @@ enum TileType {
 
 	TT_RAIL_STATION_H,
 	TT_RAIL_STATION_V,
+
 	TT_RAIL_TRACK,
-
-
+	//TT_RAIL_TRACK_H,
+	//TT_RAIL_TRACK_V,
+	//TT_RAIL_TRACK_LU,
+	//TT_RAIL_TRACK_RU,
+	//TT_RAIL_TRACK_LD,
+	//TT_RAIL_TRACK_RD,
+	//TT_RAIL_TRACK_CROSS,
 
 };
 
@@ -62,7 +68,20 @@ enum TileInfoFlags {
 	TIF_ALIEN = 0x02,
 	TIF_HUMAN = 0x04,
 	TIF_WALKABLE = 0x08,
+	TIF_RAIL = 0x10,
 };
+
+//uses timer
+enum TileRailStates {
+	TRS_H,
+	TRS_V,
+	TRS_RD,
+	TRS_LD,
+	TRS_RU,
+	TRS_LU,
+	TRS_CROSS,
+};
+
 
 struct TileInfo {
 	std::string name = "NAME ME";
