@@ -373,11 +373,11 @@ void UpdateWallConnections(int x, int y, Tile* _tile) {
 	if (_tcheckU->type == TT_WALL) _connected_above = true;
 	if (_tcheckD->type == TT_WALL) _connected_below = true;
 	if (_connected_left && _connected_right) {
-		if (_connected_above && _connected_below) _tile->timer = 0;
+		if (_connected_above || _connected_below) _tile->timer = 0;
 		else _tile->timer = 1;
 	}
 	else if (_connected_above && _connected_below) {
-		if (_connected_left && _connected_right) _tile->timer = 0;
+		if (_connected_left || _connected_right) _tile->timer = 0;
 		else _tile->timer = 2;
 	}
 	//else _tile->timer = 0;
