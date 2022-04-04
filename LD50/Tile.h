@@ -69,6 +69,7 @@ enum TileInfoFlags {
 	TIF_HUMAN = 0x04,
 	TIF_WALKABLE = 0x08,
 	TIF_RAIL = 0x10,
+	TIF_PLAYER = 0x20,
 };
 
 //uses timer

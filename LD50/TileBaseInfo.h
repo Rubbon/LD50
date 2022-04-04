@@ -5,7 +5,7 @@ const TileInfo arrTileInfo[] = {
 	{
 		/* NAME */			"Demolish",
 		/* BASE_HP */		0,
-		/* BUILD_SPR */		{},
+		/* BUILD_SPR */		{16, 0, 8, 8},
 		/* BUILD_TIME */	0,
 		/* FLAGS */			0x00,
 		/* BUILDCOST */		0,

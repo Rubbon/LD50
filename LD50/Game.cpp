@@ -99,9 +99,7 @@ void Game::Tick() {
 
 		//building tile
 		if (bm_selected_opt != -1) {
-
 			tileToBuild = (TileType)arrBuildOptions[bm_selected_opt];
-
 		} else {
 			tileToBuild = TT_NONE;
 		}
@@ -126,17 +124,25 @@ void Game::Tick() {
 	}
 
 	//building tile
-	if (tileToBuild != TT_NONE && mouseInMenu == 0) {
+	if ((tileToBuild != TT_NONE || bm_selected_opt != -1) && mouseInMenu == 0) {
 		cursorState = CS_BUILD_TILE;
 
-
 		if (Input::MousePressed(MB_LEFT)) {
-			if (CheckIfCanBuildTile(hovered_tile_x, hovered_tile_y, tileToBuild)) {
-				BuildTileAt(hovered_tile_x, hovered_tile_y, tileToBuild);
-				tileToBuild = TT_NONE;
+
+			if (tileToBuild != TT_NONE) {
+				//build
+				if (CheckIfCanBuildTile(hovered_tile_x, hovered_tile_y, tileToBuild)) {
+					BuildTileAt(hovered_tile_x, hovered_tile_y, tileToBuild);
+					tileToBuild = TT_NONE;
+				}
+			} else {
+				//demolish
+				//temp
+				if (LEVEL.GetTile(hovered_tile_x, hovered_tile_y)->type != TT_WATER) {
+					LEVEL.GetTile(hovered_tile_x, hovered_tile_y)->type = TT_CRATER;
+				}
 			}
 		}
-
 	}
 
 	if (state == GS_BUILD || state == GS_BUILD_HQ) TickCamMovement();
@@ -395,6 +401,7 @@ void Game::DrawUi() {
 				_col.b = 0;
 			} 
 			Graphics::DrawSpr(TEX_CHARS, { -CAMERA_X + hovered_tile_x * 8, -CAMERA_Y + hovered_tile_y * 8, GET_TILE_INFO(tileToBuild).buildSpr.w, GET_TILE_INFO(tileToBuild).buildSpr.h }, GET_TILE_INFO(tileToBuild).buildSpr, _col);
+			Graphics::DrawSpr(TEX_CHARS, { CURSOR_X, CURSOR_Y, 8, 8 }, { 0, 248, 8, 8 });
 		break;}
 		case CS_CROSSHAIR:
 			//Graphics::DrawSpr(TEX_CHARS, { CURSOR_X - 4 + 2, CURSOR_Y - 4, 8, 8 }, { 0, 240, 8, 8 }, { 0, 0, 0, 255 });
