@@ -204,7 +204,7 @@ const TileInfo arrTileInfo[] = {
 		/* NAME */			"Wall",
 		/* BASE_HP */		4,
 		/* BUILD_SPR */		{64, 96, 8, 8},
-		/* BUILD_TIME */	256,
+		/* BUILD_TIME */	128,
 		/* FLAGS */			TIF_HUMAN,
 		/* BUILDCOST */		0,
 		/* MULTITILES */	{0,0},

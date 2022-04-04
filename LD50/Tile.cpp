@@ -334,6 +334,33 @@ Tile* BuildTileAt(int x, int y, TileType _type, unsigned char flags) {
 
 }
 
+void UpdateWallConnections(int x, int y, Tile* _tile) {
+	Tile* _tcheckL;
+	Tile* _tcheckR;
+	Tile* _tcheckU;
+	Tile* _tcheckD;
+	bool _connected_above = false;
+	bool _connected_below = false;
+	bool _connected_left = false;
+	bool _connected_right = false;
+	_tcheckL = LEVEL.GetTile(x - 1, y);
+	_tcheckR = LEVEL.GetTile(x + 1, y);
+	_tcheckU = LEVEL.GetTile(x, y - 1);
+	_tcheckD = LEVEL.GetTile(x, y + 1);
+	if (_tcheckL->type == TT_WALL) _connected_left = true;
+	if (_tcheckR->type == TT_WALL) _connected_right = true;
+	if (_tcheckU->type == TT_WALL) _connected_above = true;
+	if (_tcheckD->type == TT_WALL) _connected_below = true;
+	if (_connected_left && _connected_right) {
+		if (_connected_above || _connected_below) _tile->timer = 0;
+		else _tile->timer = 1;
+	}
+	else if (_connected_above && _connected_below) {
+		if (_connected_left || _connected_right) _tile->timer = 0;
+		else _tile->timer = 2;
+	}
+	//else _tile->timer = 0;
+}
 
 void TileOnBuilt(int x, int y, Tile* _tile) {
 	switch (_tile->type) {
@@ -350,6 +377,39 @@ void TileOnBuilt(int x, int y, Tile* _tile) {
 			_ent->fx = x;
 			_ent->fy = y;
 		break; }
+		
+		case TT_WALL: {
+			Tile* _tcheckL;
+			Tile* _tcheckR;
+			Tile* _tcheckU;
+			Tile* _tcheckD;
+			bool _connected_above = false;
+			bool _connected_below = false;
+			bool _connected_left = false;
+			bool _connected_right = false;
+			_tcheckL = LEVEL.GetTile(x-1, y);
+			_tcheckR = LEVEL.GetTile(x +1, y);
+			_tcheckU = LEVEL.GetTile(x,y-1);
+			_tcheckD = LEVEL.GetTile(x,y+1);
+			if (_tcheckL->type == TT_WALL) _connected_left = true;
+			if (_tcheckR->type == TT_WALL) _connected_right = true;
+			if (_tcheckU->type == TT_WALL) _connected_above = true;
+			if (_tcheckD->type == TT_WALL) _connected_below = true;
+
+			if (_connected_left && _connected_right) {
+				if (_connected_above || _connected_below) _tile->timer = 0;
+				else _tile->timer = 1;
+			}
+			else if (_connected_above && _connected_below) {
+				if (_connected_left || _connected_right) _tile->timer = 0;
+				else _tile->timer = 2;
+			}
+			UpdateWallConnections(x - 1, y, _tcheckL);
+			UpdateWallConnections(x + 1, y, _tcheckR);
+			UpdateWallConnections(x, y - 1, _tcheckU);
+			UpdateWallConnections(x, y + 1, _tcheckD);
+			break;
+		}
 
 		case TT_RAIL_TRACK: {
 

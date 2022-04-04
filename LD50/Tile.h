@@ -117,6 +117,8 @@ extern void TileDraw(int dx, int dy, int tx, int ty, Tile* _tile);
 extern void DrawLand(int dx, int dy, int tx = 0, int ty = 0);
 
 extern Tile* BuildTileAt(int x, int y, TileType _type, unsigned char flags = 0x00);
+
+extern void UpdateWallConnections(int x, int y, Tile* _tile);
 //ran when the tile has been fully built and has been spawned unto the world
 extern void TileOnBuilt(int x, int y, Tile* _tile);
 
