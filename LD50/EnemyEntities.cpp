@@ -26,7 +26,6 @@ void E_UfoTick(Entity* ent) {
 		case ES_RECON:
 			if (ent->substate != 2 && ent->x == ent->target_x && ent->y == ent->target_y) {
 
-
 				//report what we see
 				if (ent->wait == 0 && ent->substate == 0) {
 					Tile* _tile = LEVEL.GetTile(ent->x >> 3, ent->y >> 3);
@@ -58,7 +57,7 @@ void E_UfoTick(Entity* ent) {
 
 				ent->wait++;
 
-				if (ent->wait >= 80) {
+				if (ent->wait >= 16) {
 					ent->wait = 0;
 					ent->ticker++;
 

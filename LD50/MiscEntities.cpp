@@ -17,10 +17,22 @@ void FxTick(Entity* ent) {
 
 
 
+	if (ent->z >= 0) {
+		if (ent->flags & FXS_DESTROY_ON_LAND) DeleteEntity(ent);
+	} else {
+		if (ent->flags & FXS_HAS_GRAVITY) {
+			if (ent->mz < 3) ent->mz += 0.25f;
+		}
+	}
+
+
 	//move
-	ent->x += ent->mx;
-	ent->y += ent->my;
+	ent->fx += ent->mx;
+	ent->fy += ent->my;
 	ent->z += ent->mz;
+
+	ent->x = ent->fx;
+	ent->y = ent->fy;
 
 }
 

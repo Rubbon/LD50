@@ -4,7 +4,7 @@
 #include "Game.h"
 #include "TileBaseInfo.h"
 #include "Sound.h"
-
+#include <algorithm>
 
 float _spd = 0.05f;
 bool muted = false;
@@ -14,6 +14,7 @@ short reserveLanding = 0;
 enum PLayerJetState {
 	PJS_FLYING,
 	PJS_LANDING,
+	PJS_LANDING_HQ,
 	PJS_LANDED,
 };
 
@@ -28,6 +29,9 @@ void PlayerJetInit(Entity* ent) {
 	ent->flags |= EFL_HUMAN;
 	ent->state = PJS_FLYING;
 	ent->zwig = 0;
+
+	ent->hp = 8;
+
 }
 
 void PlayerJetTick(Entity* ent) {
@@ -47,6 +51,9 @@ void PlayerJetTick(Entity* ent) {
 
 	case PJS_FLYING: {
 
+			ent->x = std::clamp(ent->x, 0, LEVEL_W*8);
+			ent->y = std::clamp(ent->y, 0, LEVEL_H*8);
+
 			ent->flags |= EFL_AIR;
 
 			if (ent->z > -6) ent->z--;
@@ -57,7 +64,8 @@ void PlayerJetTick(Entity* ent) {
 			//move
 			if (Input::MouseHeld(MB_RIGHT)) {
 
-				if (_spd < 0.3f) _spd += 0.01f;
+				//0.3f
+				if (_spd < 0.2f) _spd += 0.01f;
 
 				ent->mx += _spd * cos(_mouseAngle);
 				ent->my += _spd * sin(_mouseAngle);
@@ -92,6 +100,11 @@ void PlayerJetTick(Entity* ent) {
 			//land button
 			if (reserveLanding > 0) {
 				TileType _tileAtFeet = LEVEL.GetTile(ent->x >> 3, ent->y >> 3)->type;
+
+				if (_tileAtFeet >= TT_HQ_TL && _tileAtFeet <= TT_HQ_BR) {
+					ent->state = PJS_LANDING_HQ;
+				}
+
 				if (GET_TILE_INFO(_tileAtFeet).flags & TIF_WALKABLE) {
 					ent->state = PJS_LANDING;
 				}
@@ -158,7 +171,7 @@ void PlayerJetTick(Entity* ent) {
 
 		break; }
 
-		case PJS_LANDING:
+		case PJS_LANDING: case PJS_LANDING_HQ:
 			if (ent->z < 0) {
 				if (GAME_TICK % 3 == 0) ent->z++;
 
@@ -170,8 +183,16 @@ void PlayerJetTick(Entity* ent) {
 				else if (ent->y > 4 + ((ent->y) >> 3) * 8) ent->y--;
 
 			} else {
+				//finished landing
 				ent->z = 0;
-				ent->state = PJS_LANDED;
+
+				if (ent->state == PJS_LANDING) {
+					ent->state = PJS_LANDED;
+				} else {
+					GAME.jetBuildTimer = 128;
+					DeleteEntity(ent);
+				}
+
 				GAME.state = GS_BUILD;
 			}
 		break;
@@ -196,7 +217,7 @@ void PlayerJetDraw(Entity* ent) {
 	TileType _tileAtFeet = LEVEL.GetTile(ent->x >> 3, ent->y >> 3)->type;
 
 	//shadow
-	if (_tileAtFeet == TT_LAND || _tileAtFeet == TT_WATER) Graphics::DrawSpr(TEX_CHARS, { ent->x - 4 - (ent->z/2) - CAMERA_X, ent->y + 1 - CAMERA_Y, 8, 3 }, { 0, 157, 8, 3 });
+	if (GET_TILE_INFO(_tileAtFeet).flags & TIF_WALKABLE || _tileAtFeet == TT_WATER) Graphics::DrawSpr(TEX_CHARS, { ent->x - 4 - (ent->z/2) - CAMERA_X, ent->y + 1 - CAMERA_Y, 8, 3 }, { 0, 157, 8, 3 });
 
 	Graphics::DrawSpr(TEX_CHARS, { ent->x - 4 - CAMERA_X, ent->y - 3 + ent->z - CAMERA_Y, 8, 8 }, ent->animSpr, { 255, 255, 255, 255 }, _flip);
 	Graphics::DrawSpr(TEX_CHARS, { ent->x - 4 - CAMERA_X, ent->y - 4 + ent->z - CAMERA_Y, 8, 8 }, ent->animSpr, { 229, 113, 247, 255 }, _flip);
@@ -232,8 +253,38 @@ void JetBulletTick(Entity* ent) {
 	ent->x = ent->fx;
 	ent->y = ent->fy;
 
-	if (ent->wait > 24) DeleteEntity(ent);
+	if (ent->y > LEVEL_H * 8 || ent->x > LEVEL_W * 8) DeleteEntity(ent);
+
+
+	if (ent->wait > 20) {
+		if (ent->z < 0) {
+			ent->z++;
+		} else {
+			
+			int _fxLife = 6;
+			Entity* _fx;
+
+			if (LEVEL.GetTile(ent->x >> 3, ent->y >> 3)->type == TT_WATER) {
+
+				_fxLife = 12;
+
+				for (int i = 0; i < 3; i++) {
+					_fx = SpawnFx(ent->x, ent->y, 0, 16 + rand()%24, FXS_HAS_GRAVITY | FXS_DESTROY_ON_LAND);
+					SetFxSpr(_fx, { 16, 32, 8, 8 });
+					SetFxMotion(_fx,  ( - 10 + rand() % 30)/10.0f, -rand() % 2, -8);
+				}
+
+			}
+
+			_fx = SpawnFx(ent->x, ent->y, 0, _fxLife);
+			SetFxSpr(_fx, {8, 32, 8, 8});
+			DeleteEntity(ent);
+		}
+	}
+
 	ent->wait++;
+
+
 }
 
 void JetBulletDraw(Entity* ent) {

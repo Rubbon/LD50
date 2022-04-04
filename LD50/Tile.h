@@ -25,6 +25,20 @@ enum TileType {
 	TT_FACTORY_BL,
 	TT_FACTORY_BR,
 
+	TT_AIRFIELD_TL,
+	TT_AIRFIELD_TR,
+	TT_AIRFIELD_BL,
+	TT_AIRFIELD_BR,
+
+	TT_AA_GUN,
+	TT_WALL,
+	TT_CITYSTARTER,
+
+	TT_RAIL_STATION_H,
+	TT_RAIL_STATION_V,
+	TT_RAIL_TRACK,
+
+
 
 };
 
@@ -56,6 +70,7 @@ struct TileInfo {
 	SDL_Rect buildSpr;
 	unsigned short buildTime = 0;
 	unsigned char flags = 0x00;
+	unsigned short buildCost = 0;
 };
 
 

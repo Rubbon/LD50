@@ -5,6 +5,7 @@
 #include "Level.h"
 #include "AlienAi.h"
 #include "Sound.h"
+#include "Graphics.h"
 
 const SDL_Colour C_XRED = { 255, 64, 64 };
 const SDL_Colour C_YBLUE = { 32, 32, 255 };
@@ -28,10 +29,41 @@ enum GameState {
 class Game {
 public:
 
+
 	Level currentLevel = {};
 	unsigned char cursorState = CS_POINTER;
 
 	GameState state = GS_PLAY;
+
+	int playerCash = 100;
+
+	//build menu
+	char bm_selected_opt = -1;
+	char bm_hover = -1;
+
+	unsigned char mouseInMenu = 0;
+
+	bool playerIsAtHQ = false;
+
+	//border
+	short borderTopSize = 16;
+	short borderBottomSize = 16;
+
+
+#define BUILD_OPTIONS 9
+	char arrBuildOptions[BUILD_OPTIONS] = {
+		TT_AA_GUN,
+		TT_AIRFIELD_TL,
+		TT_FACTORY_TL,
+		TT_WALL,
+		TT_WALL,
+		TT_WALL,
+		TT_WALL,
+		TT_WALL,
+		TT_NONE,
+	};
+
+	int bm_startX = SCREEN_W - 16 - (BUILD_OPTIONS * 24);
 
 	//building tiles
 	TileType tileToBuild = TT_NONE;
@@ -41,6 +73,8 @@ public:
 
 
 	Entity* playerJet = NULL;
+
+	int jetBuildTimer = 128;
 
 
 	int hovered_tile_x = 0;

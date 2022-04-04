@@ -5,37 +5,26 @@
 #include "Input.h"
 #include "EnemyEntities.h"
 
-int reconTick = 128;
+int reconTick = 32;
+int attackTick = 256;
+
+int lastAttackedHq = 0;
 
 void AlienMastermind::Tick(){
 
-	Entity* _ent;
-
 	TryDoingRecon();
+	TryDoingAttack();
 
-
-	//attack something from outside world
-	if (Input::KeyPressed(SDL_SCANCODE_K)) {
-
-		std::cout << "KILL" << std::endl;
-
-		AlienParty _party = {};
-
-		for (int i = 0; i < 6; i++) {
-			_ent = LEVEL.AddEntity(0, 0, ENT_UFO);
-			_ent->state = ES_ATTACKER;
-			_party.vEntities.push_back(_ent);
+	//update parties
+	for (int i = 0; i < vAttackParties.size(); i++) {
+		//remove if everyones gone
+		if (vAttackParties[i].vEntities.size() <= 0) {
+			vAttackParties.erase(vAttackParties.begin() + i);
 		}
 
-		_party.gather_x = GAME.hovered_tile_x;
-		_party.gather_y = GAME.hovered_tile_y;
-
-		_party.TellEntitiesToGather();
-
-		vAttackParties.push_back(_party);
+		//update for flanking?
 
 	}
-
 
 
 }
@@ -45,6 +34,8 @@ void AlienMastermind::Tick(){
 
 void AlienMastermind::TryDoingRecon() {
 	Entity* _ent;
+
+	reconTick--;
 
 	//rcon
 	if (reconTick <= 0) {
@@ -58,11 +49,14 @@ void AlienMastermind::TryDoingRecon() {
 			_reconUnit->state = ES_RECON;
 			_reconUnit->substate = 0;
 			_reconUnit->wait = 0;
+			_reconUnit->ticker = 0;
 		}
 		else {
 			//if recon unit isn't done, wait a bit
-			if (_reconUnit->substate != 2) reconTick += 256;
-			return;
+			if (_reconUnit->substate != 2) {
+				reconTick += 256;
+				return;
+			}
 		}
 
 		//find a cool pos to recon
@@ -77,6 +71,9 @@ void AlienMastermind::TryDoingRecon() {
 		if (searchLocation.x != lastSearchLocation.x || searchLocation.y != lastSearchLocation.y) {
 			_reconUnit->target_x = (searchLocation.x * RECON_SPACE_SIZE) * 8;
 			_reconUnit->target_y = (searchLocation.y * RECON_SPACE_SIZE) * 8;
+			_reconUnit->substate = 0;
+			_reconUnit->wait = 0;
+			_reconUnit->ticker = 0;
 
 			std::cout << "RECON CHECKING OUT " << searchLocation.x * RECON_SPACE_SIZE << ", " << searchLocation.y * RECON_SPACE_SIZE << std::endl;
 
@@ -85,10 +82,93 @@ void AlienMastermind::TryDoingRecon() {
 		reconTick = 512 - warStage * 2;
 
 	}
-	else {
-		reconTick--;
-	}
 }
+
+
+
+
+
+void AlienMastermind::TryDoingAttack() {
+
+	Entity* _ent;
+
+	//attack something from outside world
+	if (attackTick <= 0) {
+
+		if (vAttackParties.size() < warStage + 1) {
+
+			int _targetX = -1;
+			int _targetY = -1;
+			int _r;
+
+			//find something to attack
+
+			//areas of interest first
+			if (vAreasOfInterest.size() > 0) {
+
+				_r = rand() % vAreasOfInterest.size();
+
+				_targetX = vAreasOfInterest[_r].x;
+				_targetY = vAreasOfInterest[_r].y;
+
+				goto lEndOfLocationSearch;
+			}
+
+			//then hq
+			if (foundHqPos.x != -1 && GAME_TICK - lastAttackedHq > 1024 - warStage * 2 + rand() % 256) {
+				_targetX = foundHqPos.x;
+				_targetY = foundHqPos.y;
+				lastAttackedHq = GAME_TICK;
+				goto lEndOfLocationSearch;
+			}
+
+			//then city
+			_r = rand() % MAX_CITIES;
+
+			if ((LEVEL.arrCities[_r].flags & CF_FOUND) && (LEVEL.arrCities[_r].flags & CF_ACTIVE)) {
+				_targetX = LEVEL.arrCities[_r].origin_x + -2 + rand() % 6;
+				_targetY = LEVEL.arrCities[_r].origin_y + -2 + rand() % 6;
+			}
+
+
+			//then rando?
+			//if (rand() % (8 + warStage / 2) >= 8) {
+				//_targetX = rand();
+				//_targetY = LEVEL_H;
+		//	}
+
+
+			lEndOfLocationSearch:
+
+			if (_targetX == -1) return;
+
+			std::cout << "Sending out new attack party to " << _targetX	<< ", " << _targetY << std::endl;
+
+			//make new attack party
+			AlienParty _party = {};
+
+			for (int i = 0; i < 6 + warStage * 2 + (rand() % warStage * 3); i++) {
+				_ent = LEVEL.AddEntity(0, 0, ENT_UFO);
+				_ent->state = ES_ATTACKER;
+				_party.vEntities.push_back(_ent);
+			}
+
+			_party.gather_x = _targetX;
+			_party.gather_y = _targetY;
+
+			_party.TellEntitiesToGather();
+
+			vAttackParties.push_back(_party);
+
+			attackTick = 1024 + (rand() % 256) - warStage * 3;
+		}
+
+	}
+
+	attackTick--;
+
+}
+
 
 
 
