@@ -43,16 +43,22 @@ public:
 
 	unsigned char mouseInMenu = 0;
 
+	bool playerIsAtHQ = false;
+
 	//border
 	short borderTopSize = 16;
 	short borderBottomSize = 16;
 
 
-#define BUILD_OPTIONS 5
+#define BUILD_OPTIONS 9
 	char arrBuildOptions[BUILD_OPTIONS] = {
 		TT_AA_GUN,
 		TT_AIRFIELD_TL,
 		TT_FACTORY_TL,
+		TT_WALL,
+		TT_WALL,
+		TT_WALL,
+		TT_WALL,
 		TT_WALL,
 		TT_NONE,
 	};
@@ -67,6 +73,8 @@ public:
 
 
 	Entity* playerJet = NULL;
+
+	int jetBuildTimer = 128;
 
 
 	int hovered_tile_x = 0;

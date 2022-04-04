@@ -196,8 +196,12 @@ Tile* BuildTileAt(int x, int y, TileType _type) {
 			LEVEL.vTilesToTick.push_back({ (short)x,		(short)(y + 1) });
 			LEVEL.vTilesToTick.push_back({ (short)(x + 1),	(short)(y + 1) });
 
-			GAME.state = GS_PLAY;
-			//GAME.state = GS_BUILD;
+			//GAME.state = GS_PLAY;
+			GAME.state = GS_BUILD;
+
+			LEVEL.playerHq.origin_x = x;
+			LEVEL.playerHq.origin_y = y;
+			LEVEL.playerHq.flags |= CF_ACTIVE;
 
 		break;
 	}

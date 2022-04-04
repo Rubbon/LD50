@@ -14,6 +14,7 @@ short reserveLanding = 0;
 enum PLayerJetState {
 	PJS_FLYING,
 	PJS_LANDING,
+	PJS_LANDING_HQ,
 	PJS_LANDED,
 };
 
@@ -99,6 +100,11 @@ void PlayerJetTick(Entity* ent) {
 			//land button
 			if (reserveLanding > 0) {
 				TileType _tileAtFeet = LEVEL.GetTile(ent->x >> 3, ent->y >> 3)->type;
+
+				if (_tileAtFeet >= TT_HQ_TL && _tileAtFeet <= TT_HQ_BR) {
+					ent->state = PJS_LANDING_HQ;
+				}
+
 				if (GET_TILE_INFO(_tileAtFeet).flags & TIF_WALKABLE) {
 					ent->state = PJS_LANDING;
 				}
@@ -165,7 +171,7 @@ void PlayerJetTick(Entity* ent) {
 
 		break; }
 
-		case PJS_LANDING:
+		case PJS_LANDING: case PJS_LANDING_HQ:
 			if (ent->z < 0) {
 				if (GAME_TICK % 3 == 0) ent->z++;
 
@@ -177,8 +183,16 @@ void PlayerJetTick(Entity* ent) {
 				else if (ent->y > 4 + ((ent->y) >> 3) * 8) ent->y--;
 
 			} else {
+				//finished landing
 				ent->z = 0;
-				ent->state = PJS_LANDED;
+
+				if (ent->state == PJS_LANDING) {
+					ent->state = PJS_LANDED;
+				} else {
+					GAME.jetBuildTimer = 128;
+					DeleteEntity(ent);
+				}
+
 				GAME.state = GS_BUILD;
 			}
 		break;

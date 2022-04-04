@@ -25,7 +25,7 @@ void Game::Init() {
 	state = GS_BUILD_HQ;
 	tileToBuild = TT_HQ_TL;
 
-	playerJet = currentLevel.AddEntity(256, 256, ENT_PLAYERJET);
+	//playerJet = currentLevel.AddEntity(256, 256, ENT_PLAYERJET);
 
 }
 
@@ -44,6 +44,11 @@ void Game::Tick() {
 	currentLevel.Tick();
 
 	mouseInMenu = 0;
+
+
+	//see if we're at HQ
+	playerIsAtHQ = ((playerJet == NULL || playerJet->flags & EFL_DELETED) && LEVEL.playerHq.flags & CF_ACTIVE);
+
 
 	//see if we're hovering over the screen borders
 	if (CURSOR_X < _borderW || CURSOR_X > SCREEN_W - _borderW || CURSOR_Y < borderTopSize || CURSOR_Y > SCREEN_H - borderBottomSize) {
@@ -102,7 +107,21 @@ void Game::Tick() {
 		}
 
 
-
+		//enter jet if at hq
+		if (playerIsAtHQ) {
+			if (jetBuildTimer <= 0) {
+				if (Input::KeyPressed(SDL_SCANCODE_SPACE)) {
+					//enter jet
+					playerJet = LEVEL.AddEntity((LEVEL.playerHq.origin_x * 8) + 8, (LEVEL.playerHq.origin_y * 8) + 8, ENT_PLAYERJET);
+					playerJet->my = -1;
+					playerIsAtHQ = false;
+					state = GS_PLAY;
+				}
+			} else {
+				//decrement build timer
+				jetBuildTimer--;
+			}
+		}
 
 	}
 
@@ -187,6 +206,11 @@ void Game::TickCamMovement() {
 	if (playerJet != NULL) {
 		CAMERA_X = std::clamp(CAMERA_X, playerJet->x - SCREEN_W/2 - 96, playerJet->x - SCREEN_W/2 + 96);
 		CAMERA_Y = std::clamp(CAMERA_Y, playerJet->y - SCREEN_H/2 - 80, playerJet->y - SCREEN_H/2 + 80);	
+	} else {
+		if (LEVEL.playerHq.flags & CF_ACTIVE) {
+			CAMERA_X = std::clamp(CAMERA_X, (LEVEL.playerHq.origin_x * 8) - SCREEN_W / 2 - 96, (LEVEL.playerHq.origin_x * 8) - SCREEN_W / 2 + 96);
+			CAMERA_Y = std::clamp(CAMERA_Y, (LEVEL.playerHq.origin_y * 8) - SCREEN_H / 2 - 80, (LEVEL.playerHq.origin_y * 8) - SCREEN_H / 2 + 80);
+		}
 	}
 
 }
@@ -294,18 +318,18 @@ void Game::DrawUi() {
 			if (bm_hover != -1) _info = GET_TILE_INFO(arrBuildOptions[bm_hover]);
 			else _info = GET_TILE_INFO(arrBuildOptions[bm_selected_opt]);
 
-			Graphics::DrawRect({ _borderW, SCREEN_H - 24, SCREEN_W - _borderW * 2, 8 }, { 0, 0, 0, 255 });
+			Graphics::DrawRect({ _borderW, SCREEN_H - 32, SCREEN_W - _borderW * 2, 16 }, { 0, 0, 0, 255 });
 			//name
-			Graphics::DrawText(_borderW, SCREEN_H - 24, _info.name, 1);
+			Graphics::DrawText(_borderW, SCREEN_H - 32, _info.name, 1);
 			//cost
-			Graphics::DrawText(bm_startX - 48, SCREEN_H - 24, "$" + std::to_string(_info.buildCost), 1, { 255, 227, 128, 255 });
+			Graphics::DrawText(_borderW, SCREEN_H - 24, "$" + std::to_string(_info.buildCost), 1, { 255, 227, 128, 255 });
 		}
 
 
 		int _xx, _yy;
 		TileInfo _tileInfo;
 
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < BUILD_OPTIONS; i++) {
 			_xx = bm_startX + i * 24;
 			_tileInfo = GET_TILE_INFO(arrBuildOptions[i]);
 
@@ -343,6 +367,14 @@ void Game::DrawUi() {
 	if (playerJet != NULL && !(playerJet->flags & EFL_DELETED)) {
 		Graphics::DrawText(17, SCREEN_H - 15, "H " + std::to_string(playerJet->hp), 1, { 0, 0, 0, 255 });
 		Graphics::DrawText(16, SCREEN_H - 16, "H " + std::to_string(playerJet->hp), 1, { 247, 104, 104, 255 });
+	}
+	//looking at hq
+	else if (LEVEL.playerHq.flags & CF_ACTIVE) {
+		if (jetBuildTimer <= 0) {
+			//jet is ready notice
+			Graphics::DrawText(_borderW + 1, borderTopSize + 1, "JET READY!", 1, { 0, 0, 0, 255 });
+			Graphics::DrawText(_borderW, borderTopSize, "JET READY!", 1, { 255, 227, 128, 255 });
+		}
 	}
 
 

@@ -34,6 +34,11 @@ enum TileType {
 	TT_WALL,
 	TT_CITYSTARTER,
 
+	TT_RAIL_STATION_H,
+	TT_RAIL_STATION_V,
+	TT_RAIL_TRACK,
+
+
 
 };
 
