@@ -60,5 +60,5 @@ void TrainTick(Entity* ent) {
 }
 
 void TrainDraw(Entity* ent) {
-	Graphics::DrawSpr(TEX_CHARS, { ent->x, ent->y, 8, 8 }, {24, 104, 8, 8});
+	Graphics::DrawSpr(TEX_CHARS, { ent->x - CAMERA_X, ent->y - CAMERA_Y, 8, 8 }, {24, 104, 8, 8});
 }

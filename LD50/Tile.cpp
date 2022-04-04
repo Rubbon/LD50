@@ -368,7 +368,8 @@ void TileOnBuilt(int x, int y, Tile* _tile) {
 		case TT_RAIL_STATION_H: {
 			Entity* _ent = LEVEL.AddEntity(x * 8, y * 8, ENT_TRAIN);
 			_tile->ref = _ent->id;
-			//_ent->substate = 
+			_ent->target_x = x;
+			_ent->target_y = y;
 		break; }
 
 		case TT_RAIL_TRACK: {
