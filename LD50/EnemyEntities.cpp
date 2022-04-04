@@ -97,7 +97,7 @@ void E_UfoTick(Entity* ent) {
 						SetFxSpr(_fx, { 0, 144, 8, 8 }, {32, 225, 32, 255});
 
 						HurtTile(1, ent->x >> 3, ent->y >> 3, _tile);
-
+						Sound::PlayTempSoundAt(SND_LASER, ent->x, ent->y);
 						ent->wait += 80 + rand() % 64;
 						break;
 					}

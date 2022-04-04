@@ -151,7 +151,7 @@ void Game::Tick() {
 						int _sp = 0;
 						//special case for stuyff on water
 						if (LEVEL.GetTile(hovered_tile_x, hovered_tile_y)->type == TT_WATER)  _sp = 1;
-
+						Sound::PlayTempSound(SND_PLACE_BUILDING, 0.8f, 1.0f);
 						BuildTileAt(hovered_tile_x, hovered_tile_y, tileToBuild, _sp);
 						tileToBuild = TT_NONE;
 					}

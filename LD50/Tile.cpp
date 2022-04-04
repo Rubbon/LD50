@@ -578,6 +578,7 @@ void OnTileDestroy(int x, int y, Tile* _tile, bool multiDestroy) {
 			if (_tile->flags & TF_ONWATER) _tile->type = TT_WATER;
 			else _tile->type = TT_CRATER;
 			_tile->owner = 0;
+			Sound::PlayTempSound(SND_DEMOLISH,0.2f,1.0f);
 		break;
 
 

@@ -52,6 +52,7 @@ public:
 	//Sound playing functions
 	//returns the pos in the list of temp sounds it's at, for if you want to do additional sounds
 	static int PlayTempSoundAt(ALuint sound, float x, float y, float gain = 1.0f, float pitch = 1.0f);
+	static int PlayTempSound(ALuint sound, float gain, float pitch);
 	static void SetListenerPos(float x, float y);
 
 	//audio file loading
@@ -78,10 +79,16 @@ enum Sfx {
 	//MUSIC
 	//BGM_EXAMPLE,
 	BGM_INVASION,
+	BGM_BUILDMODE,
 	//SOUNDS
 	//SND_EXAMPLE,
 	SND_BULLET,
-
+	SND_BANG,
+	SND_DEMOLISH,
+	SND_PLACE_BUILDING,
+	SND_LASER,
+	SND_TAKEOFF,
+	SND_LAND_JET,
 };
 
 enum Efx {
