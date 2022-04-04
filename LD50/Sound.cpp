@@ -122,11 +122,11 @@ void Sound::CleanupSoundDevice() {
 void Sound::LoadGameAudio() {
 	//BGM
 	//LoadSound("res/snd/bgm_example.ogg");
-
+	LoadSound("res/snd/invasion.ogg");
 
 	//SFX
 	//LoadSound("res/snd/snd_example.ogg");
-
+	LoadSound("res/snd/bullet.ogg");
 
 	//efx
 	EFXEAXREVERBPROPERTIES reverb;

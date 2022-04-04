@@ -77,10 +77,10 @@ enum Sfx {
 
 	//MUSIC
 	//BGM_EXAMPLE,
-
+	BGM_INVASION,
 	//SOUNDS
 	//SND_EXAMPLE,
-
+	SND_BULLET,
 
 };
 

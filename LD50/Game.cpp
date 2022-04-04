@@ -8,6 +8,8 @@
 bool RUN_GAME = false;
 Game GAME = {};
 
+//sound
+AudioSource Game::sndBgm;
 
 void Game::Init() {
 	
@@ -266,5 +268,10 @@ void Game::DrawUi() {
 
 	}
 
+}
+
+void Game::SetMusicTo(int sound) {
+	if (sound == 0) sndBgm.Stop();
+	else if (sndBgm.soundBufferID != sound) sndBgm.Play(sound, true, false);
 }
 

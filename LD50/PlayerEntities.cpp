@@ -3,11 +3,11 @@
 #include "Input.h"
 #include "Game.h"
 #include "TileBaseInfo.h"
+#include "Sound.h"
 #include <algorithm>
 
-
 float _spd = 0.05f;
-
+bool muted = false;
 short reserveLanding = 0;
 
 
@@ -27,10 +27,21 @@ void PlayerJetInit(Entity* ent) {
 
 	ent->flags |= EFL_HUMAN;
 	ent->state = PJS_FLYING;
-
+	ent->zwig = 0;
 }
 
 void PlayerJetTick(Entity* ent) {
+
+	if (Input::KeyPressed(SDL_SCANCODE_M)) {
+		if (muted) {
+			Game::SetMusicTo(BGM_INVASION);
+			muted = false;
+		}
+		else {
+			Game::SetMusicTo(SFX_NOSOUND);
+			muted = true;
+		}
+	}
 
 	switch (ent->state) {
 
@@ -42,7 +53,7 @@ void PlayerJetTick(Entity* ent) {
 			ent->flags |= EFL_AIR;
 
 			if (ent->z > -6) ent->z--;
-
+			
 			float _mouseAngle = atan2((CURSOR_Y + CAMERA_Y) - ent->fy, (CURSOR_X + CAMERA_X) - ent->fx);
 			//lookDir = std::lerp(lookDir, _mouseAngle, 0.2f);
 
@@ -65,11 +76,12 @@ void PlayerJetTick(Entity* ent) {
 			if (Input::MouseHeld(MB_LEFT)) {
 				if (ent->ticker <= 0) {
 					Entity* _ent = LEVEL.AddEntity(ent->x, ent->y + 2, ENT_JETBULLET, false);
+					Sound::PlayTempSoundAt(SND_BULLET,ent->x,ent->y);
 					_ent->mx = 6 * cos(_mouseAngle) + ent->mx;
 					_ent->my = 6 * sin(_mouseAngle) + ent->my;
 					_ent->z = ent->z;
 					arrEntityFuncs[_ent->entityIndex].Init(_ent);
-
+					
 					ent->ticker = 8;
 				}
 			}
@@ -94,7 +106,21 @@ void PlayerJetTick(Entity* ent) {
 			}
 
 			reserveLanding--;
-
+			
+			// hover wiggle like a VTOL
+			if (_spd<=0.06) { 
+				ent->z += sin(ent->zwig);
+				if (!ent->ascending) {
+					if (ent->zwig < 90) ent->zwig += 0.1;
+					else ent->ascending = true;
+				}
+				else {
+					if (ent->zwig > 0) ent->zwig -= 0.1;
+					else ent->ascending = false;
+				}
+				//std::cout << std::to_string(ent->zwig) << std::endl;
+			}
+			
 
 			ent->mx *= 0.95f;
 			ent->my *= 0.95f;
