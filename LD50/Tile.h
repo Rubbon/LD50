@@ -46,6 +46,8 @@ enum TileType {
 	//TT_RAIL_TRACK_RD,
 	//TT_RAIL_TRACK_CROSS,
 
+	TT_TRAIN_DEPOT,
+
 };
 
 struct Pos {
@@ -83,6 +85,10 @@ enum TileInfoFlags {
 	TIF_RAIL = 0x10,
 	TIF_PLAYER = 0x20,
 };
+
+//enum TileCategory {
+//
+//};
 
 //uses timer
 enum TileRailStates {
@@ -146,6 +152,7 @@ struct City {
 	std::vector<Pos> myTiles;
 	int timer = 4;
 	int friendliness = 8;
+	short resources = 0;
 	void expandTick();
 };
 

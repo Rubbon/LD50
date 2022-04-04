@@ -21,6 +21,47 @@ void TileTick(int x, int y, Tile* _tile) {
 				TileOnBuilt(x, y, _tile);
 			}
 		break;
+
+		case TT_AA_GUN:
+
+		break;
+
+		case TT_TRAIN_DEPOT: {
+			if (_tile->ref == 0 || LEVEL.arrEntities[_tile->ref].flags & EFL_DELETED) {
+
+				int _xMake = -1;
+				int _yMake = -1;
+
+				//make new train
+	
+				//make one to right
+				if (GET_TILE_INFO(LEVEL.GetTile(x + 1, y)->type).flags & TIF_RAIL) {
+					_xMake = x + 1;
+					_yMake = y;
+				} else
+				if (GET_TILE_INFO(LEVEL.GetTile(x, y + 1)->type).flags & TIF_RAIL) {
+					_xMake = x;
+					_yMake = y + 1;
+				} else
+				if (GET_TILE_INFO(LEVEL.GetTile(x - 1, y)->type).flags & TIF_RAIL) {
+					_xMake = x - 1;
+					_yMake = y;
+				} else
+				if (GET_TILE_INFO(LEVEL.GetTile(x, y - 1)->type).flags & TIF_RAIL) {
+					_xMake = x;
+					_yMake = y - 1;
+				}
+
+
+				if (_xMake == -1) break;
+
+				Entity* _ent = LEVEL.AddEntity(_xMake * 8, _yMake * 8, ENT_TRAIN);
+				_tile->ref = _ent->id;
+				_ent->fx = x;
+				_ent->fy = y;
+			}
+		break; }
+
 	}
 }
 
@@ -139,8 +180,14 @@ void TileDraw(int dx, int dy, int tx, int ty, Tile* _tile) {
 			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 64+_tile->timer*8, 96, 8, 8 });
 			break;
 		case TT_CITYSTARTER:
-			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 56,57, 8, 8 });
-			break;
+			DrawLand(dx, dy, tx, ty);
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 56, 56, 8, 8 });
+		break;
+
+		case TT_TRAIN_DEPOT:
+			DrawLand(dx, dy, tx, ty);
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 160, 88, 8, 8 });
+		break;
 
 
 	}
@@ -372,10 +419,10 @@ void TileOnBuilt(int x, int y, Tile* _tile) {
 		break;
 
 		case TT_RAIL_STATION_H: {
-			Entity* _ent = LEVEL.AddEntity(x * 8, y * 8, ENT_TRAIN);
-			_tile->ref = _ent->id;
-			_ent->fx = x;
-			_ent->fy = y;
+			//check  what type
+			//Tile* _t = LEVEL.GetTile(x - 1, y);
+
+
 		break; }
 		
 		case TT_WALL: {
@@ -499,6 +546,10 @@ void TileOnBuilt(int x, int y, Tile* _tile) {
 			}
 
 		break; }
+
+		case TT_TRAIN_DEPOT:
+			_tile->ref = 0;
+		break;
 
 	}
 }

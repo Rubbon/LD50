@@ -22,16 +22,18 @@ void Level::Tick() {
 	}
 
 	//tile tick
-	for (i = 0; i < vTilesToTick.size(); i++) {
-		//remove if not tickable anymore
-		if (!(GET_TILE_INFO(GetTile(vTilesToTick[i])->type).flags & TIF_TICKABLE)) {
-			vTilesToTick.erase(vTilesToTick.begin() + i);
-			i--;
-			continue;
+	if (GAME_TICK % 2 == 0) {
+		for (i = 0; i < vTilesToTick.size(); i++) {
+			//remove if not tickable anymore
+			if (!(GET_TILE_INFO(GetTile(vTilesToTick[i])->type).flags & TIF_TICKABLE)) {
+				vTilesToTick.erase(vTilesToTick.begin() + i);
+				i--;
+				continue;
+			}
+
+			TileTick(vTilesToTick[i].x, vTilesToTick[i].y, GetTile(vTilesToTick[i]));
+
 		}
-
-		TileTick(vTilesToTick[i].x, vTilesToTick[i].y, GetTile(vTilesToTick[i]));
-
 	}
 
 	//force mpty chnks for freedom

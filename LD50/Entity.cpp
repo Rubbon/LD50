@@ -7,8 +7,8 @@
 
 const EntityFunctions arrEntityFuncs[] = {
 	//Init, Tick, Draw, onhurt, onhurtother
-	{ E_UfoInit, E_UfoTick, E_UfoDraw }, // ufo
-	{ E_WalkerInit, E_WalkerTick, E_WalkerDraw }, // walker
+	{ E_UfoInit, E_UfoTick, E_UfoDraw, E_UfoHurt }, // ufo
+	{ E_WalkerInit, E_WalkerTick, E_WalkerDraw, E_UfoHurt }, // walker
 	{ FxInit, FxTick, FxDraw }, // fx
 	{ PlayerJetInit, PlayerJetTick, PlayerJetDraw }, // player
 	{ JetBulletInit, JetBulletTick, JetBulletDraw }, // jet bullet
@@ -104,5 +104,24 @@ int GetSprOffsetOnAngle(float angle) {
 	else {				// <-
 		return 4;
 	}
+
+}
+
+
+
+Entity* GetEntityInDistFlags(int x, int y, int dist, unsigned char flags) {
+	
+	int _ch = GetChunkIndexAtEntityPos(x, y);
+	Entity* _ent;
+
+	for (int i = 0; i < LEVEL.arrChunks[_ch].lsEntities.size(); i++) {
+		_ent = LEVEL.arrChunks[_ch].lsEntities[i];
+		if (!(_ent->flags & flags)) continue;
+		if (abs(_ent->x - x) < dist || abs(_ent->y - y) < dist) {
+			return _ent;
+		}
+	}
+
+	return NULL;
 
 }

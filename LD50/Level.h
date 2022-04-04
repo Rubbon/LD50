@@ -4,7 +4,7 @@
 #include "Tile.h"
 
 
-#define MAX_ENTITIES 1024
+#define MAX_ENTITIES 2048
 #define MAX_CITIES 8
 
 #define LEVEL_W 176

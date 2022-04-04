@@ -117,3 +117,6 @@ extern short GetChunkIndexAtEntityPos(int x, int y);
 extern void DeleteEntity(Entity* ent);
 
 extern int GetSprOffsetOnAngle(float angle);
+
+extern Entity* GetEntityInDistFlags(int x, int y, int dist, unsigned char flags);
+
