@@ -3,11 +3,12 @@
 
 const TileInfo arrTileInfo[] = {
 	{
-		/* NAME */			"Air",
+		/* NAME */			"Demolish",
 		/* BASE_HP */		0,
 		/* BUILD_SPR */		{},
 		/* BUILD_TIME */	0,
 		/* FLAGS */			0x00,
+		/* BUILDCOST */		0,
 	},
 	{
 		/* NAME */			"Water",
@@ -15,6 +16,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{},
 		/* BUILD_TIME */	0,
 		/* FLAGS */			0x00,
+		/* BUILDCOST */		0,
 	},
 	{
 		/* NAME */			"Land",
@@ -22,6 +24,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{},
 		/* BUILD_TIME */	0,
 		/* FLAGS */			TIF_WALKABLE,
+		/* BUILDCOST */		0,
 	},
 	{
 		/* NAME */			"Tree",
@@ -29,6 +32,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{},
 		/* BUILD_TIME */	0,
 		/* FLAGS */			0x00,
+		/* BUILDCOST */		0,
 	},
 	{
 		/* NAME */			"City", // small
@@ -36,6 +40,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{8, 64, 16, 16},
 		/* BUILD_TIME */	1280,
 		/* FLAGS */			TIF_HUMAN,
+		/* BUILDCOST */		0,
 	},
 	{
 		/* NAME */			"City", // big
@@ -50,6 +55,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{8, 64, 16, 16},
 		/* BUILD_TIME */	128,
 		/* FLAGS */			TIF_HUMAN,
+		/* BUILDCOST */		0,
 	},
 	{
 		/* NAME */			"HQ", //tr
@@ -57,6 +63,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{8, 64, 16, 16},
 		/* BUILD_TIME */	128,
 		/* FLAGS */			TIF_HUMAN,
+		/* BUILDCOST */		0,
 	},
 	{
 		/* NAME */			"HQ", //bl
@@ -64,6 +71,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{8, 64, 16, 16},
 		/* BUILD_TIME */	128,
 		/* FLAGS */			TIF_HUMAN,
+		/* BUILDCOST */		0,
 	},
 	{
 		/* NAME */			"HQ", //br
@@ -71,6 +79,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{8, 64, 16, 16},
 		/* BUILD_TIME */	128,
 		/* FLAGS */			TIF_HUMAN,
+		/* BUILDCOST */		0,
 	},
 	{
 		/* NAME */			"Bank",
@@ -78,6 +87,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{8, 64, 16, 16},
 		/* BUILD_TIME */	5000,
 		/* FLAGS */			TIF_HUMAN,
+		/* BUILDCOST */		0,
 	},
 	{
 		/* NAME */			"Construction Site",
@@ -85,6 +95,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{},
 		/* BUILD_TIME */	0,
 		/* FLAGS */			TIF_TICKABLE | TIF_HUMAN,
+		/* BUILDCOST */		0,
 	},
 	{
 		/* NAME */			"Crater",
@@ -92,6 +103,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{},
 		/* BUILD_TIME */	0,
 		/* FLAGS */			TIF_WALKABLE,
+		/* BUILDCOST */		0,
 	},
 	{
 		/* NAME */			"Factory", //tl
@@ -99,6 +111,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{48, 64, 16, 16},
 		/* BUILD_TIME */	256,
 		/* FLAGS */			TIF_HUMAN,
+		/* BUILDCOST */		0,
 	},
 	{
 		/* NAME */			"Factory", //tr
@@ -106,6 +119,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{48, 64, 16, 16},
 		/* BUILD_TIME */	256,
 		/* FLAGS */			TIF_HUMAN,
+		/* BUILDCOST */		0,
 	},
 	{
 		/* NAME */			"Factory", //bl
@@ -113,6 +127,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{48, 64, 16, 16},
 		/* BUILD_TIME */	256,
 		/* FLAGS */			TIF_HUMAN,
+		/* BUILDCOST */		0,
 	},
 	{
 		/* NAME */			"Factory", //br
@@ -120,6 +135,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{48, 64, 16, 16},
 		/* BUILD_TIME */	256,
 		/* FLAGS */			TIF_HUMAN,
+		/* BUILDCOST */		0,
 	},
 	{
 		/* NAME */			"Airfield", //tl
@@ -127,6 +143,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{0, 128, 16, 16},
 		/* BUILD_TIME */	256,
 		/* FLAGS */			TIF_HUMAN,
+		/* BUILDCOST */		0,
 	},
 	{
 		/* NAME */			"Airfield", //tr
@@ -134,6 +151,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{0, 128, 16, 16},
 		/* BUILD_TIME */	256,
 		/* FLAGS */			TIF_HUMAN,
+		/* BUILDCOST */		0,
 	},
 	{
 		/* NAME */			"Airfield", //bl
@@ -141,6 +159,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{0, 128, 16, 16},
 		/* BUILD_TIME */	256,
 		/* FLAGS */			TIF_HUMAN,
+		/* BUILDCOST */		0,
 	},
 	{
 		/* NAME */			"Airfield", //br
@@ -148,13 +167,15 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{0, 128, 16, 16},
 		/* BUILD_TIME */	256,
 		/* FLAGS */			TIF_HUMAN,
+		/* BUILDCOST */		0,
 	},
 	{
-		/* NAME */			"Anti Air Gun",
+		/* NAME */			"AA Gun",
 		/* BASE_HP */		4,
 		/* BUILD_SPR */		{0, 96, 8, 8},
 		/* BUILD_TIME */	256,
 		/* FLAGS */			TIF_HUMAN | TIF_TICKABLE,
+		/* BUILDCOST */		0,
 	},
 	{
 		/* NAME */			"Wall",
@@ -162,6 +183,15 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{64, 96, 8, 8},
 		/* BUILD_TIME */	256,
 		/* FLAGS */			TIF_HUMAN,
+		/* BUILDCOST */		0,
+	},
+	{
+		/* NAME */			"City Plans",
+		/* BASE_HP */		6,
+		/* BUILD_SPR */		{56, 56, 8, 8},
+		/* BUILD_TIME */	256,
+		/* FLAGS */			TIF_HUMAN,
+		/* BUILDCOST */		0,
 	},
 
 };

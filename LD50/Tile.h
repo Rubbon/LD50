@@ -32,6 +32,8 @@ enum TileType {
 
 	TT_AA_GUN,
 	TT_WALL,
+	TT_CITYSTARTER,
+
 
 };
 
@@ -63,6 +65,7 @@ struct TileInfo {
 	SDL_Rect buildSpr;
 	unsigned short buildTime = 0;
 	unsigned char flags = 0x00;
+	unsigned short buildCost = 0;
 };
 
 

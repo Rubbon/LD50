@@ -28,6 +28,9 @@ void PlayerJetInit(Entity* ent) {
 	ent->flags |= EFL_HUMAN;
 	ent->state = PJS_FLYING;
 	ent->zwig = 0;
+
+	ent->hp = 8;
+
 }
 
 void PlayerJetTick(Entity* ent) {

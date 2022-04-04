@@ -5,6 +5,7 @@
 #include "Level.h"
 #include "AlienAi.h"
 #include "Sound.h"
+#include "Graphics.h"
 
 const SDL_Colour C_XRED = { 255, 64, 64 };
 const SDL_Colour C_YBLUE = { 32, 32, 255 };
@@ -34,16 +35,29 @@ public:
 
 	GameState state = GS_PLAY;
 
+	int playerCash = 100;
+
 	//build menu
 	char bm_selected_opt = -1;
 	char bm_hover = -1;
 
-	char bm_options[4] = {
+	unsigned char mouseInMenu = 0;
+
+	//border
+	short borderTopSize = 16;
+	short borderBottomSize = 16;
+
+
+#define BUILD_OPTIONS 5
+	char arrBuildOptions[BUILD_OPTIONS] = {
 		TT_AA_GUN,
 		TT_AIRFIELD_TL,
 		TT_FACTORY_TL,
 		TT_WALL,
+		TT_NONE,
 	};
+
+	int bm_startX = SCREEN_W - 16 - (BUILD_OPTIONS * 24);
 
 	//building tiles
 	TileType tileToBuild = TT_NONE;
