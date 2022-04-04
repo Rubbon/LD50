@@ -7,6 +7,7 @@ enum EntityName {
 	ENT_FX,
 	ENT_PLAYERJET,
 	ENT_JETBULLET,
+	ENT_TRAIN,
 
 };
 

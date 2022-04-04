@@ -1,6 +1,7 @@
 #include "MiscEntities.h"
 #include "Graphics.h"
 #include "Game.h"
+#include "TileBaseInfo.h"
 
 
 
@@ -38,4 +39,26 @@ void FxTick(Entity* ent) {
 
 void FxDraw(Entity* ent) {
 	Graphics::DrawSpr(TEX_CHARS, { ent->x - CAMERA_X - ent->animSpr.w / 2, ent->y - CAMERA_Y, ent->animSpr.w, ent->animSpr.h }, ent->animSpr, ent->blend);
+}
+
+
+
+
+
+void TrainInit(Entity* ent) {
+
+}
+
+void TrainTick(Entity* ent) {
+	Tile* _tile = LEVEL.GetTile(ent->x >> 3, ent->y >> 3);
+
+	//fallen off rail, die
+	if (!(GET_TILE_INFO(_tile->type).flags & TIF_RAIL)) {
+		DeleteEntity(ent);
+	}
+
+}
+
+void TrainDraw(Entity* ent) {
+	Graphics::DrawSpr(TEX_CHARS, { ent->x, ent->y, 8, 8 }, {24, 104, 8, 8});
 }

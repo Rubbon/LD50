@@ -12,6 +12,7 @@ const EntityFunctions arrEntityFuncs[] = {
 	{ FxInit, FxTick, FxDraw }, // fx
 	{ PlayerJetInit, PlayerJetTick, PlayerJetDraw }, // player
 	{ JetBulletInit, JetBulletTick, JetBulletDraw }, // jet bullet
+	{ TrainInit, TrainTick, TrainDraw }, // train
 
 };
 

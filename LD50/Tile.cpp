@@ -230,25 +230,104 @@ void TileOnBuilt(int x, int y, Tile* _tile) {
 			LEVEL.playerHq.flags |= CF_ACTIVE;
 		break;
 
+		case TT_RAIL_STATION_H: {
+			Entity* _ent = LEVEL.AddEntity(x * 8, y * 8, ENT_TRAIN);
+			_tile->ref = _ent->id;
+			//_ent->substate = 
+		break; }
+
 		case TT_RAIL_TRACK: {
 
-			Tile* _tile_l = LEVEL.GetTile(x - 1, y);
-			Tile* _tile_r = LEVEL.GetTile(x - 1, y);
-			Tile* _tile_u = LEVEL.GetTile(x - 1, y);
-			Tile* _tile_d = LEVEL.GetTile(x - 1, y);
+			//DOGSHIT CODE WARNING
+
+			Tile* _tcheck0;
+			Tile* _tcheck1;
+			Tile* _tcheck2;
+
+			bool _connected_above = false;
+			bool _connected_below = false;
 
 			//check for above tile to connect to
-			if (_tile_u->type = TT_RAIL_TRACK) {
-				if (_tile_u->timer == TRS_H) {
-					_tile->timer = TRS_H;
+			_tcheck0 = LEVEL.GetTile(x, y - 1);
+			if (_tcheck0->type == TT_RAIL_TRACK) {
+
+				//easy connect, straight shot
+				if (_tcheck0->timer == TRS_V || _tcheck0->timer == TRS_LD || _tcheck0->timer == TRS_RD) {
+					_tile->timer = TRS_V;
+					_connected_above = true;
+				}
+
+				//check for end of rail
+				_tcheck1 = LEVEL.GetTile(x - 1, y-1);
+				_tcheck2 = LEVEL.GetTile(x + 1, y-1);
+				if ((_tcheck0->timer == TRS_H || _tcheck0->timer == TRS_LU || _tcheck0->timer == TRS_RU) && (_tcheck1->type != TT_RAIL_TRACK || _tcheck2->type != TT_RAIL_TRACK)) {
+					//no both
+					if (_tcheck1->type != TT_RAIL_TRACK && _tcheck2->type != TT_RAIL_TRACK) _tcheck0->timer = TRS_V;
+					//no l
+					else if (_tcheck1->type != TT_RAIL_TRACK) _tcheck0->timer = TRS_RD;
+					//no r
+					else if (_tcheck2->type != TT_RAIL_TRACK) _tcheck0->timer = TRS_LD;
+					_tile->timer = TRS_V;
+					_connected_above = true;
 				}
 			}
 
+
+
+			//check for below tile to connect to
+			_tcheck0 = LEVEL.GetTile(x, y + 1);
+			if (_tcheck0->type == TT_RAIL_TRACK) {
+
+				//easy connect, straight shot
+				if (_tcheck0->timer == TRS_V || _tcheck0->timer == TRS_LU || _tcheck0->timer == TRS_RU) {
+					_tile->timer = TRS_V;
+					_connected_below = true;
+				}
+
+				//check for end of rail
+				_tcheck1 = LEVEL.GetTile(x - 1, y + 1);
+				_tcheck2 = LEVEL.GetTile(x + 1, y + 1);
+				if ((_tcheck0->timer == TRS_H || _tcheck0->timer == TRS_LD || _tcheck0->timer == TRS_RD) && (_tcheck1->type != TT_RAIL_TRACK || _tcheck2->type != TT_RAIL_TRACK)) {
+					//no both
+					if (_tcheck1->type != TT_RAIL_TRACK && _tcheck2->type != TT_RAIL_TRACK) _tcheck0->timer = TRS_V;
+					//no l
+					else if (_tcheck1->type != TT_RAIL_TRACK) _tcheck0->timer = TRS_RU;
+					//no r
+					else if (_tcheck2->type != TT_RAIL_TRACK) _tcheck0->timer = TRS_LU;
+					_tile->timer = TRS_V;
+					_connected_below = true;
+				}
+
+			}
+
+
+			//see if we need to curve
+
+			//curve left?
+			_tcheck0 = LEVEL.GetTile(x - 1, y);
+			if (_tcheck0->type == TT_RAIL_TRACK && ( _tcheck0->timer == TRS_H || _tcheck0->timer == TRS_RU || _tcheck0->timer == TRS_RD)) {
+				if (_connected_above && _connected_below) _tile->timer = TRS_CROSS;
+				else {
+					if (_connected_above) _tile->timer = TRS_LU;
+					else if (_connected_below) _tile->timer = TRS_LD;
+				}
+			}
+
+			//curve right?
+			_tcheck0 = LEVEL.GetTile(x + 1, y);
+			if (_tcheck0->type == TT_RAIL_TRACK && (_tcheck0->timer == TRS_H || _tcheck0->timer == TRS_LU || _tcheck0->timer == TRS_LD)) {
+				if (_connected_above && _connected_below) _tile->timer = TRS_CROSS;
+				else {
+					if (_connected_above) _tile->timer = TRS_RU;
+					else if (_connected_below) _tile->timer = TRS_RD;
+				}
+			}
 
 		break; }
 
 	}
 }
+
 
 
 void HurtTile(int dmg, int x, int y, Tile* _tile) {

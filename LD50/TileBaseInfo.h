@@ -213,7 +213,7 @@ const TileInfo arrTileInfo[] = {
 		/* NAME */			"Rail", // H
 		/* BASE_HP */		3,
 		/* BUILD_SPR */		{104, 88, 8, 8},
-		/* BUILD_TIME */	256,
+		/* BUILD_TIME */	64,
 		/* FLAGS */			TIF_HUMAN | TIF_RAIL,
 		/* BUILDCOST */		0,
 	},
