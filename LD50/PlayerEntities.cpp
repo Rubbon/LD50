@@ -28,7 +28,7 @@ void PlayerJetInit(Entity* ent) {
 
 	ent->flags |= EFL_HUMAN;
 	ent->state = PJS_FLYING;
-	ent->zwig = 0;
+	//ent->zwig = 0;
 
 	ent->hp = 8;
 
@@ -116,19 +116,8 @@ void PlayerJetTick(Entity* ent) {
 
 			reserveLanding--;
 			
-			// hover wiggle like a VTOL
-			if (_spd<=0.06) { 
-				ent->z += sin(ent->zwig);
-				if (!ent->ascending) {
-					if (ent->zwig < 90) ent->zwig += 0.1;
-					else ent->ascending = true;
-				}
-				else {
-					if (ent->zwig > 0) ent->zwig -= 0.1;
-					else ent->ascending = false;
-				}
-				//std::cout << std::to_string(ent->zwig) << std::endl;
-			}
+			// hover wiggle like a VTOL (sorry i ate your code)
+			if (_spd<=0.06) ent->z += sin(GAME_TICK * 0.1f);
 			
 
 			ent->mx *= 0.95f;
@@ -204,6 +193,10 @@ void PlayerJetTick(Entity* ent) {
 			if (Input::KeyPressed(SDL_SCANCODE_SPACE)) {
 				ent->state = PJS_FLYING;
 				GAME.state = GS_PLAY;
+
+				//reset build options
+				GAME.bm_selected_opt = -1;
+				GAME.tileToBuild = TT_NONE;
 			}
 
 		break;

@@ -114,6 +114,11 @@ void Game::Tick() {
 					playerJet->my = -1;
 					playerIsAtHQ = false;
 					state = GS_PLAY;
+
+					//reset build options
+					bm_selected_opt = -1;
+					tileToBuild = TT_NONE;
+
 				}
 			} else {
 				//decrement build timer
@@ -123,29 +128,40 @@ void Game::Tick() {
 
 	}
 
-	//building tile
-	if ((tileToBuild != TT_NONE || bm_selected_opt != -1) && mouseInMenu == 0) {
-		cursorState = CS_BUILD_TILE;
 
-		if (Input::MousePressed(MB_LEFT)) {
 
-			if (tileToBuild != TT_NONE) {
-				//build
-				if (CheckIfCanBuildTile(hovered_tile_x, hovered_tile_y, tileToBuild)) {
-					BuildTileAt(hovered_tile_x, hovered_tile_y, tileToBuild);
-					tileToBuild = TT_NONE;
+	if (state == GS_BUILD || state == GS_BUILD_HQ) {
+
+		//building tile
+		if ((tileToBuild != TT_NONE || bm_selected_opt != -1) && mouseInMenu == 0) {
+			cursorState = CS_BUILD_TILE;
+
+			if (Input::MousePressed(MB_LEFT)) {
+
+				if (tileToBuild != TT_NONE) {
+					//build
+					if (CheckIfCanBuildTile(hovered_tile_x, hovered_tile_y, tileToBuild)) {
+
+						int _sp = 0;
+						//special case for stuyff on water
+						if (LEVEL.GetTile(hovered_tile_x, hovered_tile_y)->type == TT_WATER)  _sp = 1;
+
+						BuildTileAt(hovered_tile_x, hovered_tile_y, tileToBuild, _sp);
+						tileToBuild = TT_NONE;
+					}
 				}
-			} else {
-				//demolish
-				//temp
-				if (LEVEL.GetTile(hovered_tile_x, hovered_tile_y)->type != TT_WATER) {
-					LEVEL.GetTile(hovered_tile_x, hovered_tile_y)->type = TT_CRATER;
+				else {
+					//demolish
+					//temp
+					if (LEVEL.GetTile(hovered_tile_x, hovered_tile_y)->type != TT_WATER) {
+						OnTileDestroy(hovered_tile_x, hovered_tile_y, LEVEL.GetTile(hovered_tile_x, hovered_tile_y));
+					}
 				}
 			}
 		}
-	}
 
-	if (state == GS_BUILD || state == GS_BUILD_HQ) TickCamMovement();
+		TickCamMovement();
+	}
 
 	//clamp camera in screen
 	CAMERA_X = std::clamp(CAMERA_X, -16, -SCREEN_W + 16 + LEVEL_W * 8);

@@ -51,8 +51,8 @@ struct Entity {
 	char state;
 	short substate;
 
-	float zwig; // z wiggle (for jet hover)
-	bool ascending = false; // ^
+	//float zwig; // z wiggle (for jet hover)
+	//bool ascending = false; // ^
 
 	//generic values
 	short wait;

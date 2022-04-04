@@ -48,10 +48,21 @@ enum TileType {
 
 };
 
+struct Pos {
+	short x = 0;
+	short y = 0;
+};
+
+
 
 //get tile as bit for comparing buildables
 #define TILE_BIT(_t) (1 << ((_t)-1))
 #define TILE_BIT_NONE 1 << ((TT_NONE)-1)
+
+
+enum TileFlags {
+	TF_ONWATER = 0x01,
+};
 
 
 struct Tile {
@@ -59,6 +70,7 @@ struct Tile {
 	unsigned short ref = 0;	  // these are kinda just generic values to use how you feel
 	short timer = 0; // ^
 	unsigned char owner = 0;
+	unsigned char flags = 0x00;
 	short hp = 0;
 };
 
@@ -82,6 +94,7 @@ enum TileRailStates {
 	TRS_LU,
 	TRS_CROSS,
 };
+// use owner for whether or  not on land
 
 
 struct TileInfo {
@@ -91,6 +104,7 @@ struct TileInfo {
 	unsigned short buildTime = 0;
 	unsigned char flags = 0x00;
 	unsigned short buildCost = 0;
+	Pos multiTiles = {0,0};
 };
 
 
@@ -102,7 +116,7 @@ extern void TileDraw(int dx, int dy, int tx, int ty, Tile* _tile);
 
 extern void DrawLand(int dx, int dy, int tx = 0, int ty = 0);
 
-extern Tile* BuildTileAt(int x, int y, TileType _type);
+extern Tile* BuildTileAt(int x, int y, TileType _type, unsigned char flags = 0x00);
 //ran when the tile has been fully built and has been spawned unto the world
 extern void TileOnBuilt(int x, int y, Tile* _tile);
 
@@ -110,13 +124,8 @@ extern bool CheckIfCanBuildTile(int x, int y, TileType _type);
 
 extern void HurtTile(int dmg, int x, int y, Tile* _tile);
 
-extern void OnTileDestroy(int x, int y, Tile* _tile);
+extern void OnTileDestroy(int x, int y, Tile* _tile, bool multiDestroy = true);
 
-
-struct Pos {
-	short x = 0;
-	short y = 0;
-};
 
 
 enum CityFlags {

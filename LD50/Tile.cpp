@@ -72,7 +72,7 @@ void TileDraw(int dx, int dy, int tx, int ty, Tile* _tile) {
 		break;
 		
 		case TT_CONSTRUCTION_SITE: {
-			DrawLand(dx, dy, tx, ty);
+			if (!(_tile->flags & TF_ONWATER)) DrawLand(dx, dy, tx, ty);
 
 			int _tick = (float)_tile->timer / GET_TILE_INFO(_tile->ref).buildTime * 4;
 			if (_tick > 3) _tick = 3;
@@ -126,6 +126,7 @@ void TileDraw(int dx, int dy, int tx, int ty, Tile* _tile) {
 		break;
 
 		case TT_RAIL_TRACK:
+			if (!(_tile->flags & TF_ONWATER)) DrawLand(dx, dy, tx, ty);
 			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 104 + _tile->timer*8, 88, 8, 8 });
 		break;
 
@@ -178,15 +179,12 @@ bool CheckIfCanBuildTile(int x, int y, TileType _type) {
 		default: 
 			if (LEVEL.GetTile(x, y)->type == TT_LAND || LEVEL.GetTile(x, y)->type == TT_CRATER) return true;
 		return false;
-		case TT_HQ_TL:
+		case TT_HQ_TL: case TT_AIRFIELD_TL: case TT_FACTORY_TL:
 			if (LEVEL.GetTile(x, y)->type == TT_LAND && LEVEL.GetTile(x+1, y)->type == TT_LAND && LEVEL.GetTile(x, y + 1)->type == TT_LAND && LEVEL.GetTile(x + 1, y + 1)->type == TT_LAND) return true;
 		return false;
-		case TT_AIRFIELD_TL:
-			if (LEVEL.GetTile(x, y)->type == TT_LAND && LEVEL.GetTile(x + 1, y)->type == TT_LAND && LEVEL.GetTile(x, y + 1)->type == TT_LAND && LEVEL.GetTile(x + 1, y + 1)->type == TT_LAND) return true;
-			return false;
-		case TT_FACTORY_TL:
-			if (LEVEL.GetTile(x, y)->type == TT_LAND && LEVEL.GetTile(x + 1, y)->type == TT_LAND && LEVEL.GetTile(x, y + 1)->type == TT_LAND && LEVEL.GetTile(x + 1, y + 1)->type == TT_LAND) return true;
-			return false;
+		case TT_RAIL_TRACK:
+			if (LEVEL.GetTile(x, y)->type == TT_LAND || LEVEL.GetTile(x, y)->type == TT_CRATER || LEVEL.GetTile(x, y)->type == TT_WATER) return true;
+		break;
 
 	}
 	return false;
@@ -194,7 +192,7 @@ bool CheckIfCanBuildTile(int x, int y, TileType _type) {
 
 
 
-Tile* BuildTileAt(int x, int y, TileType _type) {
+Tile* BuildTileAt(int x, int y, TileType _type, unsigned char flags) {
 
 	Tile* _tile;
 
@@ -205,6 +203,7 @@ Tile* BuildTileAt(int x, int y, TileType _type) {
 			_tile->ref = _type;
 			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
 			_tile->owner = 0;
+			_tile->flags = flags;
 			LEVEL.vTilesToTick.push_back({(short)x, (short)y});
 		break;
 		case TT_HQ_TL:
@@ -214,24 +213,28 @@ Tile* BuildTileAt(int x, int y, TileType _type) {
 			_tile->ref = _type;
 			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
 			_tile->owner = 0;
+			_tile->flags = flags;
 			//tr
 			_tile = LEVEL.GetTile(x + 1, y);
 			_tile->type = TT_CONSTRUCTION_SITE;
 			_tile->ref = TT_HQ_TR;
 			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
 			_tile->owner = 0;
+			_tile->flags = flags;
 			//bl
 			_tile = LEVEL.GetTile(x, y + 1);
 			_tile->type = TT_CONSTRUCTION_SITE;
 			_tile->ref = TT_HQ_BL;
 			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
 			_tile->owner = 0;
+			_tile->flags = flags;
 			//br
 			_tile = LEVEL.GetTile(x + 1, y + 1);
 			_tile->type = TT_CONSTRUCTION_SITE;
 			_tile->ref = TT_HQ_BR;
 			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
 			_tile->owner = 0;
+			_tile->flags = flags;
 
 			//dont look atr this its horrible \/
 			LEVEL.vTilesToTick.push_back({ (short)x,		(short)y });
@@ -254,24 +257,28 @@ Tile* BuildTileAt(int x, int y, TileType _type) {
 			_tile->ref = _type;
 			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
 			_tile->owner = 0;
+			_tile->flags = flags;
 			//tr
 			_tile = LEVEL.GetTile(x + 1, y);
 			_tile->type = TT_CONSTRUCTION_SITE;
 			_tile->ref = TT_FACTORY_TR;
 			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
 			_tile->owner = 0;
+			_tile->flags = flags;
 			//bl
 			_tile = LEVEL.GetTile(x, y + 1);
 			_tile->type = TT_CONSTRUCTION_SITE;
 			_tile->ref = TT_FACTORY_BL;
 			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
 			_tile->owner = 0;
+			_tile->flags = flags;
 			//br
 			_tile = LEVEL.GetTile(x + 1, y + 1);
 			_tile->type = TT_CONSTRUCTION_SITE;
 			_tile->ref = TT_FACTORY_BR;
 			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
 			_tile->owner = 0;
+			_tile->flags = flags;
 
 			//dont look atr this its horrible \/
 			LEVEL.vTilesToTick.push_back({ (short)x,		(short)y });
@@ -287,24 +294,28 @@ Tile* BuildTileAt(int x, int y, TileType _type) {
 			_tile->ref = _type;
 			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
 			_tile->owner = 0;
+			_tile->flags = flags;
 			//tr
 			_tile = LEVEL.GetTile(x + 1, y);
 			_tile->type = TT_CONSTRUCTION_SITE;
 			_tile->ref = TT_AIRFIELD_TR;
 			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
 			_tile->owner = 0;
+			_tile->flags = flags;
 			//bl
 			_tile = LEVEL.GetTile(x, y + 1);
 			_tile->type = TT_CONSTRUCTION_SITE;
 			_tile->ref = TT_AIRFIELD_BL;
 			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
 			_tile->owner = 0;
+			_tile->flags = flags;
 			//br
 			_tile = LEVEL.GetTile(x + 1, y + 1);
 			_tile->type = TT_CONSTRUCTION_SITE;
 			_tile->ref = TT_AIRFIELD_BR;
 			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
 			_tile->owner = 0;
+			_tile->flags = flags;
 
 			//dont look atr this its horrible \/
 			LEVEL.vTilesToTick.push_back({ (short)x,		(short)y });
@@ -313,42 +324,10 @@ Tile* BuildTileAt(int x, int y, TileType _type) {
 			LEVEL.vTilesToTick.push_back({ (short)(x + 1),	(short)(y + 1) });
 
 		break;
-		case TT_AA_GUN:
 
-			_tile = LEVEL.GetTile(x, y);
-			_tile->type = TT_CONSTRUCTION_SITE;
-			_tile->ref = _type;
-			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
-			_tile->owner = 0;
 
-			//dont look atr this its horrible \/
-			LEVEL.vTilesToTick.push_back({ (short)x,		(short)y });
 
-		break;
-		case TT_WALL:
 
-			_tile = LEVEL.GetTile(x, y);
-			_tile->type = TT_CONSTRUCTION_SITE;
-			_tile->ref = _type;
-			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
-			_tile->owner = 0;
-
-			//dont look atr this its horrible \/
-			LEVEL.vTilesToTick.push_back({ (short)x,		(short)y });
-
-		break;
-		case TT_CITYSTARTER:
-
-			_tile = LEVEL.GetTile(x, y);
-			_tile->type = TT_CONSTRUCTION_SITE;
-			_tile->ref = _type;
-			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
-			_tile->owner = 0;
-
-			//dont look atr this its horrible \/
-			LEVEL.vTilesToTick.push_back({ (short)x,		(short)y });
-
-		break;
 	}
 
 	return _tile;
@@ -474,13 +453,24 @@ void HurtTile(int dmg, int x, int y, Tile* _tile) {
 
 
 
-void OnTileDestroy(int x, int y, Tile* _tile) {
+void OnTileDestroy(int x, int y, Tile* _tile, bool multiDestroy) {
 
 	switch (_tile->type) {
 		default:
-			_tile->type = TT_CRATER;
+			if (multiDestroy) {
+				TileInfo _tileInfo = GET_TILE_INFO(_tile->type);
+				OnTileDestroy(x + _tileInfo.multiTiles.x, y, LEVEL.GetTile(x + _tileInfo.multiTiles.x, y), false);
+				OnTileDestroy(x, y + _tileInfo.multiTiles.y, LEVEL.GetTile(x, y + _tileInfo.multiTiles.y), false);
+				OnTileDestroy(x + _tileInfo.multiTiles.x, y + _tileInfo.multiTiles.y, LEVEL.GetTile(x + _tileInfo.multiTiles.x, y + _tileInfo.multiTiles.y), false);
+			}
+
+			if (_tile->flags & TF_ONWATER) _tile->type = TT_WATER;
+			else _tile->type = TT_CRATER;
 			_tile->owner = 0;
 		break;
+
+
+
 	}
 }
 
