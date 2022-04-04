@@ -4,6 +4,7 @@
 #include "SDL.h"
 #include "Level.h"
 #include "AlienAi.h"
+#include "Sound.h"
 
 const SDL_Colour C_XRED = { 255, 64, 64 };
 const SDL_Colour C_YBLUE = { 32, 32, 255 };
@@ -54,7 +55,8 @@ public:
 	void TickCamMovement();
 
 	void DrawUi();
-
+	static void SetMusicTo(int sound);
+	static AudioSource sndBgm;
 };
 
 
