@@ -86,22 +86,39 @@ void TileDraw(int dx, int dy, int tx, int ty, Tile* _tile) {
 		break;
 
 
+		case TT_AIRFIELD_TL:
+			DrawLand(dx, dy, tx, ty);
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 0, 128, 8, 8 });
+		break;
+		case TT_AIRFIELD_TR:
+			DrawLand(dx, dy, tx, ty);
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 8, 128, 8, 8 });
+		break;
+		case TT_AIRFIELD_BL:
+			DrawLand(dx, dy, tx, ty);
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 0, 136, 8, 8 });
+		break;
+		case TT_AIRFIELD_BR:
+			DrawLand(dx, dy, tx, ty);
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 8, 136, 8, 8 });
+		break;
+
 		case TT_FACTORY_TL:
 			DrawLand(dx, dy, tx, ty);
 			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 48, 64, 8, 8 });
-		break;
+			break;
 		case TT_FACTORY_TR:
 			DrawLand(dx, dy, tx, ty);
 			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 56, 64, 8, 8 });
-		break;
+			break;
 		case TT_FACTORY_BL:
 			DrawLand(dx, dy, tx, ty);
 			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 48, 72, 8, 8 });
-		break;
+			break;
 		case TT_FACTORY_BR:
 			DrawLand(dx, dy, tx, ty);
 			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 56, 72, 8, 8 });
-		break;
+			break;
 
 
 		case TT_RAIL_STATION_H:
@@ -112,6 +129,17 @@ void TileDraw(int dx, int dy, int tx, int ty, Tile* _tile) {
 			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 104 + _tile->timer*8, 88, 8, 8 });
 		break;
 
+		case TT_AA_GUN:
+			DrawLand(dx, dy, tx, ty);
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, {((GAME_TICK / 96) % 2) * 8,96, 8, 8 });
+			break;
+		case TT_WALL:
+			DrawLand(dx, dy, tx, ty);
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 64+_tile->timer*8, 96, 8, 8 });
+			break;
+		case TT_CITYSTARTER:
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 56,57, 8, 8 });
+			break;
 
 
 	}
@@ -153,7 +181,12 @@ bool CheckIfCanBuildTile(int x, int y, TileType _type) {
 		case TT_HQ_TL:
 			if (LEVEL.GetTile(x, y)->type == TT_LAND && LEVEL.GetTile(x+1, y)->type == TT_LAND && LEVEL.GetTile(x, y + 1)->type == TT_LAND && LEVEL.GetTile(x + 1, y + 1)->type == TT_LAND) return true;
 		return false;
-
+		case TT_AIRFIELD_TL:
+			if (LEVEL.GetTile(x, y)->type == TT_LAND && LEVEL.GetTile(x + 1, y)->type == TT_LAND && LEVEL.GetTile(x, y + 1)->type == TT_LAND && LEVEL.GetTile(x + 1, y + 1)->type == TT_LAND) return true;
+			return false;
+		case TT_FACTORY_TL:
+			if (LEVEL.GetTile(x, y)->type == TT_LAND && LEVEL.GetTile(x + 1, y)->type == TT_LAND && LEVEL.GetTile(x, y + 1)->type == TT_LAND && LEVEL.GetTile(x + 1, y + 1)->type == TT_LAND) return true;
+			return false;
 
 	}
 	return false;
@@ -205,13 +238,115 @@ Tile* BuildTileAt(int x, int y, TileType _type) {
 			LEVEL.vTilesToTick.push_back({ (short)(x + 1),	(short)y });
 			LEVEL.vTilesToTick.push_back({ (short)x,		(short)(y + 1) });
 			LEVEL.vTilesToTick.push_back({ (short)(x + 1),	(short)(y + 1) });
-
+		
 			//GAME.state = GS_PLAY;
 			GAME.state = GS_BUILD;
 
 			LEVEL.playerHq.origin_x = x;
 			LEVEL.playerHq.origin_y = y;
 			LEVEL.playerHq.flags |= CF_ACTIVE;
+
+		break;
+		case TT_FACTORY_TL:
+			//tl
+			_tile = LEVEL.GetTile(x, y);
+			_tile->type = TT_CONSTRUCTION_SITE;
+			_tile->ref = _type;
+			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
+			_tile->owner = 0;
+			//tr
+			_tile = LEVEL.GetTile(x + 1, y);
+			_tile->type = TT_CONSTRUCTION_SITE;
+			_tile->ref = TT_FACTORY_TR;
+			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
+			_tile->owner = 0;
+			//bl
+			_tile = LEVEL.GetTile(x, y + 1);
+			_tile->type = TT_CONSTRUCTION_SITE;
+			_tile->ref = TT_FACTORY_BL;
+			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
+			_tile->owner = 0;
+			//br
+			_tile = LEVEL.GetTile(x + 1, y + 1);
+			_tile->type = TT_CONSTRUCTION_SITE;
+			_tile->ref = TT_FACTORY_BR;
+			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
+			_tile->owner = 0;
+
+			//dont look atr this its horrible \/
+			LEVEL.vTilesToTick.push_back({ (short)x,		(short)y });
+			LEVEL.vTilesToTick.push_back({ (short)(x + 1),	(short)y });
+			LEVEL.vTilesToTick.push_back({ (short)x,		(short)(y + 1) });
+			LEVEL.vTilesToTick.push_back({ (short)(x + 1),	(short)(y + 1) });
+
+		break;
+		case TT_AIRFIELD_TL:
+			//tl
+			_tile = LEVEL.GetTile(x, y);
+			_tile->type = TT_CONSTRUCTION_SITE;
+			_tile->ref = _type;
+			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
+			_tile->owner = 0;
+			//tr
+			_tile = LEVEL.GetTile(x + 1, y);
+			_tile->type = TT_CONSTRUCTION_SITE;
+			_tile->ref = TT_AIRFIELD_TR;
+			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
+			_tile->owner = 0;
+			//bl
+			_tile = LEVEL.GetTile(x, y + 1);
+			_tile->type = TT_CONSTRUCTION_SITE;
+			_tile->ref = TT_AIRFIELD_BL;
+			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
+			_tile->owner = 0;
+			//br
+			_tile = LEVEL.GetTile(x + 1, y + 1);
+			_tile->type = TT_CONSTRUCTION_SITE;
+			_tile->ref = TT_AIRFIELD_BR;
+			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
+			_tile->owner = 0;
+
+			//dont look atr this its horrible \/
+			LEVEL.vTilesToTick.push_back({ (short)x,		(short)y });
+			LEVEL.vTilesToTick.push_back({ (short)(x + 1),	(short)y });
+			LEVEL.vTilesToTick.push_back({ (short)x,		(short)(y + 1) });
+			LEVEL.vTilesToTick.push_back({ (short)(x + 1),	(short)(y + 1) });
+
+		break;
+		case TT_AA_GUN:
+
+			_tile = LEVEL.GetTile(x, y);
+			_tile->type = TT_CONSTRUCTION_SITE;
+			_tile->ref = _type;
+			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
+			_tile->owner = 0;
+
+			//dont look atr this its horrible \/
+			LEVEL.vTilesToTick.push_back({ (short)x,		(short)y });
+
+		break;
+		case TT_WALL:
+
+			_tile = LEVEL.GetTile(x, y);
+			_tile->type = TT_CONSTRUCTION_SITE;
+			_tile->ref = _type;
+			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
+			_tile->owner = 0;
+
+			//dont look atr this its horrible \/
+			LEVEL.vTilesToTick.push_back({ (short)x,		(short)y });
+
+		break;
+		case TT_CITYSTARTER:
+
+			_tile = LEVEL.GetTile(x, y);
+			_tile->type = TT_CONSTRUCTION_SITE;
+			_tile->ref = _type;
+			_tile->hp = GET_TILE_INFO(_tile->type).baseHp;
+			_tile->owner = 0;
+
+			//dont look atr this its horrible \/
+			LEVEL.vTilesToTick.push_back({ (short)x,		(short)y });
 
 		break;
 	}
