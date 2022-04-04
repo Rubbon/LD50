@@ -100,7 +100,7 @@ void PlayerJetTick(Entity* ent) {
 			//land button
 			if (reserveLanding > 0) {
 				TileType _tileAtFeet = LEVEL.GetTile(ent->x >> 3, ent->y >> 3)->type;
-
+				Sound::PlayTempSoundAt(SND_LAND_JET, ent->x, ent->y);
 				if (_tileAtFeet >= TT_HQ_TL && _tileAtFeet <= TT_HQ_BR) {
 					ent->state = PJS_LANDING_HQ;
 				}
@@ -193,7 +193,7 @@ void PlayerJetTick(Entity* ent) {
 			if (Input::KeyPressed(SDL_SCANCODE_SPACE)) {
 				ent->state = PJS_FLYING;
 				GAME.state = GS_PLAY;
-
+				Sound::PlayTempSoundAt(SND_TAKEOFF, ent->x, ent->y);
 				//reset build options
 				GAME.bm_selected_opt = -1;
 				GAME.tileToBuild = TT_NONE;

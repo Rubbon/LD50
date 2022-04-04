@@ -118,15 +118,20 @@ void Sound::CleanupSoundDevice() {
 	std::cout << "SND: Closed Sound Device!" << std::endl;
 }
 
-
 void Sound::LoadGameAudio() {
 	//BGM
 	//LoadSound("res/snd/bgm_example.ogg");
 	LoadSound("res/snd/invasion.ogg");
-
+	LoadSound("res/snd/bobandgang.ogg");
 	//SFX
 	//LoadSound("res/snd/snd_example.ogg");
 	LoadSound("res/snd/bullet.ogg");
+	LoadSound("res/snd/bang.ogg");
+	LoadSound("res/snd/broke.ogg");
+	LoadSound("res/snd/plonk.ogg");
+	LoadSound("res/snd/laser.ogg");
+	LoadSound("res/snd/takeoff.ogg");
+	LoadSound("res/snd/landjet.ogg");
 
 	//efx
 	EFXEAXREVERBPROPERTIES reverb;
@@ -345,6 +350,14 @@ int Sound::PlayTempSoundAt(ALuint sound, float x, float y, float gain, float pit
 	return 0;// lsTempAudioSources.size() - 1;
 }
 
+int Sound::PlayTempSound(ALuint sound, float gain, float pitch) {
+	AudioSource* _snd = new AudioSource();
+	_snd->Generate(true);
+	_snd->Play(sound, false, true);
+	_snd->SetGain(gain);
+	_snd->SetPitch(pitch);
+	return 0;// lsTempAudioSources.size() - 1;
+}
 
 void Sound::SetListenerPos(float x, float y) {
 	alListener3f(AL_POSITION, x / 24, 0, y / 24);
