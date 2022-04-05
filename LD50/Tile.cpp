@@ -30,6 +30,7 @@ void TileTick(int x, int y, Tile* _tile) {
 				if (_ent != NULL) {
 					//make bullet
 					Entity* _bul = LEVEL.AddEntity((x * 8) + 2, (y * 8) + 2, ENT_JETBULLET, false);
+					Sound::PlayTempSoundAt(SND_BULLET, _ent->x, _ent->y);
 					float _angle = atan2(_ent->y - _bul->y, _ent->x - _bul->x);
 					_bul->mx = 4 * cos(_angle);
 					_bul->my = 4 * sin(_angle);
@@ -615,10 +616,12 @@ void OnTileDestroy(int x, int y, Tile* _tile, bool multiDestroy) {
 void City::expandTick() {
 	//std::cout << timer << std::endl;
 	int _popCount = 0;
-	if (bankX != -1) {
+	if (bankX != -1 && bankY!=-1) {
 		Tile* _bankPos = LEVEL.GetTile(bankX, bankY);
-		if (_bankPos->type != TT_CITY_BANK) flags &= ~CF_HASBANK;
-		bankX = -1; bankY = -1;
+		if (_bankPos->type != TT_CITY_BANK) {
+			flags &= ~CF_HASBANK;
+			bankX = -1; bankY = -1; //bank has been gooped
+		}
 	}
 
 	for (int i = 0; i < myTiles.size(); i++) {
@@ -644,7 +647,7 @@ void City::expandTick() {
 		resources --;
 	}
 
-	if (money == maxMoney && flags & CF_HASBANK) {
+	if (money == maxMoney && flags&CF_HASBANK) {
 		//send a plane to hq
 		Entity* _plane = LEVEL.AddEntity(origin_x * 8, origin_y * 8, ENT_CITYPLANE);
 		_plane->target_x = 8 + LEVEL.playerHq.origin_x * 8;
@@ -676,10 +679,15 @@ void City::expandTick() {
 					break;
 				}
 				else {
-
+					_placeX += (rand() % 3) - 1;
+					_placeY += (rand() % 3) - 1;
+					if (_placeX == 0 && _placeY == 0) {
+						_placeX = -1;
+						_placeY = 1;
+					}
 					//chance to upgrade existing city tile
 					_chance = (int)rand() % 10;
-					if (_chance > 1) {
+					if (_chance > 6) {
 						if (_t->type == TT_CITYBLOCK_SMALL) {
 							_t = BuildTileAt(_placeX, _placeY, TT_CITYBLOCK_BIG);
 							_t->owner = index;
@@ -702,18 +710,17 @@ void City::expandTick() {
 							}
 						}
 					}
-					_placeX += (rand() % 3) - 1;
-					_placeY += (rand() % 3) - 1;
-					if (_placeX == 0 && _placeY == 0) {
-						_placeX = -1;
-						_placeY = 1;
-					}
 				}
 			}
 		}
 		timer = 4;
+		/*
 		std::cout << name << std::endl;
 		std::cout << std::to_string(resources) << std::endl;
 		std::cout << std::to_string(friendliness) << std::endl;
+		std::cout << std::to_string(money) << std::endl;
+		if (flags & CF_HASBANK)std::cout << "GOT A BANK" << std::endl;
+		else std::cout << "no bank :(" << std::endl;
+		*/
 	}
 }
