@@ -625,7 +625,7 @@ void City::expandTick() {
 		resources --;
 	}
 
-	if (money = maxMoney && flags&CF_HASBANK) {
+	if (money == maxMoney && flags&CF_HASBANK) {
 		//send a plane to hq
 	}
 
@@ -690,5 +690,6 @@ void City::expandTick() {
 		std::cout << name << std::endl;
 		std::cout << std::to_string(resources) << std::endl;
 		std::cout << std::to_string(friendliness) << std::endl;
+		std::cout << std::to_string(money) << std::endl;
 	}
 }

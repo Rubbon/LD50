@@ -155,7 +155,7 @@ struct City {
 	short resources = 0;
 	short maxResources;
 	short money = 0;
-	short maxMoney;
+	short maxMoney=60;
 	int bankX=-1;
 	int bankY=-1;
 	void expandTick();
