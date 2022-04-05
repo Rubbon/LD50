@@ -595,8 +595,13 @@ void OnTileDestroy(int x, int y, Tile* _tile, bool multiDestroy) {
 
 void City::expandTick() {
 	//std::cout << timer << std::endl;
-	
 	int _popCount = 0;
+	if (bankX != -1) {
+		Tile* _bankPos = LEVEL.GetTile(bankX, bankY);
+		if (_bankPos->type != TT_CITY_BANK) flags &= ~CF_HASBANK;
+		bankX = -1; bankY = -1;
+	}
+
 	for (int i = 0; i < myTiles.size(); i++) {
 		Tile* _curTile = GAME.currentLevel.GetTile(myTiles[i].x, myTiles[i].y);
 		if (_curTile->owner != index) {
@@ -613,13 +618,14 @@ void City::expandTick() {
 		}
 	}
 	
-	if (resources > maxResources) resources = maxResources; // hard limit
-	if (resources > 0) {
-		money += 20 * resources;
-		resources = 0;
+	if (resources > maxResources) resources = maxResources; // hard limit, even though its converted into money at each tick so its almost redundant.
+	if (resources > 1) { //give them a little breathing room to expand still 
+		if (flags&CF_HASBANK) money += 30;
+		else money += 20;
+		resources --;
 	}
 
-	if (money = maxMoney) {
+	if (money = maxMoney && flags&CF_HASBANK) {
 		//send a plane to hq
 	}
 
@@ -628,49 +634,54 @@ void City::expandTick() {
 		//chump change regardless of resources
 		money += 10;
 		//time to grow
-		Tile* _t;
-		int _placeX = origin_x;
-		int _placeY = origin_y;
-		int _chance;
-		for (int i = 0; i < myTiles.size() * 2; i++) {
-			_t = LEVEL.GetTile(_placeX, _placeY);
-			if (_t->type == TT_LAND) {
-				//TileType _cityBlockType = TT_CITYBLOCK_BIG; 
-				//if (i > myTiles.size()) _cityBlockType = TT_CITYBLOCK_SMALL;
-				_t = BuildTileAt(_placeX,_placeY, TT_CITYBLOCK_SMALL); 
-				_t->owner = index;
-				if (friendliness < 20) friendliness++;
-				maxResources++;
-				break;
-			}
-			else {
-				_placeX += (rand() % 3) - 1;
-				_placeY += (rand() % 3) - 1;
-				if (_placeX == 0 && _placeY == 0) {
-					_placeX = -1;
-					_placeY = 1;
+		if (resources > 0) {
+			Tile* _t;
+			int _placeX = origin_x;
+			int _placeY = origin_y;
+			int _chance;
+			for (int i = 0; i < myTiles.size() * 2; i++) {
+				_t = LEVEL.GetTile(_placeX, _placeY);
+				if (_t->type == TT_LAND) {
+					//TileType _cityBlockType = TT_CITYBLOCK_BIG; 
+					//if (i > myTiles.size()) _cityBlockType = TT_CITYBLOCK_SMALL;
+					_t = BuildTileAt(_placeX, _placeY, TT_CITYBLOCK_SMALL);
+					_t->owner = index;
+					if (friendliness < 20) friendliness++;
+					maxResources++;
+					break;
 				}
-				//chance to upgrade existing city tile
-				_chance = (int)rand() % 10;
-				if (_chance > 1) {
-					if (_t->type == TT_CITYBLOCK_SMALL) { 
-						_t = BuildTileAt(_placeX, _placeY, TT_CITYBLOCK_BIG);
-						_t->owner = index;
-						myTiles.push_back({ (short)_placeX, (short)_placeY });
-						if (friendliness<20) friendliness+=3;
-						maxResources++;
-						break;
-					}
-					else if (_t->type == TT_CITYBLOCK_BIG && _popCount>160000) {
-						if (!(flags & CF_HASBANK)) {
-							flags|= CF_HASBANK;
-							_t = BuildTileAt(_placeX, _placeY, TT_CITY_BANK);
+				else {
+
+					//chance to upgrade existing city tile
+					_chance = (int)rand() % 10;
+					if (_chance > 1) {
+						if (_t->type == TT_CITYBLOCK_SMALL) {
+							_t = BuildTileAt(_placeX, _placeY, TT_CITYBLOCK_BIG);
 							_t->owner = index;
 							myTiles.push_back({ (short)_placeX, (short)_placeY });
-							if (friendliness < 20) friendliness+=5;
-							maxResources+=3;
+							if (friendliness < 20) friendliness += 3;
+							maxResources++;
 							break;
 						}
+						else if (_t->type == TT_CITYBLOCK_BIG && _popCount > 160000) {
+							if (!(flags & CF_HASBANK)) {
+								flags |= CF_HASBANK;
+								_t = BuildTileAt(_placeX, _placeY, TT_CITY_BANK);
+								_t->owner = index;
+								myTiles.push_back({ (short)_placeX, (short)_placeY });
+								if (friendliness < 20) friendliness += 5;
+								maxResources++;
+								bankX = _placeX;
+								bankY = _placeY;
+								break;
+							}
+						}
+					}
+					_placeX += (rand() % 3) - 1;
+					_placeY += (rand() % 3) - 1;
+					if (_placeX == 0 && _placeY == 0) {
+						_placeX = -1;
+						_placeY = 1;
 					}
 				}
 			}
