@@ -23,6 +23,9 @@ void Game::Init() {
 	state = GS_BUILD_HQ;
 	tileToBuild = TT_HQ_TL;
 
+	LEVEL.AddEntity(CAMERA_X, CAMERA_Y, ENT_CITYPLANE);
+
+
 }
 
 

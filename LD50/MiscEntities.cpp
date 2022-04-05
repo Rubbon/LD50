@@ -217,3 +217,52 @@ void TrainTick(Entity* ent) {
 void TrainDraw(Entity* ent) {
 	Graphics::DrawSpr(TEX_CHARS, { ent->x - CAMERA_X, ent->y - 2 - CAMERA_Y, 8, 8 }, {24, 104, 8, 8});
 }
+
+
+
+
+
+
+
+#include "Input.h"
+
+
+void CityPlaneInit(Entity* ent) {
+	
+}
+
+void CityPlaneTick(Entity* ent) {
+
+	//ent->z += sin((GAME_TICK + ent->id) * 0.05f) * 0.01f;
+
+	if (ent->z > -5) ent->z--;
+
+	//move to target pos
+	if (ent->x < ent->target_x) ent->x++;
+	else if (ent->x > ent->target_x) ent->x--;
+
+	if (ent->y < ent->target_y) ent->y++;
+	else if (ent->y > ent->target_y) ent->y--;
+
+	//update angle
+	if ((ent->id + GAME_TICK) % 10 == 0) {
+		float _angle = atan2(ent->target_x - ent->y, ent->target_y - ent->x);
+		ent->animSpr = { GetSprOffsetOnAngle(_angle)*8, 88, 8, 8 };
+	}
+
+
+}
+
+void CityPlaneDraw(Entity* ent) {
+	TileType _tileAtFeet = LEVEL.GetTile(ent->x >> 3, ent->y >> 3)->type;
+
+	//shadow
+	if (GET_TILE_INFO(_tileAtFeet).flags & TIF_WALKABLE || _tileAtFeet == TT_WATER) Graphics::DrawSpr(TEX_CHARS, { ent->x - 4 - (ent->z / 2) - CAMERA_X, ent->y + 1 - CAMERA_Y, 8, 3 }, { 0, 157, 8, 3 });
+
+	//flip
+	SDL_RendererFlip _flip = SDL_FLIP_NONE;
+	if (ent->target_y < ent->y) _flip = SDL_FLIP_VERTICAL;
+
+	Graphics::DrawSpr(TEX_CHARS, { ent->x - 4 - CAMERA_X, ent->y - 3 + ent->z - CAMERA_Y, 8, 8 }, ent->animSpr, { 255, 255, 255, 255 }, _flip);
+	Graphics::DrawSpr(TEX_CHARS, { ent->x - 4 - CAMERA_X, ent->y - 4 + ent->z - CAMERA_Y, 8, 8 }, ent->animSpr, { 104, 170, 255, 255 }, _flip);
+}

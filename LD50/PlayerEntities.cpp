@@ -79,12 +79,14 @@ void PlayerJetTick(Entity* ent) {
 			//schoot
 			if (Input::MouseHeld(MB_LEFT)) {
 				if (ent->ticker <= 0) {
-					Entity* _ent = LEVEL.AddEntity(ent->x, ent->y + 2, ENT_JETBULLET, false);
 					Sound::PlayTempSoundAt(SND_BULLET,ent->x,ent->y);
+
+					Entity* _ent = LEVEL.AddEntity(ent->x, ent->y + 2, ENT_JETBULLET, false);
 					_ent->mx = 6 * cos(_mouseAngle) + ent->mx;
 					_ent->my = 6 * sin(_mouseAngle) + ent->my;
 					_ent->z = ent->z;
 					arrEntityFuncs[_ent->entityIndex].Init(_ent);
+					_ent->dmg = 2;
 					
 					ent->ticker = 8;
 				}
@@ -249,9 +251,9 @@ void JetBulletTick(Entity* ent) {
 	if (ent->y > LEVEL_H * 8 || ent->x > LEVEL_W * 8) DeleteEntity(ent);
 
 	//check for hitting enemy
-	Entity* _ent = GetEntityInDistFlags(ent->x, ent->y, 2, EFL_ALIEN);
+	Entity* _ent = GetEntityInDistFlags(ent->x, ent->y, 5, EFL_ALIEN);
 	if (_ent != NULL) {
-		_ent->hp--;
+		_ent->hp -= ent->dmg;
 		arrEntityFuncs[_ent->entityIndex].OnHurt(_ent, ent);
 		DeleteEntity(ent);
 	}

@@ -13,6 +13,7 @@ const EntityFunctions arrEntityFuncs[] = {
 	{ PlayerJetInit, PlayerJetTick, PlayerJetDraw }, // player
 	{ JetBulletInit, JetBulletTick, JetBulletDraw }, // jet bullet
 	{ TrainInit, TrainTick, TrainDraw }, // train
+	{ CityPlaneInit, CityPlaneTick, CityPlaneDraw }, // train
 
 };
 
@@ -91,18 +92,18 @@ int GetSprOffsetOnAngle(float angle) {
 	}
 	else
 	if (angle < 50) {   // \  
-		return 1;
-	}
-	else
-	if (angle < 128) {  // |
 		return 2;
 	}
 	else
+	if (angle < 128) {  // |
+		return 4;
+	}
+	else
 	if (angle < 150) { //  /
-		return 3;
+		return 1;
 	}
 	else {				// <-
-		return 4;
+		return 5;
 	}
 
 }
@@ -111,14 +112,26 @@ int GetSprOffsetOnAngle(float angle) {
 
 Entity* GetEntityInDistFlags(int x, int y, int dist, unsigned char flags) {
 	
-	int _ch = GetChunkIndexAtEntityPos(x, y);
+	int _ch;
 	Entity* _ent;
 
-	for (int i = 0; i < LEVEL.arrChunks[_ch].lsEntities.size(); i++) {
-		_ent = LEVEL.arrChunks[_ch].lsEntities[i];
-		if (!(_ent->flags & flags)) continue;
-		if (abs(_ent->x - x) < dist || abs(_ent->y - y) < dist) {
-			return _ent;
+	int _chx = ((x - CHUNK_SIZE * 4 ) >> 3) / CHUNK_SIZE;
+	int _chy = ((y - CHUNK_SIZE * 4) >> 3) / CHUNK_SIZE;
+
+	for (int ix = _chx; ix < _chx+2; ix++) {
+		for (int iy = _chy; iy < _chy+2; iy++) {
+
+			_ch = ix + iy * (LEVEL_W / CHUNK_SIZE);
+
+			for (int i = 0; i < LEVEL.arrChunks[_ch].lsEntities.size(); i++) {
+				_ent = LEVEL.arrChunks[_ch].lsEntities[i];
+				if (!(_ent->flags & flags)) continue;
+
+				if (abs(_ent->x - x) < dist && abs(_ent->y - y) < dist) {
+					return _ent;
+				}
+			}
+
 		}
 	}
 
