@@ -45,6 +45,8 @@ struct Entity {
 	short hp = 1;
 	short dmg = 1;
 
+	unsigned char owner = 0;
+
 	//animation
 	unsigned char animFrame = 0;
 	SDL_Rect animSpr = {};

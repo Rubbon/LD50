@@ -639,8 +639,14 @@ void City::expandTick() {
 		resources --;
 	}
 
-	if (money == maxMoney && flags&CF_HASBANK) {
+	if (money == maxMoney && flags & CF_HASBANK) {
 		//send a plane to hq
+		Entity* _plane = LEVEL.AddEntity(origin_x * 8, origin_y * 8, ENT_CITYPLANE);
+		_plane->target_x = 8 + LEVEL.playerHq.origin_x * 8;
+		_plane->target_y = 8 + LEVEL.playerHq.origin_y * 8;
+		_plane->owner = index;
+		_plane->ticker = money;
+		money = 0;
 	}
 
 	if (timer > 0) timer--;
@@ -704,6 +710,5 @@ void City::expandTick() {
 		std::cout << name << std::endl;
 		std::cout << std::to_string(resources) << std::endl;
 		std::cout << std::to_string(friendliness) << std::endl;
-		std::cout << std::to_string(money) << std::endl;
 	}
 }
