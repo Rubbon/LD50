@@ -36,6 +36,7 @@ void PlayerJetInit(Entity* ent) {
 
 void PlayerJetTick(Entity* ent) {
 
+	// mute button
 	if (Input::KeyPressed(SDL_SCANCODE_M)) {
 		if (muted) {
 			Game::SetMusicTo(BGM_INVASION);
@@ -103,6 +104,7 @@ void PlayerJetTick(Entity* ent) {
 			if (reserveLanding > 0) {
 				TileType _tileAtFeet = LEVEL.GetTile(ent->x >> 3, ent->y >> 3)->type;
 				Sound::PlayTempSoundAt(SND_LAND_JET, ent->x, ent->y);
+				Game::SetMusicTo(BGM_BUILDMODE);
 				if (_tileAtFeet >= TT_HQ_TL && _tileAtFeet <= TT_HQ_BR) {
 					ent->state = PJS_LANDING_HQ;
 				}
