@@ -50,13 +50,14 @@ public:
 	short borderBottomSize = 16;
 
 
-#define BUILD_OPTIONS 8
+#define BUILD_OPTIONS 9
 	char arrBuildOptions[BUILD_OPTIONS] = {
 		TT_AA_GUN,
 		TT_AIRFIELD_TL,
 		TT_FACTORY_TL,
 		TT_WALL,
 		TT_CITYSTARTER,
+		TT_TRAIN_DEPOT,
 		TT_RAIL_STATION_H,
 		TT_RAIL_TRACK,
 		TT_NONE,

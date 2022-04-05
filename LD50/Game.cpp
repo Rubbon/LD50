@@ -7,8 +7,6 @@
 bool RUN_GAME = false;
 Game GAME = {};
 
-int _borderW = std::max(((SCREEN_W / 20) >> 3) * 8, 16);
-
 //sound
 AudioSource Game::sndBgm;
 
@@ -31,6 +29,8 @@ void Game::Init() {
 
 
 
+int _borderW;
+
 //temp (for screen drag)
 bool draggingCam = false;
 int camDragX, camDragY;
@@ -39,12 +39,14 @@ void Game::Tick() {
 	//reset cursor state first thing
 	cursorState = CS_POINTER;
 
+	//fix border offset
+	_borderW = std::max(((SCREEN_W / 20) >> 3) * 8, 16);
+
 	gameTick++;
 
 	currentLevel.Tick();
 
 	mouseInMenu = 0;
-
 
 	//see if we're at HQ
 	playerIsAtHQ = ((playerJet == NULL || playerJet->flags & EFL_DELETED) && LEVEL.playerHq.flags & CF_ACTIVE);
@@ -76,6 +78,10 @@ void Game::Tick() {
 	if (state == GS_BUILD) {
 
 		bm_hover = -1;
+
+		//fix offsets
+		bm_startX = SCREEN_W - 16 - (BUILD_OPTIONS * 24);
+
 
 		//HOVER OVER TILES
 		if (CURSOR_X >= bm_startX && CURSOR_Y >= SCREEN_H - 24) {

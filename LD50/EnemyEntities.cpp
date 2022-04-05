@@ -7,7 +7,7 @@
 
 
 void E_UfoInit(Entity* ent) {
-
+	ent->flags |= EFL_ALIEN;
 }
 
 
@@ -156,6 +156,36 @@ void E_UfoDraw(Entity* ent) {
 
 
 
+void E_UfoHurt(Entity* ent, Entity* attacker) {
+
+	Entity* _fx;
+
+	if (ent->hp <= 0) {
+
+		//die fx
+		for (int i = 0; i < 4; i++) {
+			_fx = SpawnFx(ent->x, ent->y, 0, 16 + rand() % 24, FXS_HAS_GRAVITY | FXS_DESTROY_ON_LAND);
+			SetFxSpr(_fx, { 8, 0, 8, 8 }, { 255, 64, 64 });
+			SetFxMotion(_fx, (-10 + rand() % 30) / 10.0f, -rand() % 2, -8);
+		}
+
+		DeleteEntity(ent);
+	}
+
+
+	//hit fx
+	for (int i = 0; i < 2; i++) {
+		_fx = SpawnFx(ent->x, ent->y, 0, 16 + rand() % 24, FXS_HAS_GRAVITY | FXS_DESTROY_ON_LAND);
+		SetFxSpr(_fx, { 8, 0, 8, 8 }, { 255, 64, 64, 255 });
+		SetFxMotion(_fx, (-10 + rand() % 30) / 10.0f, -rand() % 2, -8);
+	}
+
+
+}
+
+
+
+
 
 
 
@@ -164,7 +194,7 @@ const SDL_Rect arrAnimWalkerWalk[4] = { {0, 179, 9, 10}, {9, 179, 7, 10}, {0, 17
 
 
 void E_WalkerInit(Entity* ent) {
-
+	ent->flags |= EFL_ALIEN;
 }
 
 

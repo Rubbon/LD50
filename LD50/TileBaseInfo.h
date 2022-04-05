@@ -231,7 +231,7 @@ const TileInfo arrTileInfo[] = {
 		/* NAME */			"Rail Station", // V
 		/* BASE_HP */		6,
 		/* BUILD_SPR */		{88, 88, 8, 8},
-		/* BUILD_TIME */	256,
+		/* BUILD_TIME */	128,
 		/* FLAGS */			TIF_HUMAN | TIF_RAIL,
 		/* BUILDCOST */		0,
 		/* MULTITILES */	{0,0},
@@ -245,7 +245,15 @@ const TileInfo arrTileInfo[] = {
 		/* BUILDCOST */		0,
 		/* MULTITILES */	{0,0},
 	},
-
+	{
+		/* NAME */			"Train Depot", // H
+		/* BASE_HP */		4,
+		/* BUILD_SPR */		{160, 88, 8, 8},
+		/* BUILD_TIME */	256,
+		/* FLAGS */			TIF_HUMAN | TIF_TICKABLE,
+		/* BUILDCOST */		0,
+		/* MULTITILES */	{0,0},
+	},
 
 };
 

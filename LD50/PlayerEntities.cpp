@@ -248,6 +248,13 @@ void JetBulletTick(Entity* ent) {
 
 	if (ent->y > LEVEL_H * 8 || ent->x > LEVEL_W * 8) DeleteEntity(ent);
 
+	//check for hitting enemy
+	Entity* _ent = GetEntityInDistFlags(ent->x, ent->y, 2, EFL_ALIEN);
+	if (_ent != NULL) {
+		_ent->hp--;
+		arrEntityFuncs[_ent->entityIndex].OnHurt(_ent, ent);
+		DeleteEntity(ent);
+	}
 
 	if (ent->wait > 20) {
 		if (ent->z < 0) {
