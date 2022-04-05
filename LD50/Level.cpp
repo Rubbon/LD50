@@ -11,6 +11,7 @@ unsigned char cityTick = 0;
 int  i;
 
 Tile _noTile = {TT_NONE};
+Chunk _noChunk = {};
 
 void Level::Tick() {
 
@@ -144,6 +145,7 @@ Tile* Level::GetTile(int x, int y) {
 }
 
 Tile* Level::GetTile(Pos pos) {
+	if (pos.x >= LEVEL_W || pos.x < 0 || pos.y >= LEVEL_H || pos.y < 0) return &_noTile;
 	return &arrTiles[pos.x + pos.y * LEVEL_W];
 }
 
@@ -193,7 +195,9 @@ Entity* Level::AddEntity(int x, int y, unsigned short entityIndex, bool runInit)
 }
 
 Chunk* Level::GetChunkAtTilePos(int x, int y) {
-	return &arrChunks[(x / CHUNK_SIZE) + (y / CHUNK_SIZE) * (LEVEL_W / CHUNK_SIZE)];
+	int _pos = (x / CHUNK_SIZE) + (y / CHUNK_SIZE) * (LEVEL_W / CHUNK_SIZE);
+	if (_pos < 0 || _pos >(LEVEL_W / CHUNK_SIZE) * (LEVEL_H / CHUNK_SIZE)) return &_noChunk;
+	return &arrChunks[_pos];
 }
 
 

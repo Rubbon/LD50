@@ -40,8 +40,8 @@ public:
 	Pos searchLocation = {0,0};
 	Pos lastSearchLocation = {0,0};
 	std::vector<Pos> lastSearchedLocations = {};
-	Entity* _reconUnit = NULL;
-
+	//Entity* _reconUnit = NULL;
+	std::vector<Entity*> vReconUnits;
 
 	void Tick();
 

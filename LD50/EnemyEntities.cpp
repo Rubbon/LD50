@@ -188,6 +188,8 @@ void E_UfoHurt(Entity* ent, Entity* attacker) {
 
 	if (ent->hp <= 0) {
 
+		if (attacker->entityIndex == ENT_PLAYERJET) GAME.playerCash += 10;
+
 		//die fx
 		for (int i = 0; i < 4; i++) {
 			_fx = SpawnFx(ent->x, ent->y - 4, ent->z, 16 + rand() % 24, FXS_HAS_GRAVITY | FXS_DESTROY_ON_LAND);

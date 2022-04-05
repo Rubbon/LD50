@@ -56,6 +56,11 @@ public:
 	AudioSource audio_bgm;
 	bool mute_music = false;
 
+	//newsticker
+	int newsticker_time = -SCREEN_W;
+	std::string newsticker_text = "";
+	//std::vector<std::string> vNewsBacklog;
+
 
 #define BUILD_OPTIONS 9
 	char arrBuildOptions[BUILD_OPTIONS] = {
@@ -97,6 +102,9 @@ public:
 
 	void DrawUi();
 	void SetMusicTo(int sound);
+
+	void AddNews(std::string _txt);
+
 };
 
 

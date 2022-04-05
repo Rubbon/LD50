@@ -311,6 +311,13 @@ void Game::Draw() {
 
 void Game::DrawUi() {
 
+	//news ticker
+	if (newsticker_time > -SCREEN_W) {
+		Graphics::DrawRect({ _borderW, borderTopSize, SCREEN_W - _borderW * 2, 8 }, { 0, 0, 0, 255 });
+		Graphics::DrawText(_borderW + newsticker_time, borderTopSize, newsticker_text, 1);
+		if (GAME_TICK % 2 == 0) newsticker_time--;
+	}
+
 	//border?
 	Graphics::DrawRect({ 0, 0, SCREEN_W, borderTopSize }, { 160, 160, 174, 255 });
 	Graphics::DrawRect({ 0, SCREEN_H- borderTopSize, SCREEN_W, borderTopSize }, { 160, 160, 174, 255 });
@@ -450,13 +457,13 @@ void Game::DrawUi() {
 	else if (LEVEL.playerHq.flags & CF_ACTIVE) {
 		if (jetBuildTimer <= 0) {
 			//jet is ready notice
-			Graphics::DrawText(_borderW + 1, borderTopSize + 1, "JET READY!", 1, { 0, 0, 0, 255 });
-			Graphics::DrawText(_borderW, borderTopSize, "JET READY!", 1, { 255, 227, 128, 255 });
+			Graphics::DrawText(_borderW + 8 + 1, borderTopSize + 8 + 1, "JET READY!", 1, { 0, 0, 0, 255 });
+			Graphics::DrawText(_borderW + 8, borderTopSize + 8, "JET READY!", 1, { 255, 227, 128, 255 });
 		} else {
 			if ((GAME_TICK/3) % 6 < 4) {
 				//jet is ready notice
-				Graphics::DrawText(_borderW + 1, borderTopSize + 1, "PREPARING JET!", 1, { 0, 0, 0, 255 });
-				Graphics::DrawText(_borderW, borderTopSize, "PREPARING JET!", 1, { 255, 152, 51, 255 });
+				Graphics::DrawText(_borderW + 8 + 1, borderTopSize + 8 + 1, "PREPARING JET!", 1, { 0, 0, 0, 255 });
+				Graphics::DrawText(_borderW + 8, borderTopSize + 8, "PREPARING JET!", 1, { 255, 152, 51, 255 });
 			}
 		}
 
@@ -520,3 +527,8 @@ void Game::SetMusicTo(int sound) {
 	}
 }
 
+
+void Game::AddNews(std::string _txt) {
+	newsticker_text = _txt;
+	newsticker_time = SCREEN_W;
+}

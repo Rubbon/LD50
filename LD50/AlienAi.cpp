@@ -7,7 +7,7 @@
 
 int reconTick = 32;
 int attackTick = 256;
-int warTick = 2000;
+int warTick = 1200;
 
 int lastAttackedHq = 0;
 
@@ -22,7 +22,9 @@ void AlienMastermind::Tick(){
 		std::cout << "war +1" << std::endl;
 		if (warStage < 16) warStage++;
 
-		warTick = 2000 + warStage * 24;
+		warTick = 1800 + warStage * 24;
+	} else {
+		warTick--;
 	}
 
 	//update parties
@@ -68,42 +70,69 @@ void AlienMastermind::TryDoingRecon() {
 	//rcon
 	if (reconTick <= 0) {
 
+		Entity* _reconUnit;
+
+		//remove dead recons
+		for (int i = 0; i < vReconUnits.size(); i++) {
+			if ((vReconUnits[i]->flags & EFL_DELETED) || vReconUnits[i]->state != ES_RECON) {
+				vReconUnits.erase(vReconUnits.begin() + i);
+			}
+		}
+
 		//check if we need to make a new recon unit
-		if (_reconUnit == NULL || (_reconUnit->flags & EFL_DELETED) || _reconUnit->state != ES_RECON) {
+		//if (_reconUnit == NULL || (_reconUnit->flags & EFL_DELETED) || _reconUnit->state != ES_RECON) {
+		if (vReconUnits.size() < warStage+1) {
 			//make one for now
-			_ent = LEVEL.AddEntity((rand() % 2) * LEVEL_W*8, 8 + rand() % (LEVEL_H/2) * 8, ENT_UFO);
+			_reconUnit = LEVEL.AddEntity((rand() % 2) * LEVEL_W*8, 8 + rand() % (LEVEL_H/2) * 8, ENT_UFO);
 			//vActiveAlienUnits.push_back(_ent);
-			_reconUnit = _ent;
+			//_reconUnit = _ent;
 			_reconUnit->state = ES_RECON;
 			_reconUnit->substate = 0;
 			_reconUnit->wait = 0;
 			_reconUnit->ticker = 0;
+			vReconUnits.push_back(_reconUnit);
 		}
 		else {
 			//if recon unit isn't done, wait a bit
-			if (_reconUnit->substate != 2) {
-				reconTick += 256;
-				return;
+			//if (_reconUnit->substate != 2) {
+			//	reconTick += 256;
+			//	return;
+			//}
+
+			for (int i = 0; i < vReconUnits.size(); i++) {
+				if (vReconUnits[i]->substate != 2) {
+					reconTick += 256;
+					return;
+				}
 			}
+
 		}
 
-		//find a cool pos to recon
-		searchLocation.x = 1 + rand() % ((LEVEL_W / RECON_SPACE_SIZE) - 2);
-		searchLocation.y = 1 + rand() % ((LEVEL_H / RECON_SPACE_SIZE) - 2);
+		for (int i = 0; i < vReconUnits.size(); i++) {
 
-		//cheating, for setting the pos
-		//searchLocation.x = (GAME.hovered_tile_x / RECON_SPACE_SIZE);
-		//searchLocation.y = (GAME.hovered_tile_y / RECON_SPACE_SIZE);
+			_reconUnit = vReconUnits[i];
 
-		//if its not the same place as last time, go and look there
-		if (searchLocation.x != lastSearchLocation.x || searchLocation.y != lastSearchLocation.y) {
-			_reconUnit->target_x = (searchLocation.x * RECON_SPACE_SIZE) * 8;
-			_reconUnit->target_y = (searchLocation.y * RECON_SPACE_SIZE) * 8;
-			_reconUnit->substate = 0;
-			_reconUnit->wait = 0;
-			_reconUnit->ticker = 0;
+			if (_reconUnit->substate < 1) continue;
 
-			std::cout << "RECON CHECKING OUT " << searchLocation.x * RECON_SPACE_SIZE << ", " << searchLocation.y * RECON_SPACE_SIZE << std::endl;
+			//find a cool pos to recon
+			searchLocation.x = 1 + rand() % ((LEVEL_W / RECON_SPACE_SIZE) - 2);
+			searchLocation.y = 1 + rand() % ((LEVEL_H / RECON_SPACE_SIZE) - 2);
+
+			//cheating, for setting the pos
+			//searchLocation.x = (GAME.hovered_tile_x / RECON_SPACE_SIZE);
+			//searchLocation.y = (GAME.hovered_tile_y / RECON_SPACE_SIZE);
+
+			//if its not the same place as last time, go and look there
+			if (searchLocation.x != lastSearchLocation.x || searchLocation.y != lastSearchLocation.y) {
+				_reconUnit->target_x = (searchLocation.x * RECON_SPACE_SIZE) * 8;
+				_reconUnit->target_y = (searchLocation.y * RECON_SPACE_SIZE) * 8;
+				_reconUnit->substate = 0;
+				_reconUnit->wait = 0;
+				_reconUnit->ticker = 0;
+
+				std::cout << "RECON #" << std::to_string(i) << " CHECKING OUT " << searchLocation.x * RECON_SPACE_SIZE << ", " << searchLocation.y * RECON_SPACE_SIZE << std::endl;
+
+			}
 
 		}
 

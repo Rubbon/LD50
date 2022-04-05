@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include "SDL.h"
+#include "Entity.h"
 
 enum TileType {
 	TT_NONE,
@@ -132,10 +133,11 @@ extern void TileOnBuilt(int x, int y, Tile* _tile);
 
 extern bool CheckIfCanBuildTile(int x, int y, TileType _type);
 
-extern void HurtTile(int dmg, int x, int y, Tile* _tile);
+extern void HurtTile(int dmg, int x, int y, Tile* _tile, Entity* _hurtBy = NULL);
 
 extern void OnTileDestroy(int x, int y, Tile* _tile, bool demolished = false, bool multiDestroy = true);
 
+extern void TileDoDefaultDestroy(int x, int y, Tile* _tile, bool demolished = false, bool multiDestroy = true);
 
 enum CityFlags {
 	CF_ACTIVE = 0x01,
@@ -159,6 +161,7 @@ struct City {
 	short maxMoney=60;
 	int bankX=-1;
 	int bankY=-1;
+	short warnAboutAttackTimer = 0;
 	void expandTick();
 };
 

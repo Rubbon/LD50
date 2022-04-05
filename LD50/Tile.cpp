@@ -445,6 +445,8 @@ void UpdateWallConnections(int x, int y, Tile* _tile) {
 	//else _tile->timer = 0;
 }
 
+
+
 void TileOnBuilt(int x, int y, Tile* _tile) {
 	switch (_tile->type) {
 		case TT_HQ_TL:
@@ -610,7 +612,7 @@ void TileOnBuilt(int x, int y, Tile* _tile) {
 
 
 
-void HurtTile(int dmg, int x, int y, Tile* _tile) {
+void HurtTile(int dmg, int x, int y, Tile* _tile, Entity* _hurtBy) {
 	_tile->hp -= dmg;
 
 	if (_tile->hp <= 0) OnTileDestroy(x, y, _tile);
@@ -622,19 +624,7 @@ void OnTileDestroy(int x, int y, Tile* _tile, bool demolished, bool multiDestroy
 
 	switch (_tile->type) {
 		default:
-			if (multiDestroy) {
-				TileInfo _tileInfo = GET_TILE_INFO(_tile->type);
-				if (_tileInfo.multiTiles.x != 0 || _tileInfo.multiTiles.y != 0) {
-					OnTileDestroy(x + _tileInfo.multiTiles.x, y, LEVEL.GetTile(x + _tileInfo.multiTiles.x, y), false);
-					OnTileDestroy(x, y + _tileInfo.multiTiles.y, LEVEL.GetTile(x, y + _tileInfo.multiTiles.y), false);
-					OnTileDestroy(x + _tileInfo.multiTiles.x, y + _tileInfo.multiTiles.y, LEVEL.GetTile(x + _tileInfo.multiTiles.x, y + _tileInfo.multiTiles.y), false);
-				}
-			}
-
-			if (_tile->flags & TF_ONWATER) _tile->type = TT_WATER;
-			else _tile->type = TT_CRATER;
-			_tile->owner = 0;
-			if (PosIsOnScreen(x * 8, y * 8)) Sound::PlayTempSound(SND_DEMOLISH,0.2f,1.0f);
+			TileDoDefaultDestroy(x, y, _tile, demolished, multiDestroy);
 		break;
 
 		case TT_HQ_TL: case TT_HQ_TR: case TT_HQ_BL: case TT_HQ_BR: {
@@ -651,6 +641,9 @@ void OnTileDestroy(int x, int y, Tile* _tile, bool demolished, bool multiDestroy
 			if (demolished) {
 				LEVEL.arrCities[_tile->owner].friendliness -= 2;
 				LEVEL.arrCities[_tile->owner].money = 0;
+			} else {
+				//warn about attack
+				if (LEVEL.arrCities[_tile->owner].warnAboutAttackTimer <= 0) GAME.AddNews(LEVEL.arrCities[_tile->owner].name + " is under attack!");
 			}
 
 			if (_tile->flags & TF_ONWATER) _tile->type = TT_WATER;
@@ -667,13 +660,30 @@ void OnTileDestroy(int x, int y, Tile* _tile, bool demolished, bool multiDestroy
 
 
 
+void TileDoDefaultDestroy(int x, int y, Tile* _tile, bool demolished, bool multiDestroy) {
+	if (multiDestroy) {
+		TileInfo _tileInfo = GET_TILE_INFO(_tile->type);
+		if (_tileInfo.multiTiles.x != 0 || _tileInfo.multiTiles.y != 0) {
+			OnTileDestroy(x + _tileInfo.multiTiles.x, y, LEVEL.GetTile(x + _tileInfo.multiTiles.x, y), false);
+			OnTileDestroy(x, y + _tileInfo.multiTiles.y, LEVEL.GetTile(x, y + _tileInfo.multiTiles.y), false);
+			OnTileDestroy(x + _tileInfo.multiTiles.x, y + _tileInfo.multiTiles.y, LEVEL.GetTile(x + _tileInfo.multiTiles.x, y + _tileInfo.multiTiles.y), false);
+		}
+	}
 
+	if (_tile->flags & TF_ONWATER) _tile->type = TT_WATER;
+	else _tile->type = TT_CRATER;
+	_tile->owner = 0;
+	if (PosIsOnScreen(x * 8, y * 8)) Sound::PlayTempSound(SND_DEMOLISH, 0.2f, 1.0f);
+}
 
 
 
 
 void City::expandTick() {
 	//std::cout << timer << std::endl;
+
+	if (warnAboutAttackTimer > 0) warnAboutAttackTimer--;
+
 	int _popCount = 0;
 	if (bankX != -1 && bankY!=-1) {
 		Tile* _bankPos = LEVEL.GetTile(bankX, bankY);
