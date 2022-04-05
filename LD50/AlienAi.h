@@ -30,6 +30,7 @@ public:
 
 	//areas recon found that have something in them
 	std::vector<Pos> vAreasOfInterest;
+	std::vector<Pos> vEmptyPlots;
 	//if we've found hq
 	Pos foundHqPos = {-1, -1};
 

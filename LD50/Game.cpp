@@ -23,8 +23,6 @@ void Game::Init() {
 	state = GS_BUILD_HQ;
 	tileToBuild = TT_HQ_TL;
 
-	//playerJet = currentLevel.AddEntity(256, 256, ENT_PLAYERJET);
-
 }
 
 

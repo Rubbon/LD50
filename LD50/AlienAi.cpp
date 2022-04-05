@@ -111,6 +111,9 @@ void AlienMastermind::TryDoingAttack() {
 				_targetX = vAreasOfInterest[_r].x;
 				_targetY = vAreasOfInterest[_r].y;
 
+				//remove once attacked
+				vAreasOfInterest.erase(vAreasOfInterest.begin() + _r);
+
 				goto lEndOfLocationSearch;
 			}
 
@@ -128,14 +131,22 @@ void AlienMastermind::TryDoingAttack() {
 			if ((LEVEL.arrCities[_r].flags & CF_FOUND) && (LEVEL.arrCities[_r].flags & CF_ACTIVE)) {
 				_targetX = LEVEL.arrCities[_r].origin_x + -2 + rand() % 6;
 				_targetY = LEVEL.arrCities[_r].origin_y + -2 + rand() % 6;
+				goto lEndOfLocationSearch;
 			}
 
 
-			//then rando?
-			//if (rand() % (8 + warStage / 2) >= 8) {
-				//_targetX = rand();
-				//_targetY = LEVEL_H;
-		//	}
+			//consider empty pltos
+			if (vEmptyPlots.size() > 0 && rand() % (8 + warStage / 2) >= 8) {
+
+				_r = rand() % vEmptyPlots.size();
+
+				_targetX = vEmptyPlots[_r].x;
+				_targetY = vEmptyPlots[_r].y;
+
+				//remove once attacked
+				vEmptyPlots.erase(vEmptyPlots.begin() + _r);
+			}
+
 
 
 			lEndOfLocationSearch:

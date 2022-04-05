@@ -70,6 +70,15 @@ void E_UfoTick(Entity* ent) {
 					
 					//we're done searching
 					if (ent->ticker >= RECON_SPACE_SIZE * RECON_SPACE_SIZE) {
+
+						//consider reporting as empty plot if nothing was found
+						if (ent->substate == 0) {
+							if (rand() % 3 == 0) {
+								std::cout << "REPORTING EMPTY LAND " << std::endl;
+								GAME.alienMastermind.vEmptyPlots.push_back({ (short)(ent->x >> 3), (short)(ent->y >> 3) });
+							}
+						}
+
 						ent->substate = 2;
 					}
 
