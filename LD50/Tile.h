@@ -151,8 +151,11 @@ struct City {
 	std::string name;
 	std::vector<Pos> myTiles;
 	int timer = 4;
-	int friendliness = 8;
+	int friendliness;
 	short resources = 0;
+	short maxResources;
+	short money = 0;
+	short maxMoney;
 	void expandTick();
 };
 

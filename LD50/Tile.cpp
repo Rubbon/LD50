@@ -602,8 +602,9 @@ void City::expandTick() {
 		if (_curTile->owner != index) {
 			//check if city has been gooped by aliens
 			myTiles.erase(myTiles.begin() + i);
-			friendliness--;
 			timer = 10;
+			if (friendliness>0) friendliness-=2;
+			if (maxResources > 0) maxResources--; 
 		}
 		if (_curTile->type == TT_CITYBLOCK_SMALL) _popCount += (4000 + (int)rand() % 999);
 		else if (_curTile->type == TT_CITYBLOCK_BIG) _popCount += (10000 + (int)rand() % 9999);
@@ -612,8 +613,20 @@ void City::expandTick() {
 		}
 	}
 	
+	if (resources > maxResources) resources = maxResources; // hard limit
+	if (resources > 0) {
+		money += 20 * resources;
+		resources = 0;
+	}
+
+	if (money = maxMoney) {
+		//send a plane to hq
+	}
+
 	if (timer > 0) timer--;
 	else {
+		//chump change regardless of resources
+		money += 10;
 		//time to grow
 		Tile* _t;
 		int _placeX = origin_x;
@@ -622,10 +635,12 @@ void City::expandTick() {
 		for (int i = 0; i < myTiles.size() * 2; i++) {
 			_t = LEVEL.GetTile(_placeX, _placeY);
 			if (_t->type == TT_LAND) {
-				TileType _cityBlockType = TT_CITYBLOCK_BIG;
-				if (i > myTiles.size()) _cityBlockType = TT_CITYBLOCK_SMALL;
-				_t = BuildTileAt(_placeX,_placeY, _cityBlockType);
+				//TileType _cityBlockType = TT_CITYBLOCK_BIG; 
+				//if (i > myTiles.size()) _cityBlockType = TT_CITYBLOCK_SMALL;
+				_t = BuildTileAt(_placeX,_placeY, TT_CITYBLOCK_SMALL); 
 				_t->owner = index;
+				if (friendliness < 20) friendliness++;
+				maxResources++;
 				break;
 			}
 			else {
@@ -642,6 +657,8 @@ void City::expandTick() {
 						_t = BuildTileAt(_placeX, _placeY, TT_CITYBLOCK_BIG);
 						_t->owner = index;
 						myTiles.push_back({ (short)_placeX, (short)_placeY });
+						if (friendliness<20) friendliness+=3;
+						maxResources++;
 						break;
 					}
 					else if (_t->type == TT_CITYBLOCK_BIG && _popCount>160000) {
@@ -650,6 +667,8 @@ void City::expandTick() {
 							_t = BuildTileAt(_placeX, _placeY, TT_CITY_BANK);
 							_t->owner = index;
 							myTiles.push_back({ (short)_placeX, (short)_placeY });
+							if (friendliness < 20) friendliness+=5;
+							maxResources+=3;
 							break;
 						}
 					}
@@ -657,5 +676,8 @@ void City::expandTick() {
 			}
 		}
 		timer = 4;
+		std::cout << name << std::endl;
+		std::cout << std::to_string(resources) << std::endl;
+		std::cout << std::to_string(friendliness) << std::endl;
 	}
 }

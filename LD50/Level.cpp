@@ -342,7 +342,7 @@ void LevelGenerator::GenerateWorld(Level* level) {
 	int _cityAmt = 5 + rand() % (MAX_CITIES - 5);
 
 	for (i = 0; i < _cityAmt; i++) {
-
+		
 		//find a good spot to put the city
 		bool _foundAdequateSpot = false;
 
@@ -437,7 +437,7 @@ void LevelGenerator::PreGenerateCity(Level* level, int city_i) {
 
 	int _placeX = _city->origin_x;
 	int _placeY = _city->origin_y;
-
+	
 	int _maxTries = 64; // for safety
 
 
@@ -463,7 +463,9 @@ void LevelGenerator::PreGenerateCity(Level* level, int city_i) {
 			//reset to start
 			_placeX = _city->origin_x;
 			_placeY = _city->origin_y;
-
+			if (_city->friendliness < 10) _city->friendliness++;
+			_city->maxResources++;
+			_city->maxMoney+=10;
 		} else {
 			//move
 			_placeX += (rand() % 3) - 1;
@@ -473,9 +475,10 @@ void LevelGenerator::PreGenerateCity(Level* level, int city_i) {
 				_placeY = 1;
 			}
 		}
-
+		
 		_maxTries--;
 
 	}
-
+	//std::cout << _city->name << std::endl;
+	//std::cout << std::to_string(_city->friendliness) << std::endl;
 }
