@@ -7,7 +7,6 @@
 #include <algorithm>
 
 float _spd = 0.05f;
-bool muted = false;
 short reserveLanding = 0;
 
 
@@ -16,6 +15,7 @@ enum PLayerJetState {
 	PJS_LANDING,
 	PJS_LANDING_HQ,
 	PJS_LANDED,
+	PJS_DEAD,
 };
 
 SDL_RendererFlip _flip = SDL_FLIP_NONE;
@@ -36,16 +36,12 @@ void PlayerJetInit(Entity* ent) {
 
 void PlayerJetTick(Entity* ent) {
 
-	if (Input::KeyPressed(SDL_SCANCODE_M)) {
-		if (muted) {
-			Game::SetMusicTo(BGM_INVASION);
-			muted = false;
-		}
-		else {
-			Game::SetMusicTo(SFX_NOSOUND);
-			muted = true;
-		}
+	if (Input::KeyPressed(SDL_SCANCODE_D)) {
+		ent->state = PJS_DEAD;
+		ent->substate = 0;
 	}
+
+
 
 	switch (ent->state) {
 
@@ -79,7 +75,7 @@ void PlayerJetTick(Entity* ent) {
 			//schoot
 			if (Input::MouseHeld(MB_LEFT)) {
 				if (ent->ticker <= 0) {
-					Sound::PlayTempSoundAt(SND_BULLET,ent->x,ent->y);
+					Sound::PlayTempSoundAt(SND_BULLET,ent->x,ent->y, 0.75f);
 
 					Entity* _ent = LEVEL.AddEntity(ent->x, ent->y + 2, ENT_JETBULLET, false);
 					_ent->mx = 6 * cos(_mouseAngle) + ent->mx;
@@ -102,7 +98,7 @@ void PlayerJetTick(Entity* ent) {
 			//land button
 			if (reserveLanding > 0) {
 				TileType _tileAtFeet = LEVEL.GetTile(ent->x >> 3, ent->y >> 3)->type;
-				Sound::PlayTempSoundAt(SND_LAND_JET, ent->x, ent->y);
+				Sound::PlayTempSoundAt(SND_LAND_JET, ent->x, ent->y, 0.5f);
 				if (_tileAtFeet >= TT_HQ_TL && _tileAtFeet <= TT_HQ_BR) {
 					ent->state = PJS_LANDING_HQ;
 				}
@@ -133,7 +129,6 @@ void PlayerJetTick(Entity* ent) {
 			ent->y = ent->fy;
 
 
-
 			//look at mouse
 			if (CURSOR_Y + CAMERA_Y < ent->y) _flip = SDL_FLIP_VERTICAL;
 			else _flip = SDL_FLIP_NONE;
@@ -159,6 +154,11 @@ void PlayerJetTick(Entity* ent) {
 			else {				// <-
 				ent->animSpr = { 40, 88, 8, 8 };
 			}
+
+			//clamp to screen
+			ent->x = std::clamp(ent->x, 8, -16 + LEVEL_W * 8);
+			ent->y = std::clamp(ent->y, 8, -16 + LEVEL_H * 8);
+
 
 		break; }
 
@@ -195,13 +195,52 @@ void PlayerJetTick(Entity* ent) {
 			if (Input::KeyPressed(SDL_SCANCODE_SPACE)) {
 				ent->state = PJS_FLYING;
 				GAME.state = GS_PLAY;
-				Sound::PlayTempSoundAt(SND_TAKEOFF, ent->x, ent->y);
+				Sound::PlayTempSoundAt(SND_TAKEOFF, ent->x, ent->y, 0.5f);
 				//reset build options
 				GAME.bm_selected_opt = -1;
 				GAME.tileToBuild = TT_NONE;
 			}
 
 		break;
+
+		case PJS_DEAD:
+			if (ent->substate == 0) {
+
+				if (ent->z < 0) {
+					if (GAME_TICK % 2 == 0) ent->z++;
+				} else {
+					ent->substate++;
+					Sound::PlayTempSoundAt(SND_DEMOLISH, ent->x, ent->y, 1.0f, 1.15f);
+				}
+
+			} else {
+				ent->substate++;
+
+				if (ent->substate >= 32) {
+					GAME.jetBuildTimer = 128;
+
+					//return to build mode
+					GAME.state = GS_BUILD;
+					GAME.playerJet = NULL;
+
+					CAMERA_X = (8 + LEVEL.playerHq.origin_x * 8) - SCREEN_W / 2;
+					CAMERA_Y = (8 + LEVEL.playerHq.origin_y * 8) -SCREEN_W / 2;
+
+					DeleteEntity(ent);
+					return;
+				}
+			}
+
+			ent->mx *= 0.95f;
+			ent->my *= 0.95f;
+
+			ent->fx += ent->mx;
+			ent->fy += ent->my;
+
+			ent->x = ent->fx;
+			ent->y = ent->fy;
+		break;
+
 
 	}
 
@@ -219,6 +258,18 @@ void PlayerJetDraw(Entity* ent) {
 }
 
 
+void PlayerJetHurt(Entity* ent, Entity* attacker) {
+
+	ent->hp -= attacker->dmg;
+
+	Sound::PlayTempSoundAt(SND_PLACE_BUILDING, ent->x, ent->y, 1.0f, 1.5f);
+
+	if (ent->hp <= 0) {
+		ent->state = PJS_DEAD; //DeleteEntity(ent);
+		ent->substate = 0;
+		Sound::PlayTempSoundAt(SND_DEMOLISH, ent->x, ent->y, 1.0f, 1.25f);
+	}
+}
 
 
 
@@ -248,12 +299,12 @@ void JetBulletTick(Entity* ent) {
 	ent->x = ent->fx;
 	ent->y = ent->fy;
 
-	if (ent->y > LEVEL_H * 8 || ent->x > LEVEL_W * 8) DeleteEntity(ent);
+	if (ent->y >= LEVEL_H * 8 || ent->x >= LEVEL_W * 8) DeleteEntity(ent);
 
 	//check for hitting enemy
-	Entity* _ent = GetEntityInDistFlags(ent->x, ent->y, 5, EFL_ALIEN);
+	Entity* _ent = GetEntityInDistFlags(ent->x, ent->y, 6, EFL_ALIEN);
 	if (_ent != NULL) {
-		_ent->hp -= ent->dmg;
+		//_ent->hp -= ent->dmg;
 		arrEntityFuncs[_ent->entityIndex].OnHurt(_ent, ent);
 		DeleteEntity(ent);
 	}
@@ -298,4 +349,74 @@ void JetBulletDraw(Entity* ent) {
 
 
 
+}
+
+
+
+
+
+
+
+void MilJetInit(Entity* ent) {
+
+}
+
+void MilJetTick(Entity* ent) {
+	//ent->z += sin((GAME_TICK + ent->id) * 0.05f) * 0.01f;
+
+	switch (ent->state) {
+		case 0: // fly to target
+			if (ent->z > -5) ent->z--;
+
+			//move to target pos
+			if (ent->x < ent->target_x) ent->x++;
+			else if (ent->x > ent->target_x) ent->x--;
+
+			if (ent->y < ent->target_y) ent->y++;
+			else if (ent->y > ent->target_y) ent->y--;
+
+			if (ent->x == ent->target_x && ent->y == ent->target_y) ent->state = 1;
+
+		break;
+
+		//crash
+		//case -1:
+		//	
+		//break;
+
+	}
+
+
+}
+
+void MilJetDraw(Entity* ent) {
+	TileType _tileAtFeet = LEVEL.GetTile(ent->x >> 3, ent->y >> 3)->type;
+
+	//shadow
+	if (GET_TILE_INFO(_tileAtFeet).flags & TIF_WALKABLE || _tileAtFeet == TT_WATER) Graphics::DrawSpr(TEX_CHARS, { ent->x - 4 - (ent->z / 2) - CAMERA_X, ent->y + 1 - CAMERA_Y, 8, 3 }, { 0, 157, 8, 3 });
+
+
+	//update angle
+	if ((ent->id + GAME_TICK) % 10 == 0) {
+		float _angle = atan2((float)ent->target_y - ent->y, (float)ent->target_x - ent->x);
+		ent->animSpr = { GetSprOffsetOnAngle(_angle) * 8, 88, 8, 8 };
+	}
+
+	//flip
+	SDL_RendererFlip _flip = SDL_FLIP_NONE;
+	if (ent->target_y < ent->y) _flip = SDL_FLIP_VERTICAL;
+
+	Graphics::DrawSpr(TEX_CHARS, { ent->x - 4 - CAMERA_X, ent->y - 3 + ent->z - CAMERA_Y, 8, 8 }, ent->animSpr, { 255, 255, 255, 255 }, _flip);
+	Graphics::DrawSpr(TEX_CHARS, { ent->x - 4 - CAMERA_X, ent->y - 4 + ent->z - CAMERA_Y, 8, 8 }, ent->animSpr, { 104, 170, 255, 255 }, _flip);
+}
+
+
+
+
+
+
+
+void PlaneHurt(Entity* ent, Entity* attacker) {
+	ent->hp -= attacker->dmg;
+	if (ent->hp <= 0) DeleteEntity(ent);
 }

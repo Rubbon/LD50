@@ -60,7 +60,7 @@ const TileInfo arrTileInfo[] = {
 		/* NAME */			"HQ", //tl
 		/* BASE_HP */		16,
 		/* BUILD_SPR */		{8, 64, 16, 16},
-		/* BUILD_TIME */	128,
+		/* BUILD_TIME */	64,
 		/* FLAGS */			TIF_HUMAN,
 		/* BUILDCOST */		0,
 		/* MULTITILES */	{1,1},
@@ -69,7 +69,7 @@ const TileInfo arrTileInfo[] = {
 		/* NAME */			"HQ", //tr
 		/* BASE_HP */		16,
 		/* BUILD_SPR */		{8, 64, 16, 16},
-		/* BUILD_TIME */	128,
+		/* BUILD_TIME */	64,
 		/* FLAGS */			TIF_HUMAN,
 		/* BUILDCOST */		0,
 		/* MULTITILES */	{-1,1},
@@ -78,7 +78,7 @@ const TileInfo arrTileInfo[] = {
 		/* NAME */			"HQ", //bl
 		/* BASE_HP */		16,
 		/* BUILD_SPR */		{8, 64, 16, 16},
-		/* BUILD_TIME */	128,
+		/* BUILD_TIME */	64,
 		/* FLAGS */			TIF_HUMAN,
 		/* BUILDCOST */		0,
 		/* MULTITILES */	{1,-1},
@@ -87,7 +87,7 @@ const TileInfo arrTileInfo[] = {
 		/* NAME */			"HQ", //br
 		/* BASE_HP */		16,
 		/* BUILD_SPR */		{8, 64, 16, 16},
-		/* BUILD_TIME */	128,
+		/* BUILD_TIME */	64,
 		/* FLAGS */			TIF_HUMAN,
 		/* BUILDCOST */		0,
 		/* MULTITILES */	{-1,-1},
@@ -222,7 +222,7 @@ const TileInfo arrTileInfo[] = {
 		/* NAME */			"Rail Station", // H
 		/* BASE_HP */		6,
 		/* BUILD_SPR */		{88, 88, 8, 8},
-		/* BUILD_TIME */	256,
+		/* BUILD_TIME */	128,
 		/* FLAGS */			TIF_HUMAN | TIF_RAIL,
 		/* BUILDCOST */		0,
 		/* MULTITILES */	{0,0},
@@ -240,7 +240,7 @@ const TileInfo arrTileInfo[] = {
 		/* NAME */			"Rail", // H
 		/* BASE_HP */		3,
 		/* BUILD_SPR */		{104, 88, 8, 8},
-		/* BUILD_TIME */	64,
+		/* BUILD_TIME */	32,
 		/* FLAGS */			TIF_HUMAN | TIF_RAIL | TIF_WALKABLE,
 		/* BUILDCOST */		0,
 		/* MULTITILES */	{0,0},

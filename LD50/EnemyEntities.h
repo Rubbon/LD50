@@ -17,3 +17,13 @@ void E_UfoHurt(Entity* ent, Entity* attacker);
 void E_WalkerInit(Entity* ent);
 void E_WalkerTick(Entity* ent);
 void E_WalkerDraw(Entity* ent);
+
+
+//void E_AlienUfoBulletInit(Entity* ent);
+void E_AlienUfoBulletTick(Entity* ent);
+void E_AlienUfoBulletDraw(Entity* ent);
+
+
+void E_HunterInit(Entity* ent);
+void E_HunterTick(Entity* ent);
+void E_HunterDraw(Entity* ent);

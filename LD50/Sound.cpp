@@ -412,12 +412,12 @@ void AudioSource::Generate(bool destroyAtEnd) {
 	}
 
 	deleted = false;
-	std::cout << "SND: Generated new AudioSource, ID: " << id << std::endl;
+	//std::cout << "SND: Generated new AudioSource, ID: " << id << std::endl;
 }
 
 void AudioSource::Delete() {
 	if (!deleted) {
-		std::cout << "SND: AudioSource self delete, ID: " << id << std::endl;
+		//std::cout << "SND: AudioSource self delete, ID: " << id << std::endl;
 
 		alDeleteSources(1, &id);
 

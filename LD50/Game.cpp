@@ -23,6 +23,7 @@ void Game::Init() {
 	state = GS_BUILD_HQ;
 	tileToBuild = TT_HQ_TL;
 
+	LEVEL.AddEntity(CAMERA_X, CAMERA_Y, ENT_E_ALIEN_HUNTER);
 }
 
 
@@ -174,6 +175,8 @@ void Game::Tick() {
 	//alien mastermind thinks
 	if (GAME_TICK % 2 == 0) alienMastermind.Tick();
 
+	//update sound listener
+	Sound::SetListenerPos(CAMERA_X + SCREEN_W/2, CAMERA_Y + SCREEN_H/2);
 
 }
 
@@ -400,6 +403,12 @@ void Game::DrawUi() {
 			//jet is ready notice
 			Graphics::DrawText(_borderW + 1, borderTopSize + 1, "JET READY!", 1, { 0, 0, 0, 255 });
 			Graphics::DrawText(_borderW, borderTopSize, "JET READY!", 1, { 255, 227, 128, 255 });
+		} else {
+			if ((GAME_TICK/3) % 6 < 4) {
+				//jet is ready notice
+				Graphics::DrawText(_borderW + 1, borderTopSize + 1, "PREPARING JET!", 1, { 0, 0, 0, 255 });
+				Graphics::DrawText(_borderW, borderTopSize, "PREPARING JET!", 1, { 255, 152, 51, 255 });
+			}
 		}
 	}
 

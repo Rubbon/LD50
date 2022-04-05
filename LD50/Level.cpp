@@ -132,7 +132,7 @@ void Level::Draw() {
 
 
 Tile* Level::GetTile(int x, int y) {
-	if (x > LEVEL_W || x < 0 || y > LEVEL_H || y < 0) return &_noTile;
+	if (x >= LEVEL_W || x < 0 || y >= LEVEL_H || y < 0) return &_noTile;
 	return &arrTiles[x + y * LEVEL_W];
 }
 
@@ -339,7 +339,7 @@ void LevelGenerator::GenerateWorld(Level* level) {
 	int _posi;
 
 	//lets make some cities
-	int _cityAmt = 5 + rand() % (MAX_CITIES - 5);
+	int _cityAmt = 4 + rand() % (7 - 4);
 
 	for (i = 0; i < _cityAmt; i++) {
 		
@@ -382,7 +382,7 @@ void LevelGenerator::GenerateWorld(Level* level) {
 
 	//gen some factories
 
-	int _factoryAmt = 4 + rand() % (MAX_CITIES - 4);
+	int _factoryAmt = 3 + rand() % (6 - 3);
 
 	for (i = 0; i < _factoryAmt; i++) {
 		//get a position to check

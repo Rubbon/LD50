@@ -10,10 +10,12 @@ const EntityFunctions arrEntityFuncs[] = {
 	{ E_UfoInit, E_UfoTick, E_UfoDraw, E_UfoHurt }, // ufo
 	{ E_WalkerInit, E_WalkerTick, E_WalkerDraw, E_UfoHurt }, // walker
 	{ FxInit, FxTick, FxDraw }, // fx
-	{ PlayerJetInit, PlayerJetTick, PlayerJetDraw }, // player
-	{ JetBulletInit, JetBulletTick, JetBulletDraw }, // jet bullet
-	{ TrainInit, TrainTick, TrainDraw }, // train
-	{ CityPlaneInit, CityPlaneTick, CityPlaneDraw }, // train
+	{ PlayerJetInit, PlayerJetTick, PlayerJetDraw, PlayerJetHurt }, // player
+	{ JetBulletInit, JetBulletTick, JetBulletDraw, PlaneHurt }, // jet bullet
+	{ TrainInit, TrainTick, TrainDraw, PlaneHurt }, // train
+	{ CityPlaneInit, CityPlaneTick, CityPlaneDraw, PlaneHurt }, // xirt plane
+	{ NoFunc, E_AlienUfoBulletTick, E_AlienUfoBulletDraw }, // a.ien bullet
+	{ E_HunterInit, E_HunterTick, E_HunterDraw, E_UfoHurt }, // hunter
 
 };
 
@@ -118,8 +120,8 @@ Entity* GetEntityInDistFlags(int x, int y, int dist, unsigned char flags) {
 	int _chx = ((x - CHUNK_SIZE * 4 ) >> 3) / CHUNK_SIZE;
 	int _chy = ((y - CHUNK_SIZE * 4) >> 3) / CHUNK_SIZE;
 
-	for (int ix = _chx; ix < _chx+2; ix++) {
-		for (int iy = _chy; iy < _chy+2; iy++) {
+	for (int ix = std::max(_chx, 0); ix < std::min(_chx + 2, (LEVEL_W / CHUNK_SIZE) - 1); ix++) {
+		for (int iy = std::max(_chy, 0); iy < std::min(_chy + 2, (LEVEL_H / CHUNK_SIZE) - 1); iy++) {
 
 			_ch = ix + iy * (LEVEL_W / CHUNK_SIZE);
 
@@ -137,4 +139,29 @@ Entity* GetEntityInDistFlags(int x, int y, int dist, unsigned char flags) {
 
 	return NULL;
 
+}
+
+
+Entity* GetEntityInTileFlags(int x, int y, unsigned char flags) {
+	int _chunk = (x / CHUNK_SIZE) + (y / CHUNK_SIZE) * (LEVEL_W / CHUNK_SIZE);
+	Entity* _ent;
+
+	if (_chunk < 0 || _chunk >(LEVEL_W / CHUNK_SIZE) * (LEVEL_W / CHUNK_SIZE)) return NULL;
+
+	for (int i = 0; i < LEVEL.arrChunks[_chunk].lsEntities.size(); i++) {
+		_ent = LEVEL.arrChunks[_chunk].lsEntities[i];
+		if (!(_ent->flags & flags)) continue;
+
+		if (_ent->x >> 3 == x && _ent->y >> 3 == y) return _ent;
+
+	}
+
+	return NULL;
+}
+
+
+
+bool PosIsOnScreen(int x, int y) {	
+	if (x < CAMERA_X || y < CAMERA_Y || x > CAMERA_X + SCREEN_W || y > CAMERA_Y + SCREEN_H) return false;
+	return true;
 }

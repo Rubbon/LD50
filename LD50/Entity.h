@@ -9,6 +9,9 @@ enum EntityName {
 	ENT_JETBULLET,
 	ENT_TRAIN,
 	ENT_CITYPLANE,
+	ENT_ALIENBULLET,
+	ENT_E_ALIEN_HUNTER,
+	//ENT_E_BIGUFO,
 
 };
 
@@ -61,7 +64,6 @@ struct Entity {
 	//generic values
 	short wait;
 	short ticker;
-	//float f;
 
 
 };
@@ -123,4 +125,8 @@ extern void DeleteEntity(Entity* ent);
 extern int GetSprOffsetOnAngle(float angle);
 
 extern Entity* GetEntityInDistFlags(int x, int y, int dist, unsigned char flags);
+
+extern Entity* GetEntityInTileFlags(int x, int y, unsigned char flags);
+
+extern bool PosIsOnScreen(int x, int y);
 

@@ -23,6 +23,7 @@ enum GameState {
 	GS_BUILD_HQ,
 	GS_PLAY,
 	GS_BUILD,
+	GS_GAMEOVER,
 };
 
 

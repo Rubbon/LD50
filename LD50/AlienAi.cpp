@@ -158,8 +158,10 @@ void AlienMastermind::TryDoingAttack() {
 			//make new attack party
 			AlienParty _party = {};
 
+			int _yy = rand()%LEVEL_H/2;
+
 			for (int i = 0; i < 6 + warStage * 2 + (rand() % warStage * 3); i++) {
-				_ent = LEVEL.AddEntity(0, 0, ENT_UFO);
+				_ent = LEVEL.AddEntity(0, (LEVEL_H/4) + _yy + (rand()%64) - 32, ENT_UFO);
 				_ent->state = ES_ATTACKER;
 				_party.vEntities.push_back(_ent);
 			}

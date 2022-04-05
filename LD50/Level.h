@@ -5,7 +5,7 @@
 
 
 #define MAX_ENTITIES 2048
-#define MAX_CITIES 8
+#define MAX_CITIES 12
 
 #define LEVEL_W 176
 #define LEVEL_H 176
@@ -76,5 +76,5 @@ public:
 
 	void PreGenerateCity(Level* level, int cityIndex);
 
-	std::string GetCityName();
+	static std::string GetCityName();
 };

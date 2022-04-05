@@ -50,12 +50,22 @@ void FxDraw(Entity* ent) {
 
 //ticker - cargo load
 //substate - whether on statioin or not
+//mx - my - movmenet
+//fy - people to move to city spot
 
 
 void TrainInit(Entity* ent) {
 	ent->mx = 1;
 	ent->target_x = ent->x;
 	ent->target_y = ent->y;
+	ent->fy = 0;
+
+	Tile* _tile = LEVEL.GetTile(ent->x >> 3, ent->y >> 3);
+	if (_tile->timer == TRS_V) {
+		ent->mx = 0;
+		ent->my = 1;
+	}
+
 }
 
 void TrainTick(Entity* ent) {
@@ -151,7 +161,58 @@ void TrainTick(Entity* ent) {
 										_fx = SpawnFx(ent->x + 4, ent->y - 12, ent->z - 2, 32);
 										SetFxSpr(_fx, { 0, 56, 8, 8 }, { 0, 255, 255, 255 });
 										SetFxMotion(_fx, 0, -0.15f, 0);
+									} else {
+										//pick people up instead
+										if (LEVEL.arrCities[_t->owner].myTiles.size() > 12 && ent->fy < 16) {
+											ent->fy += rand() % 16;
+											LEVEL.arrCities[_t->owner].friendliness += 1;
+											_fx = SpawnFx(ent->x + 4, ent->y - 12, ent->z - 2, 32);
+											SetFxSpr(_fx, { 0, 48, 8, 8 }, { 0, 255, 255, 255 });
+											SetFxMotion(_fx, 0, -0.15f, 0);
+										}
+
 									}
+									break;
+								}
+
+								if (_t->type == TT_CITYSTARTER) {
+									_foundSomething = true;
+
+									//add people to citystarter
+									if (ent->fy > 0) {
+										int _amt = rand() % (int)ent->fy;
+										ent->fy -= _amt;
+
+										_t->timer += ent->fy;
+
+										_fx = SpawnFx(ent->x + 4, ent->y - 12, ent->z - 2, 32);
+										SetFxSpr(_fx, { 0, 56, 8, 8 }, { 0, 255, 255, 255 });
+										SetFxMotion(_fx, 0, -0.15f, 0);
+
+										//see if we can turn it into a city
+										if (_t->timer > 324 + (rand() % 64) - 32) {
+											_t->timer = 0;
+
+											for (int i = 0; i < MAX_CITIES; i++) {
+												if (!(LEVEL.arrCities[i].flags & CF_ACTIVE)) {
+
+													LEVEL.arrCities[i].flags = CF_ACTIVE;
+													LEVEL.arrCities[i].origin_x = (ent->x >> 3) + ix;
+													LEVEL.arrCities[i].origin_y = (ent->y >> 3) + iy;
+													LEVEL.arrCities[i].name = LevelGenerator::GetCityName();
+													LEVEL.arrCities[i].index = i;
+													LEVEL.arrCities[i].myTiles.clear();
+
+													Tile* _tile = BuildTileAt((ent->x >> 3) + ix, (ent->y >> 3) + iy, TT_CITYBLOCK_SMALL);
+													_tile->owner = i;
+													LEVEL.arrCities[i].myTiles.push_back({ (short)((ent->x >> 3) + ix), (short)((ent->y >> 3) + iy) });
+
+												}
+											}							
+										}
+
+									}
+
 									break;
 								}
 
