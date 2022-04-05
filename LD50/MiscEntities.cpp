@@ -235,19 +235,52 @@ void CityPlaneTick(Entity* ent) {
 
 	//ent->z += sin((GAME_TICK + ent->id) * 0.05f) * 0.01f;
 
-	if (ent->z > -5) ent->z--;
+	if (ent->wait <= 0) {
 
-	//move to target pos
-	if (ent->x < ent->target_x) ent->x++;
-	else if (ent->x > ent->target_x) ent->x--;
+		switch (ent->state) {
+		case 0: // fly to target
+			if (ent->z > -5) ent->z--;
 
-	if (ent->y < ent->target_y) ent->y++;
-	else if (ent->y > ent->target_y) ent->y--;
+			//move to target pos
+			if (ent->x < ent->target_x) ent->x++;
+			else if (ent->x > ent->target_x) ent->x--;
 
-	//update angle
-	if ((ent->id + GAME_TICK) % 10 == 0) {
-		float _angle = atan2(ent->target_x - ent->y, ent->target_y - ent->x);
-		ent->animSpr = { GetSprOffsetOnAngle(_angle)*8, 88, 8, 8 };
+			if (ent->y < ent->target_y) ent->y++;
+			else if (ent->y > ent->target_y) ent->y--;
+
+			if (ent->x == ent->target_x && ent->y == ent->target_y) ent->state = 1;
+
+			break;
+
+		case 1: // land
+			if (ent->z < 0) {
+				ent->z++;
+			} else if (ent->substate == 0) {
+				//land at players place
+
+				//fx
+				Entity* _fx = SpawnFx(ent->x + 4, ent->y - 12, ent->z - 2, 32);
+				SetFxSpr(_fx, { 0, 64, 8, 8 }, { 0, 255, 255, 255 });
+				SetFxMotion(_fx, 0, -0.15f, 0);
+
+				//give me money
+				GAME.playerCash += ent->ticker;
+
+				ent->state = 0;
+				ent->target_x = LEVEL.arrCities[ent->owner].origin_x * 8;
+				ent->target_y = LEVEL.arrCities[ent->owner].origin_y * 8;
+				ent->substate = 1;
+				ent->wait = 32;
+			} else {
+				//kill
+				DeleteEntity(ent);
+			}
+
+			break;
+		}
+
+	} else {
+		ent->wait--;
 	}
 
 
@@ -258,6 +291,13 @@ void CityPlaneDraw(Entity* ent) {
 
 	//shadow
 	if (GET_TILE_INFO(_tileAtFeet).flags & TIF_WALKABLE || _tileAtFeet == TT_WATER) Graphics::DrawSpr(TEX_CHARS, { ent->x - 4 - (ent->z / 2) - CAMERA_X, ent->y + 1 - CAMERA_Y, 8, 3 }, { 0, 157, 8, 3 });
+
+
+	//update angle
+	if ((ent->id + GAME_TICK) % 10 == 0) {
+		float _angle = atan2((float)ent->target_y - ent->y, (float)ent->target_x - ent->x);
+		ent->animSpr = { GetSprOffsetOnAngle(_angle) * 8, 88, 8, 8 };
+	}
 
 	//flip
 	SDL_RendererFlip _flip = SDL_FLIP_NONE;
