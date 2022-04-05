@@ -46,6 +46,20 @@ void Game::Tick() {
 	//reset cursor state first thing
 	cursorState = CS_POINTER;
 
+	//mute butotn
+	if (Input::KeyPressed(SDL_SCANCODE_M)) {
+		mute_music = !mute_music;
+
+		if (mute_music == true) {
+			audio_bgm.soundBufferID = 0;
+			audio_bgm.Stop();
+		} else {
+			if (state == GS_PLAY) SetMusicTo(BGM_INVASION);
+			else SetMusicTo(BGM_BUILDMODE);
+		}
+
+	}
+
 	//no tick
 	if (state == GS_GAMEOVER) {
 		SetMusicTo(SFX_NOSOUND);
@@ -142,6 +156,9 @@ void Game::Tick() {
 					playerJet->my = -1;
 					playerIsAtHQ = false;
 					state = GS_PLAY;
+					Sound::PlayTempSoundAt(SND_TAKEOFF, playerJet->x, playerJet->y, 0.5f);
+
+					SetMusicTo(BGM_INVASION);
 
 					//reset build options
 					bm_selected_opt = -1;
@@ -494,6 +511,8 @@ void Game::DrawUi() {
 }
 
 void Game::SetMusicTo(int sound) {
+	if (mute_music) return;
+
 	if (sound == 0) audio_bgm.Stop();
 	else if (audio_bgm.soundBufferID != sound) {
 		audio_bgm.Stop();

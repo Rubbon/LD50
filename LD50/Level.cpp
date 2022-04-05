@@ -334,7 +334,7 @@ void LevelGenerator::GenerateWorld(Level* level) {
 		}
 
 		if (height[i] >= 0.36f && height[i] < 0.363f) level->arrTiles[i].type = TT_TREE;
-		//if (height[i] >= 0.34f && height[i] < 0.35f) level->arrTiles[i].type = TT_TREE;
+		if (height[i] >= 0.41f && height[i] < 0.412f) level->arrTiles[i].type = TT_TREE;
 
 	}
 	

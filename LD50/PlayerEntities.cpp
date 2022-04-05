@@ -173,10 +173,11 @@ void PlayerJetTick(Entity* ent) {
 				if (ent->state == PJS_LANDING) {
 					ent->state = PJS_LANDED;
 				} else {
-					GAME.jetBuildTimer = 128;
+					GAME.jetBuildTimer = 64;
 					DeleteEntity(ent);
 				}
 
+				GAME.SetMusicTo(BGM_BUILDMODE);
 				GAME.state = GS_BUILD;
 			}
 		break;
@@ -189,6 +190,7 @@ void PlayerJetTick(Entity* ent) {
 				ent->state = PJS_FLYING;
 				GAME.state = GS_PLAY;
 				Sound::PlayTempSoundAt(SND_TAKEOFF, ent->x, ent->y, 0.5f);
+				GAME.SetMusicTo(BGM_INVASION);
 				//reset build options
 				GAME.bm_selected_opt = -1;
 				GAME.tileToBuild = TT_NONE;
@@ -215,6 +217,7 @@ void PlayerJetTick(Entity* ent) {
 					//return to build mode
 					GAME.state = GS_BUILD;
 					GAME.playerJet = NULL;
+					GAME.SetMusicTo(BGM_BUILDMODE);
 
 					CAMERA_X = (8 + LEVEL.playerHq.origin_x * 8) - SCREEN_W / 2;
 					CAMERA_Y = (8 + LEVEL.playerHq.origin_y * 8) -SCREEN_W / 2;
@@ -262,6 +265,7 @@ void PlayerJetHurt(Entity* ent, Entity* attacker) {
 
 	if (ent->hp <= 0) {
 		ent->state = PJS_DEAD; //DeleteEntity(ent);
+		GAME.SetMusicTo(0);
 		ent->substate = 0;
 		Sound::PlayTempSoundAt(SND_DEMOLISH, ent->x, ent->y, 1.0f, 1.25f);
 	}
@@ -449,6 +453,31 @@ void MilJetDraw(Entity* ent) {
 
 
 void PlaneHurt(Entity* ent, Entity* attacker) {
+
+	Entity* _fx;
+
 	ent->hp -= attacker->dmg;
-	if (ent->hp <= 0) DeleteEntity(ent);
+	if (ent->hp <= 0) {
+		//die fx
+		for (int i = 0; i < 4; i++) {
+			_fx = SpawnFx(ent->x, ent->y - 4, ent->z, 16 + rand() % 24, FXS_HAS_GRAVITY | FXS_DESTROY_ON_LAND);
+			SetFxSpr(_fx, { 8, 0, 8, 8 }, { 64, 64, 255 });
+			SetFxMotion(_fx, (-10 + rand() % 30) / 10.0f, -rand() % 2, -8);
+		}
+
+		if (PosIsOnScreen(ent->x, ent->y)) Sound::PlayTempSoundAt(SND_DEMOLISH, ent->x, ent->y, 1.0f, 3.0f);
+
+		DeleteEntity(ent);
+	}
+
+	//hit fx
+	for (int i = 0; i < 2; i++) {
+		_fx = SpawnFx(ent->x, ent->y - 4, ent->z, 16 + rand() % 24, FXS_HAS_GRAVITY | FXS_DESTROY_ON_LAND);
+		SetFxSpr(_fx, { 8, 0, 8, 8 }, { 64, 64, 255, 255 });
+		SetFxMotion(_fx, (-10 + rand() % 30) / 10.0f, -rand() % 2, -8);
+	}
+
+
+	if (PosIsOnScreen(ent->x, ent->y)) Sound::PlayTempSoundAt(SND_PLACE_BUILDING, ent->x, ent->y, 0.5f, 3.0f);
+
 }

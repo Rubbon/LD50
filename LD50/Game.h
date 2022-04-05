@@ -31,6 +31,7 @@ class Game {
 public:
 
 
+
 	Level currentLevel = {};
 	unsigned char cursorState = CS_POINTER;
 
@@ -53,6 +54,7 @@ public:
 
 	//music
 	AudioSource audio_bgm;
+	bool mute_music = false;
 
 
 #define BUILD_OPTIONS 9

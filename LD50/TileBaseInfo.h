@@ -242,7 +242,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{104, 88, 8, 8},
 		/* BUILD_TIME */	32,
 		/* FLAGS */			TIF_HUMAN | TIF_RAIL | TIF_WALKABLE,
-		/* BUILDCOST */		10,
+		/* BUILDCOST */		5,
 		/* MULTITILES */	{0,0},
 	},
 	{
