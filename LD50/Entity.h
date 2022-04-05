@@ -8,6 +8,7 @@ enum EntityName {
 	ENT_PLAYERJET,
 	ENT_JETBULLET,
 	ENT_TRAIN,
+	ENT_CITYPLANE,
 
 };
 
@@ -41,7 +42,8 @@ struct Entity {
 	short target_y;
 	Entity* target_entity;
 
-	short hp = 0;
+	short hp = 1;
+	short dmg = 1;
 
 	//animation
 	unsigned char animFrame = 0;

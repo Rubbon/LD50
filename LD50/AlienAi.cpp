@@ -164,6 +164,11 @@ void AlienMastermind::TryDoingAttack() {
 				_party.vEntities.push_back(_ent);
 			}
 
+			//add a recon
+			_ent = LEVEL.AddEntity(0, 0, ENT_UFO);
+			_ent->state = ES_RECON;
+			_party.vEntities.push_back(_ent);
+
 			_party.gather_x = _targetX;
 			_party.gather_y = _targetY;
 

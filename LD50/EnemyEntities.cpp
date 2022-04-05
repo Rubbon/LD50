@@ -8,6 +8,7 @@
 
 void E_UfoInit(Entity* ent) {
 	ent->flags |= EFL_ALIEN;
+	ent->hp = 3;
 }
 
 

@@ -11,6 +11,7 @@
 #define LEVEL_H 176
 
 #define CHUNK_SIZE 16
+#define CHUNK_FULL_SIZE CHUNK_SIZE * 8
 
 
 

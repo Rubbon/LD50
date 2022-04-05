@@ -22,9 +22,23 @@ void TileTick(int x, int y, Tile* _tile) {
 			}
 		break;
 
-		case TT_AA_GUN:
+		case TT_AA_GUN: {
+			if ((x + y + GAME_TICK) % 32 == 0) {
 
-		break;
+				Entity* _ent = GetEntityInDistFlags((x*8) + 4, (y*8) + 4, 64, EFL_ALIEN);
+				
+				if (_ent != NULL) {
+					//make bullet
+					Entity* _bul = LEVEL.AddEntity((x * 8) + 2, (y * 8) + 2, ENT_JETBULLET, false);
+					float _angle = atan2(_ent->y - _bul->y, _ent->x - _bul->x);
+					_bul->mx = 4 * cos(_angle);
+					_bul->my = 4 * sin(_angle);
+					_bul->z = _ent->z;
+					arrEntityFuncs[_ent->entityIndex].Init(_ent);
+				}
+
+			}
+		break; }
 
 		case TT_TRAIN_DEPOT: {
 			if (_tile->ref == 0 || LEVEL.arrEntities[_tile->ref].flags & EFL_DELETED) {
