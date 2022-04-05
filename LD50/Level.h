@@ -44,6 +44,7 @@ public:
 
 
 	City arrCities[MAX_CITIES];
+	short activeCities = 0;
 
 	void Tick();
 	void Draw();

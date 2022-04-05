@@ -214,9 +214,11 @@ void E_UfoHurt(Entity* ent, Entity* attacker) {
 	}
 
 	//if attacker, stop to attack back
-	if (ent->state == ES_ATTACKER) {
-		ent->target_x = ent->x;
-		ent->target_y = ent->y;
+	if (ent->entityIndex != ENT_WALKER) {
+		if (ent->state == ES_ATTACKER) {
+			ent->target_x = ent->x;
+			ent->target_y = ent->y;
+		}
 	}
 
 	if (PosIsOnScreen(ent->x, ent->y)) Sound::PlayTempSoundAt(SND_PLACE_BUILDING, ent->x, ent->y, 0.5f, 3.0f);
@@ -235,22 +237,153 @@ const SDL_Rect arrAnimWalkerWalk[4] = { {0, 179, 9, 10}, {9, 179, 7, 10}, {0, 17
 
 void E_WalkerInit(Entity* ent) {
 	ent->flags |= EFL_ALIEN;
+	ent->target_x = ent->x >> 3;
+	ent->target_y = ent->y >> 3;
+
+	ent->hp = 16;
+
 }
 
 
 void E_WalkerTick(Entity* ent) {
-	if (GAME_TICK % 16 == 0) {
-		ent->animFrame++;
-		if (ent->animFrame > 3) ent->animFrame = 0;
+
+	int _tx = ent->x >> 3;
+	int _ty = ent->y >> 3;
+
+	Tile* _t = LEVEL.GetTile(_tx, _ty);
+
+	int _timer = 2;
+	if (_t->type == TT_WATER) _timer = 3;
+
+	if (GAME_TICK % _timer == 0) {
+
+		if (ent->state == 0) {
+
+			ent->z = 0;
+
+			//we ain't moving - check some stuff
+			if (_tx == ent->target_x && _ty == ent->target_y) {
+
+				ent->animFrame = 0;
+
+				if (ent->wait <= 0) {
+
+					//look for a building to smash
+					int _searchDist = 8;
+					int ix, iy;
+					bool _foundTile = false;
+					for (ix = -_searchDist; ix < _searchDist; ix++) {
+						for (iy = -_searchDist; iy < _searchDist; iy++) {
+							if (GET_TILE_INFO(LEVEL.GetTile(ix + _tx, iy + _ty)->type).flags & TIF_HUMAN) {
+								ent->target_x = ix + _tx;
+								ent->target_y = iy + _ty;
+								std::cout << "found playe tile" << std::endl;
+								_foundTile = true;
+								break;
+							}
+						}
+					}
+
+					if (!_foundTile) {
+						ent->target_x = _tx + (rand() % 5) - 2;
+						ent->target_y = _ty + (rand() % 5) - 2;
+					}
+
+					ent->wait = 64 + rand() % 32;
+
+				} else {
+					ent->wait--;
+				}
+
+				// sink in water
+				if (_t->type == TT_WATER) {
+					ent->z = 4;
+				}
+
+			}
+			else {
+				//move to target pos
+				if (ent->x < ent->target_x * 8) {
+					ent->x++;
+				}
+				else if (ent->x > ent->target_x * 8) {
+					ent->x--;
+				}
+
+				if (ent->y < ent->target_y * 8) {
+					ent->y++;
+				}
+				else if (ent->y > ent->target_y * 8) {
+					ent->y--;
+				}
+
+
+				if (!(GET_TILE_INFO(_t->type).flags & TIF_WALKABLE)) {
+					if (_t->type == TT_WATER) {
+						ent->z = 4;
+					} else {
+						ent->z = 0;
+						ent->state = 1;
+						ent->substate = 0;
+					}
+				}
+
+				if (GAME_TICK % 16 == 0) {
+					ent->animFrame++;
+					if (ent->animFrame > 3) ent->animFrame = 0;
+				}
+
+			}
+
+		} else {
+
+			ent->animFrame = 0;
+
+			//attack
+			if (ent->substate < 0) ent->substate++;
+
+			if (ent->substate == 0) {
+				ent->z--;
+				if (ent->z <= -8) ent->substate++;
+			} else
+			if (ent->substate == 1) {
+				ent->z ++;
+
+				if (ent->z >= 0) {
+					ent->z = 0;
+					ent->substate = -16;
+
+					if (PosIsOnScreen(ent->x, ent->y))  Sound::PlayTempSound(SND_DEMOLISH, 0.3f, 1.25f);
+
+					//hurt the tile
+					HurtTile(1, _tx, _ty, _t);
+
+					//done
+					if (GET_TILE_INFO(_t->type).flags & TIF_WALKABLE) {
+						ent->state = 0;
+					}
+				}
+
+			}
+
+
+		}
+
 	}
+
 }
 
 
 void E_WalkerDraw(Entity* ent) {
+
+	int _cropY = 0;
+	if (ent->z > 0) _cropY = ent->z;
+
 	//shadow
 	Graphics::DrawSpr(TEX_CHARS, { ent->x - 4 - CAMERA_X, ent->y - 1 - CAMERA_Y, 8, 2 }, { 24, 187, 8, 2 });
 	//me
-	Graphics::DrawSpr(TEX_CHARS, { ent->x - 1 - arrAnimWalkerWalk[ent->animFrame].w/2 - CAMERA_X, ent->y - 10 + ent->z - CAMERA_Y, arrAnimWalkerWalk[ent->animFrame].w, arrAnimWalkerWalk[ent->animFrame].h}, arrAnimWalkerWalk[ent->animFrame]);
+	Graphics::DrawSpr(TEX_CHARS, { ent->x - 1 - (arrAnimWalkerWalk[ent->animFrame].w / 2) - CAMERA_X, ent->y - 10 + ent->z - CAMERA_Y, arrAnimWalkerWalk[ent->animFrame].w, arrAnimWalkerWalk[ent->animFrame].h - _cropY }, 
+						{ arrAnimWalkerWalk[ent->animFrame].x, arrAnimWalkerWalk[ent->animFrame].y, arrAnimWalkerWalk[ent->animFrame].w, arrAnimWalkerWalk[ent->animFrame].h - _cropY });
 }
 
 
@@ -280,8 +413,8 @@ void E_AlienUfoBulletTick(Entity* ent) {
 	}
 
 	//check for hitting enemy
-	//Entity* _ent = GetEntityInDistFlags(ent->x, ent->y, 5, EFL_HUMAN);
-	Entity* _ent = GetEntityInTileFlags(ent->x, ent->y, EFL_HUMAN);
+	Entity* _ent = GetEntityInDistFlags(ent->x, ent->y, 5, EFL_HUMAN);
+	//Entity* _ent = GetEntityInTileFlags(ent->x, ent->y, EFL_HUMAN);
 	if (_ent != NULL) {
 		_ent->hp -= ent->dmg;
 		arrEntityFuncs[_ent->entityIndex].OnHurt(_ent, ent);
@@ -336,8 +469,8 @@ void E_HunterTick(Entity* ent) {
 	}
 
 	float _angle = atan2(ent->target_x - ent->fy, ent->target_y - ent->fx);
-	ent->mx += 0.125f * cos(_angle);
-	ent->my += 0.125f * sin(_angle);
+	ent->mx += 0.1f * cos(_angle);
+	ent->my += 0.1f * sin(_angle);
 
 
 	//consider shootin'
@@ -364,31 +497,43 @@ void E_HunterTick(Entity* ent) {
 	*/
 
 	if (ent->wait <= 0) {
-		Entity* _bul;
+		if (GetEntityInDistFlags(ent->x, ent->y, 128, EFL_HUMAN) != NULL) {
+			Entity* _bul;
 
-		_bul = LEVEL.AddEntity(ent->x, ent->y + 4, ENT_ALIENBULLET);
-		_bul->mx = -2;
-		_bul->z = ent->z;
-		_bul->wait = 40;
+			if (PosIsOnScreen(ent->x, ent->y)) Sound::PlayTempSoundAt(SND_LASER, ent->x, ent->y, 0.5f, 0.75f);
 
-		_bul = LEVEL.AddEntity(ent->x, ent->y + 4, ENT_ALIENBULLET);
-		_bul->mx = 2;
-		_bul->z = ent->z;
-		_bul->wait = 40;
+			if (ent->ticker == 0) ent->ticker = 1;
+			else ent->ticker = 0;
 
 
-		_bul = LEVEL.AddEntity(ent->x, ent->y + 4, ENT_ALIENBULLET);
-		_bul->my = -2;
-		_bul->z = ent->z;
-		_bul->wait = 40;
+			_bul = LEVEL.AddEntity(ent->x, ent->y + 4, ENT_ALIENBULLET);
+			_bul->mx = -2;
+			if (ent->ticker == 1) _bul->my = -2;
+			_bul->z = ent->z;
+			_bul->wait = 20;
+
+			_bul = LEVEL.AddEntity(ent->x, ent->y + 4, ENT_ALIENBULLET);
+			_bul->mx = 2;
+			if (ent->ticker == 1) _bul->my = -2;
+			_bul->z = ent->z;
+			_bul->wait = 20;
 
 
-		_bul = LEVEL.AddEntity(ent->x, ent->y + 4, ENT_ALIENBULLET);
-		_bul->my = 2;
-		_bul->z = ent->z;
-		_bul->wait = 40;
+			_bul = LEVEL.AddEntity(ent->x, ent->y + 4, ENT_ALIENBULLET);
+			_bul->my = -2;
+			if (ent->ticker == 1) _bul->mx = -2;
+			_bul->z = ent->z;
+			_bul->wait = 20;
 
-		ent->wait = 256;
+
+			_bul = LEVEL.AddEntity(ent->x, ent->y + 4, ENT_ALIENBULLET);
+			_bul->my = 2;
+			if (ent->ticker == 1) _bul->mx = 2;
+			_bul->z = ent->z;
+			_bul->wait = 20;
+
+			ent->wait = 40;
+		}
 	} else {
 		ent->wait--;
 	}

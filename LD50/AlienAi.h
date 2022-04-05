@@ -24,7 +24,7 @@ struct AlienParty {
 
 class AlienMastermind {
 public:
-	//std::vector<Entity*> vActiveAlienUnits;
+	std::vector<Entity*> vActiveAlienUnits;
 
 	short warStage = 1;
 

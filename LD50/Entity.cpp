@@ -16,6 +16,7 @@ const EntityFunctions arrEntityFuncs[] = {
 	{ CityPlaneInit, CityPlaneTick, CityPlaneDraw, PlaneHurt }, // xirt plane
 	{ NoFunc, E_AlienUfoBulletTick, E_AlienUfoBulletDraw }, // a.ien bullet
 	{ E_HunterInit, E_HunterTick, E_HunterDraw, E_UfoHurt }, // hunter
+	{ MilJetInit, MilJetTick, MilJetDraw, PlaneHurt }, // miljet
 
 };
 

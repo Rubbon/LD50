@@ -7,8 +7,6 @@
 bool RUN_GAME = false;
 Game GAME = {};
 
-//sound
-AudioSource Game::sndBgm;
 
 void Game::Init() {
 	
@@ -23,7 +21,15 @@ void Game::Init() {
 	state = GS_BUILD_HQ;
 	tileToBuild = TT_HQ_TL;
 
-	LEVEL.AddEntity(CAMERA_X, CAMERA_Y, ENT_E_ALIEN_HUNTER);
+
+	//music thing
+	//bgm audio source
+	audio_bgm.Generate(false);
+	audio_bgm.SetLooping(true);
+	audio_bgm.SetGain(0.5f);
+
+	
+	SetMusicTo(BGM_BUILDMODE);
 }
 
 
@@ -34,9 +40,26 @@ int _borderW;
 bool draggingCam = false;
 int camDragX, camDragY;
 
+int _freeCashTick = 0;
+
 void Game::Tick() {
 	//reset cursor state first thing
 	cursorState = CS_POINTER;
+
+	//no tick
+	if (state == GS_GAMEOVER) {
+		SetMusicTo(SFX_NOSOUND);
+		return;
+	}
+
+	//get mone
+	if (_freeCashTick <= 0) {
+		playerCash++;
+		_freeCashTick = 256;
+	}
+	else {
+		_freeCashTick--;
+	}
 
 	//fix border offset
 	_borderW = std::max(((SCREEN_W / 20) >> 3) * 8, 16);
@@ -129,6 +152,13 @@ void Game::Tick() {
 				//decrement build timer
 				jetBuildTimer--;
 			}
+
+			//repair HQ
+			//if (GAME_TICK % 60 == 0) {
+				//Tile* _t = LEVEL.GetTile(LEVEL.playerHq.origin_x, LEVEL.playerHq.origin_y);
+				//if (_t->hp < GET_TILE_INFO(_t->type).baseHp) _t->hp++;
+			//}
+
 		}
 
 	}
@@ -147,6 +177,8 @@ void Game::Tick() {
 					//build
 					if (CheckIfCanBuildTile(hovered_tile_x, hovered_tile_y, tileToBuild)) {
 
+						playerCash -= GET_TILE_INFO(tileToBuild).buildCost;
+
 						int _sp = 0;
 						//special case for stuyff on water
 						if (LEVEL.GetTile(hovered_tile_x, hovered_tile_y)->type == TT_WATER)  _sp = 1;
@@ -159,7 +191,7 @@ void Game::Tick() {
 					//demolish
 					//temp
 					if (LEVEL.GetTile(hovered_tile_x, hovered_tile_y)->type != TT_WATER) {
-						OnTileDestroy(hovered_tile_x, hovered_tile_y, LEVEL.GetTile(hovered_tile_x, hovered_tile_y));
+						OnTileDestroy(hovered_tile_x, hovered_tile_y, LEVEL.GetTile(hovered_tile_x, hovered_tile_y), true);
 					}
 				}
 			}
@@ -394,8 +426,8 @@ void Game::DrawUi() {
 
 	//JET HP
 	if (playerJet != NULL && !(playerJet->flags & EFL_DELETED)) {
-		Graphics::DrawText(17, SCREEN_H - 15, "H " + std::to_string(playerJet->hp), 1, { 0, 0, 0, 255 });
-		Graphics::DrawText(16, SCREEN_H - 16, "H " + std::to_string(playerJet->hp), 1, { 247, 104, 104, 255 });
+		Graphics::DrawText(17, SCREEN_H - 15, "JET " + std::to_string(playerJet->hp), 1, { 0, 0, 0, 255 });
+		Graphics::DrawText(16, SCREEN_H - 16, "JET " + std::to_string(playerJet->hp), 1, { 247, 104, 104, 255 });
 	}
 	//looking at hq
 	else if (LEVEL.playerHq.flags & CF_ACTIVE) {
@@ -410,6 +442,24 @@ void Game::DrawUi() {
 				Graphics::DrawText(_borderW, borderTopSize, "PREPARING JET!", 1, { 255, 152, 51, 255 });
 			}
 		}
+
+		//HQ hp
+		//Tile* _t = LEVEL.GetTile(LEVEL.playerHq.origin_x, LEVEL.playerHq.origin_y);
+		//Graphics::DrawText(17, SCREEN_H - 15, "HQ " + std::to_string(_t->hp), 1, { 0, 0, 0, 255 });
+		//Graphics::DrawText(16, SCREEN_H - 16, "HQ " + std::to_string(_t->hp), 1, { 247, 104, 104, 255 });
+	}
+
+
+
+	//game over
+	if (state == GS_GAMEOVER) {
+		SDL_SetRenderDrawBlendMode(Graphics::renderer, SDL_BLENDMODE_MUL);
+		Graphics::DrawRect({ 0, 0, SCREEN_W, SCREEN_H }, {255, 0, 0, 100});
+		SDL_SetRenderDrawBlendMode(Graphics::renderer, SDL_BLENDMODE_BLEND);
+
+		std::string _str = "GAME OVER";
+		Graphics::DrawText(1 + SCREEN_W / 2 - _str.length() * 8, 63, _str, 2, {0, 0, 0, 255});
+		Graphics::DrawText(-1 + SCREEN_W / 2 - _str.length() * 8, 65, _str, 2);
 	}
 
 
@@ -439,10 +489,15 @@ void Game::DrawUi() {
 
 	}
 
+
+
 }
 
 void Game::SetMusicTo(int sound) {
-	if (sound == 0) sndBgm.Stop();
-	else if (sndBgm.soundBufferID != sound) sndBgm.Play(sound, true, false);
+	if (sound == 0) audio_bgm.Stop();
+	else if (audio_bgm.soundBufferID != sound) {
+		audio_bgm.Stop();
+		audio_bgm.Play(sound, true, false);
+	}
 }
 

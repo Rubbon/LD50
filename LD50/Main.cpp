@@ -45,10 +45,10 @@ int main(int argc, char* argv[]) {
 	}
 
 
-	GAME.Init();
 	Graphics::LoadGfx();
 	Sound::InitSoundDevice();
 	Sound::LoadGameAudio();
+	GAME.Init();
 
 	SDL_Event sdlEvent;
 

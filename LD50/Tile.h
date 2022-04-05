@@ -48,6 +48,8 @@ enum TileType {
 
 	TT_TRAIN_DEPOT,
 
+	TT_BEACON,
+
 };
 
 struct Pos {
@@ -132,8 +134,7 @@ extern bool CheckIfCanBuildTile(int x, int y, TileType _type);
 
 extern void HurtTile(int dmg, int x, int y, Tile* _tile);
 
-extern void OnTileDestroy(int x, int y, Tile* _tile, bool multiDestroy = true);
-
+extern void OnTileDestroy(int x, int y, Tile* _tile, bool demolished = false, bool multiDestroy = true);
 
 
 enum CityFlags {

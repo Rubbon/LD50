@@ -77,6 +77,23 @@ void TileTick(int x, int y, Tile* _tile) {
 			}
 		break; }
 
+		case TT_AIRFIELD_TL: case TT_AIRFIELD_BR: {
+			if (_tile->ref == 0 || LEVEL.arrEntities[_tile->ref].flags & EFL_DELETED) {
+				if (_tile->timer == 0) {
+					Entity* _ent = LEVEL.AddEntity(x * 8, y * 8, ENT_MILJET);
+					_tile->ref = _ent->id;
+					_ent->fx = x + (rand() % 6) - 3;
+					_ent->fy = y + (rand() % 6) - 3;
+					_ent->target_x = x * 8;
+					_ent->target_y = y * 8;
+					_tile->timer = 64;
+				} else {
+					_tile->timer--;
+				}
+			}
+		break; }
+
+
 	}
 }
 
@@ -237,6 +254,10 @@ void DrawLand(int dx, int dy, int tx, int ty) {
 }
 
 bool CheckIfCanBuildTile(int x, int y, TileType _type) {
+
+	//see if we have enough money
+	if (GAME.playerCash < GET_TILE_INFO(_type).buildCost) return false;
+
 	switch (_type) {
 		default: 
 			if (LEVEL.GetTile(x, y)->type == TT_LAND || LEVEL.GetTile(x, y)->type == TT_CRATER) return true;
@@ -542,21 +563,39 @@ void TileOnBuilt(int x, int y, Tile* _tile) {
 
 			//curve left?
 			_tcheck0 = LEVEL.GetTile(x - 1, y);
-			if (_tcheck0->type == TT_RAIL_TRACK && ( _tcheck0->timer == TRS_H || _tcheck0->timer == TRS_RU || _tcheck0->timer == TRS_RD)) {
-				if (_connected_above && _connected_below) _tile->timer = TRS_CROSS;
-				else {
-					if (_connected_above) _tile->timer = TRS_LU;
-					else if (_connected_below) _tile->timer = TRS_LD;
+			if (_tcheck0->type == TT_RAIL_TRACK) {
+				if (_tcheck0->timer == TRS_H || _tcheck0->timer == TRS_RU || _tcheck0->timer == TRS_RD) {
+					if (_connected_above && _connected_below) _tile->timer = TRS_CROSS;
+					else {
+						if (_connected_above) _tile->timer = TRS_LU;
+						else if (_connected_below) _tile->timer = TRS_LD;
+					}
+				} else if (_tcheck0->timer == TRS_V) {
+					_tcheck1 = LEVEL.GetTile(x - 1, y - 1);
+					_tcheck2 = LEVEL.GetTile(x - 1, y + 1);
+					//no top
+					if (_tcheck1->type != TT_RAIL_TRACK || (_tcheck1->timer != TRS_V && _tcheck1->timer != TRS_RD && _tcheck1->timer != TRS_LD)) _tcheck0->timer = TRS_RD;
+					//no bottom
+					else if (_tcheck2->type != TT_RAIL_TRACK || (_tcheck2->timer != TRS_V && _tcheck2->timer != TRS_RU && _tcheck2->timer != TRS_LU)) _tcheck0->timer = TRS_RU;
 				}
 			}
 
 			//curve right?
 			_tcheck0 = LEVEL.GetTile(x + 1, y);
-			if (_tcheck0->type == TT_RAIL_TRACK && (_tcheck0->timer == TRS_H || _tcheck0->timer == TRS_LU || _tcheck0->timer == TRS_LD)) {
-				if (_connected_above && _connected_below) _tile->timer = TRS_CROSS;
-				else {
-					if (_connected_above) _tile->timer = TRS_RU;
-					else if (_connected_below) _tile->timer = TRS_RD;
+			if (_tcheck0->type == TT_RAIL_TRACK) {
+				if (_tcheck0->timer == TRS_H || _tcheck0->timer == TRS_LU || _tcheck0->timer == TRS_LD) {
+					if (_connected_above && _connected_below) _tile->timer = TRS_CROSS;
+					else {
+						if (_connected_above) _tile->timer = TRS_RU;
+						else if (_connected_below) _tile->timer = TRS_RD;
+					}
+				} else if (_tcheck0->timer == TRS_V) {
+					_tcheck1 = LEVEL.GetTile(x + 1, y - 1);
+					_tcheck2 = LEVEL.GetTile(x + 1, y + 1);
+					//no top
+					if (_tcheck1->type != TT_RAIL_TRACK || (_tcheck1->timer != TRS_V && _tcheck1->timer != TRS_RD && _tcheck1->timer != TRS_LD)) _tcheck0->timer = TRS_LD;
+					//no bottom
+					else if (_tcheck2->type != TT_RAIL_TRACK || (_tcheck2->timer != TRS_V && _tcheck2->timer != TRS_RU && _tcheck2->timer != TRS_LU)) _tcheck0->timer = TRS_LU;
 				}
 			}
 
@@ -579,15 +618,17 @@ void HurtTile(int dmg, int x, int y, Tile* _tile) {
 
 
 
-void OnTileDestroy(int x, int y, Tile* _tile, bool multiDestroy) {
+void OnTileDestroy(int x, int y, Tile* _tile, bool demolished, bool multiDestroy) {
 
 	switch (_tile->type) {
 		default:
 			if (multiDestroy) {
 				TileInfo _tileInfo = GET_TILE_INFO(_tile->type);
-				OnTileDestroy(x + _tileInfo.multiTiles.x, y, LEVEL.GetTile(x + _tileInfo.multiTiles.x, y), false);
-				OnTileDestroy(x, y + _tileInfo.multiTiles.y, LEVEL.GetTile(x, y + _tileInfo.multiTiles.y), false);
-				OnTileDestroy(x + _tileInfo.multiTiles.x, y + _tileInfo.multiTiles.y, LEVEL.GetTile(x + _tileInfo.multiTiles.x, y + _tileInfo.multiTiles.y), false);
+				if (_tileInfo.multiTiles.x != 0 || _tileInfo.multiTiles.y != 0) {
+					OnTileDestroy(x + _tileInfo.multiTiles.x, y, LEVEL.GetTile(x + _tileInfo.multiTiles.x, y), false);
+					OnTileDestroy(x, y + _tileInfo.multiTiles.y, LEVEL.GetTile(x, y + _tileInfo.multiTiles.y), false);
+					OnTileDestroy(x + _tileInfo.multiTiles.x, y + _tileInfo.multiTiles.y, LEVEL.GetTile(x + _tileInfo.multiTiles.x, y + _tileInfo.multiTiles.y), false);
+				}
 			}
 
 			if (_tile->flags & TF_ONWATER) _tile->type = TT_WATER;
@@ -596,10 +637,28 @@ void OnTileDestroy(int x, int y, Tile* _tile, bool multiDestroy) {
 			if (PosIsOnScreen(x * 8, y * 8)) Sound::PlayTempSound(SND_DEMOLISH,0.2f,1.0f);
 		break;
 
-		case TT_HQ_TL: case TT_HQ_TR: case TT_HQ_BL: case TT_HQ_BR:
+		case TT_HQ_TL: case TT_HQ_TR: case TT_HQ_BL: case TT_HQ_BR: {
+			_tile->type = TT_CRATER;
 			if (PosIsOnScreen(x * 8, y * 8)) Sound::PlayTempSoundAt(SND_DEMOLISH, x * 8, y * 8, 0.75f, 0.8f);
 			GAME.state = GS_GAMEOVER;
+			break; }
+
+		//no no no
+		case TT_CONSTRUCTION_SITE: break;
+
+		case TT_CITYBLOCK_BIG: case TT_CITYBLOCK_SMALL: case TT_CITY_BANK:
+
+			if (demolished) {
+				LEVEL.arrCities[_tile->owner].friendliness -= 2;
+				LEVEL.arrCities[_tile->owner].money = 0;
+			}
+
+			if (_tile->flags & TF_ONWATER) _tile->type = TT_WATER;
+			else _tile->type = TT_CRATER;
+			_tile->owner = 0;
+			if (PosIsOnScreen(x * 8, y * 8)) Sound::PlayTempSound(SND_DEMOLISH, 0.2f, 1.0f);
 		break;
+
 
 
 
@@ -622,6 +681,12 @@ void City::expandTick() {
 			flags &= ~CF_HASBANK;
 			bankX = -1; bankY = -1; //bank has been gooped
 		}
+	}
+	
+	//remove from active duty if out of tiles
+	if (myTiles.size() <= 0) {
+		flags &= ~CF_ACTIVE;
+		LEVEL.activeCities--;
 	}
 
 	for (int i = 0; i < myTiles.size(); i++) {

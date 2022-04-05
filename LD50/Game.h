@@ -36,7 +36,7 @@ public:
 
 	GameState state = GS_PLAY;
 
-	int playerCash = 100;
+	int playerCash = 400;
 
 	//build menu
 	char bm_selected_opt = -1;
@@ -49,6 +49,10 @@ public:
 	//border
 	short borderTopSize = 16;
 	short borderBottomSize = 16;
+
+
+	//music
+	AudioSource audio_bgm;
 
 
 #define BUILD_OPTIONS 9
@@ -90,8 +94,7 @@ public:
 	void TickCamMovement();
 
 	void DrawUi();
-	static void SetMusicTo(int sound);
-	static AudioSource sndBgm;
+	void SetMusicTo(int sound);
 };
 
 

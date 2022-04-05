@@ -36,13 +36,6 @@ void PlayerJetInit(Entity* ent) {
 
 void PlayerJetTick(Entity* ent) {
 
-	if (Input::KeyPressed(SDL_SCANCODE_D)) {
-		ent->state = PJS_DEAD;
-		ent->substate = 0;
-	}
-
-
-
 	switch (ent->state) {
 
 	case PJS_FLYING: {
@@ -226,6 +219,9 @@ void PlayerJetTick(Entity* ent) {
 					CAMERA_X = (8 + LEVEL.playerHq.origin_x * 8) - SCREEN_W / 2;
 					CAMERA_Y = (8 + LEVEL.playerHq.origin_y * 8) -SCREEN_W / 2;
 
+					GAME.playerCash -= 50;
+					if (GAME.playerCash <= 0) GAME.playerCash = 0;
+
 					DeleteEntity(ent);
 					return;
 				}
@@ -375,9 +371,45 @@ void MilJetTick(Entity* ent) {
 			if (ent->y < ent->target_y) ent->y++;
 			else if (ent->y > ent->target_y) ent->y--;
 
-			if (ent->x == ent->target_x && ent->y == ent->target_y) ent->state = 1;
+			if (ent->x == ent->target_x && ent->y == ent->target_y) {
+
+				//there's a unit to attack!
+				Entity* _oe = GetEntityInDistFlags(ent->x, ent->y, 64, EFL_ALIEN);
+				if (_oe != NULL) {
+
+					//make bullet
+					Entity* _bul = LEVEL.AddEntity(ent->x, ent->y, ENT_JETBULLET);
+					float _angle = atan2(_oe->y - ent->y, _oe->x - _bul->x);
+					_bul->mx = 3 * cos(_angle);
+					_bul->my = 3 * sin(_angle);
+					_bul->z = ent->z;
+
+					if (PosIsOnScreen(ent->x, ent->y)) Sound::PlayTempSoundAt(SND_LASER, ent->x, ent->y, 0.4f, 2.0f);
+					ent->wait += 32 + rand() % 48;
+					break;
+				}
+
+
+				int _moveX = -1;
+				int _moveY = -1;
+
+				//find new pos
+				//think about moving randomly
+				if (_moveX == -1) {
+					_moveX = ent->fx + (rand() % 16) - 8;
+					_moveY = ent->fy + (rand() % 16) - 8;
+				}
+
+				if (LEVEL.GetEntityAtTile(_moveX, _moveY, EFL_AIR) == NULL) {
+					ent->target_x = _moveX * 8;
+					ent->target_y = _moveY * 8;
+					ent->wait += 128 + rand() % 128;
+				}
+			
+			}
 
 		break;
+
 
 		//crash
 		//case -1:

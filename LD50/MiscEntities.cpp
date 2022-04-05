@@ -202,6 +202,7 @@ void TrainTick(Entity* ent) {
 													LEVEL.arrCities[i].name = LevelGenerator::GetCityName();
 													LEVEL.arrCities[i].index = i;
 													LEVEL.arrCities[i].myTiles.clear();
+													LEVEL.activeCities ++;
 
 													Tile* _tile = BuildTileAt((ent->x >> 3) + ix, (ent->y >> 3) + iy, TT_CITYBLOCK_SMALL);
 													_tile->owner = i;

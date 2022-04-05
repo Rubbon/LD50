@@ -16,10 +16,17 @@ void Level::Tick() {
 
 	//city tick
 	if (GAME_TICK % 60 == 0) {
-		if (arrCities[cityTick].flags & CF_ACTIVE) arrCities[cityTick].expandTick();
+		
+		if (arrCities[cityTick].flags & CF_ACTIVE) {
+			arrCities[cityTick].expandTick();
+		}
 		cityTick++;
 		if (cityTick >= MAX_CITIES) cityTick = 0;
+
+		//all cities arfe dead <:(
+		if (activeCities <= 0) GAME.state = GS_GAMEOVER;
 	}
+
 
 	//tile tick
 	if (GAME_TICK % 2 == 0) {
@@ -340,6 +347,7 @@ void LevelGenerator::GenerateWorld(Level* level) {
 
 	//lets make some cities
 	int _cityAmt = 4 + rand() % (7 - 4);
+	level->activeCities = _cityAmt;
 
 	for (i = 0; i < _cityAmt; i++) {
 		
