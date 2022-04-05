@@ -125,7 +125,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{48, 64, 16, 16},
 		/* BUILD_TIME */	256,
 		/* FLAGS */			TIF_HUMAN,
-		/* BUILDCOST */		0,
+		/* BUILDCOST */		1000,
 		/* MULTITILES */	{1,1},
 	},
 	{
@@ -161,7 +161,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{0, 128, 16, 16},
 		/* BUILD_TIME */	256,
 		/* FLAGS */			TIF_HUMAN,
-		/* BUILDCOST */		0,
+		/* BUILDCOST */		600,
 		/* MULTITILES */	{1,1},
 	},
 	{
@@ -197,7 +197,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{0, 96, 8, 8},
 		/* BUILD_TIME */	256,
 		/* FLAGS */			TIF_HUMAN | TIF_TICKABLE,
-		/* BUILDCOST */		0,
+		/* BUILDCOST */		100,
 		/* MULTITILES */	{0,0},
 	},
 	{
@@ -206,7 +206,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{64, 96, 8, 8},
 		/* BUILD_TIME */	128,
 		/* FLAGS */			TIF_HUMAN,
-		/* BUILDCOST */		0,
+		/* BUILDCOST */		10,
 		/* MULTITILES */	{0,0},
 	},
 	{
@@ -215,7 +215,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{56, 56, 8, 8},
 		/* BUILD_TIME */	256,
 		/* FLAGS */			TIF_HUMAN,
-		/* BUILDCOST */		0,
+		/* BUILDCOST */		100,
 		/* MULTITILES */	{0,0},
 	},
 	{
@@ -224,7 +224,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{88, 88, 8, 8},
 		/* BUILD_TIME */	256,
 		/* FLAGS */			TIF_HUMAN | TIF_RAIL,
-		/* BUILDCOST */		0,
+		/* BUILDCOST */		150,
 		/* MULTITILES */	{0,0},
 	},
 	{
@@ -233,7 +233,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{88, 88, 8, 8},
 		/* BUILD_TIME */	128,
 		/* FLAGS */			TIF_HUMAN | TIF_RAIL,
-		/* BUILDCOST */		0,
+		/* BUILDCOST */		150,
 		/* MULTITILES */	{0,0},
 	},
 	{
@@ -242,7 +242,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{104, 88, 8, 8},
 		/* BUILD_TIME */	64,
 		/* FLAGS */			TIF_HUMAN | TIF_RAIL | TIF_WALKABLE,
-		/* BUILDCOST */		0,
+		/* BUILDCOST */		20,
 		/* MULTITILES */	{0,0},
 	},
 	{
@@ -251,7 +251,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{160, 88, 8, 8},
 		/* BUILD_TIME */	256,
 		/* FLAGS */			TIF_HUMAN | TIF_TICKABLE,
-		/* BUILDCOST */		0,
+		/* BUILDCOST */		200,
 		/* MULTITILES */	{0,0},
 	},
 

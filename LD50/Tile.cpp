@@ -610,10 +610,10 @@ void OnTileDestroy(int x, int y, Tile* _tile, bool multiDestroy) {
 void City::expandTick() {
 	//std::cout << timer << std::endl;
 	int _popCount = 0;
-	if (bankX != -1) {
+	if (bankX != -1 && bankY!=-1) {
 		Tile* _bankPos = LEVEL.GetTile(bankX, bankY);
 		if (_bankPos->type != TT_CITY_BANK) flags &= ~CF_HASBANK;
-		bankX = -1; bankY = -1;
+		bankX = -1; bankY = -1; //bank has been gooped
 	}
 
 	for (int i = 0; i < myTiles.size(); i++) {
@@ -639,7 +639,7 @@ void City::expandTick() {
 		resources --;
 	}
 
-	if (money = maxMoney && flags&CF_HASBANK) {
+	if (money == maxMoney && flags&CF_HASBANK) {
 		//send a plane to hq
 		Entity* _plane = LEVEL.AddEntity(origin_x * 8, origin_y * 8, ENT_CITYPLANE);
 		_plane->target_x = 8 + LEVEL.playerHq.origin_x * 8;
@@ -674,7 +674,7 @@ void City::expandTick() {
 
 					//chance to upgrade existing city tile
 					_chance = (int)rand() % 10;
-					if (_chance > 1) {
+					if (_chance > 6) {
 						if (_t->type == TT_CITYBLOCK_SMALL) {
 							_t = BuildTileAt(_placeX, _placeY, TT_CITYBLOCK_BIG);
 							_t->owner = index;
@@ -707,9 +707,12 @@ void City::expandTick() {
 			}
 		}
 		timer = 4;
+		
 		std::cout << name << std::endl;
 		std::cout << std::to_string(resources) << std::endl;
 		std::cout << std::to_string(friendliness) << std::endl;
 		std::cout << std::to_string(money) << std::endl;
+		if (flags & CF_HASBANK)std::cout << "GOT A BANK" << std::endl;
+		else std::cout << "no bank :(" << std::endl;
 	}
 }
