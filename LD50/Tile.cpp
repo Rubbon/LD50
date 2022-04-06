@@ -24,8 +24,8 @@ void TileTick(int x, int y, Tile* _tile) {
 
 		case TT_AA_GUN: {
 			if ((x + y + GAME_TICK) % 32 == 0) {
-
-				Entity* _ent = GetEntityInDistFlags((x*8) + 4, (y*8) + 4, 64, EFL_ALIEN);
+				
+				Entity* _ent = GetEntityInDistFlags((x*8) + 4, (y*8) + 4, 56, EFL_ALIEN); // 64 dist og
 				
 				if (_ent != NULL) {
 					//make bullet
@@ -35,6 +35,7 @@ void TileTick(int x, int y, Tile* _tile) {
 					_bul->mx = 4 * cos(_angle);
 					_bul->my = 4 * sin(_angle);
 					_bul->z = _ent->z;
+					_bul->ticker = 14;
 					arrEntityFuncs[_bul->entityIndex].Init(_bul);
 				}
 

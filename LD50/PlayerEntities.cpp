@@ -361,6 +361,7 @@ void JetBulletInit(Entity* ent) {
 	//angle
 	//if (ent->my < 0) ent->animFrame = SDL_FLIP_HORIZONTAL;
 	//else ent->animFrame = SDL_FLIP_NONE;
+	ent->ticker = 20;
 }
 
 void JetBulletTick(Entity* ent) {
@@ -380,7 +381,7 @@ void JetBulletTick(Entity* ent) {
 		DeleteEntity(ent);
 	}
 
-	if (ent->wait > 20) {
+	if (ent->wait > ent->ticker) {
 		if (ent->z < 0) {
 			ent->z++;
 		} else {
@@ -430,6 +431,8 @@ void JetBulletDraw(Entity* ent) {
 
 void MilJetInit(Entity* ent) {
 	ent->flags = EFL_HUMAN | EFL_AIR;
+	ent->hp = 2;
+	ent->ticker = rand() % 32;
 }
 
 void MilJetTick(Entity* ent) {
@@ -438,6 +441,7 @@ void MilJetTick(Entity* ent) {
 	switch (ent->state) {
 		case 0: // fly to target
 			if (ent->z > -5) ent->z--;
+
 
 			//move to target pos
 			if (ent->x < ent->target_x) ent->x++;
@@ -454,27 +458,30 @@ void MilJetTick(Entity* ent) {
 					Entity* _ent = LEVEL.AddEntity(ent->x, ent->y + 2, ENT_JMISSILE);
 					ent->ticker = 128;
 				}
-			} else {
+			}
+			else {
 				ent->ticker--;
 			}
 
 
 			if (ent->x == ent->target_x && ent->y == ent->target_y) {
 
-				//there's a unit to attack!
-				Entity* _oe = GetEntityInDistFlags(ent->x, ent->y, 64, EFL_ALIEN);
-				if (_oe != NULL) {
+				if (ent->ticker <= 0) {
+					//there's a unit to attack!
+					Entity* _oe = GetEntityInDistFlags(ent->x, ent->y, 64, EFL_ALIEN);
+					if (_oe != NULL) {
 
-					//make bullet
-					Entity* _bul = LEVEL.AddEntity(ent->x, ent->y, ENT_JETBULLET);
-					float _angle = atan2(_oe->y - ent->y, _oe->x - _bul->x);
-					_bul->mx = 3 * cos(_angle);
-					_bul->my = 3 * sin(_angle);
-					_bul->z = ent->z;
+						//make bullet
+						Entity* _bul = LEVEL.AddEntity(ent->x, ent->y, ENT_JETBULLET);
+						float _angle = atan2(_oe->y - ent->y, _oe->x - _bul->x);
+						_bul->mx = 3 * cos(_angle);
+						_bul->my = 3 * sin(_angle);
+						_bul->z = ent->z;
 
-					if (PosIsOnScreen(ent->x, ent->y)) Sound::PlayTempSoundAt(SND_LASER, ent->x, ent->y, 0.4f, 2.0f);
-					ent->wait += 32 + rand() % 48;
-					break;
+						if (PosIsOnScreen(ent->x, ent->y)) Sound::PlayTempSoundAt(SND_LASER, ent->x, ent->y, 0.4f, 2.0f);
+						ent->ticker += 112 + rand() % 32;
+						break;
+					}
 				}
 
 				int _moveX = -1;
@@ -490,10 +497,12 @@ void MilJetTick(Entity* ent) {
 				if (LEVEL.GetEntityAtTile(_moveX, _moveY, EFL_AIR) == NULL) {
 					ent->target_x = _moveX * 8;
 					ent->target_y = _moveY * 8;
-					ent->wait += 128 + rand() % 128;
+					//ent->wait += 128 + rand() % 128;
 				}
 
 			}
+
+			//ent->wait--;
 
 		break;
 

@@ -120,6 +120,7 @@ void E_UfoTick(Entity* ent) {
 						float _angle = atan2(_oe->y - ent->y, _oe->x - _bul->x);
 						_bul->mx = 3 * cos(_angle);
 						_bul->my = 3 * sin(_angle);
+						_bul->wait = 16;
 						_bul->z = ent->z;
 
 						if (PosIsOnScreen(ent->x, ent->y)) Sound::PlayTempSoundAt(SND_LASER, ent->x, ent->y, 0.5f, 1.5f);
