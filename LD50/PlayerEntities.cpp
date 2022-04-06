@@ -446,6 +446,19 @@ void MilJetTick(Entity* ent) {
 			if (ent->y < ent->target_y) ent->y++;
 			else if (ent->y > ent->target_y) ent->y--;
 
+
+
+			//see if theres something to bomb below
+			if (ent->ticker <= 0) {
+				if (GET_TILE_INFO(LEVEL.GetTile(ent->x >> 3, ent->y >> 3)->type).flags & TIF_ALIEN) {
+					Entity* _ent = LEVEL.AddEntity(ent->x, ent->y + 2, ENT_JMISSILE);
+					ent->ticker = 128;
+				}
+			} else {
+				ent->ticker--;
+			}
+
+
 			if (ent->x == ent->target_x && ent->y == ent->target_y) {
 
 				//there's a unit to attack!
@@ -464,7 +477,6 @@ void MilJetTick(Entity* ent) {
 					break;
 				}
 
-
 				int _moveX = -1;
 				int _moveY = -1;
 
@@ -480,7 +492,7 @@ void MilJetTick(Entity* ent) {
 					ent->target_y = _moveY * 8;
 					ent->wait += 128 + rand() % 128;
 				}
-			
+
 			}
 
 		break;

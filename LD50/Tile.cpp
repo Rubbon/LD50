@@ -135,7 +135,7 @@ void TileTick(int x, int y, Tile* _tile) {
 				//consider spawning a walker
 				if (_tile->timer <= 0) {
 
-					if (rand() % 3 == 0) {
+					if (rand() % 2 == 0) {
 						LEVEL.AddEntity(x * 8, y * 8, ENT_WALKER);
 					}
 
