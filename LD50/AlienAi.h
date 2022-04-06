@@ -12,6 +12,8 @@ struct AlienParty {
 	short gather_x = 0;
 	short gather_y = 0;
 
+	int start_time = 0;
+
 	//int hangAroundTimer = 0;
 
 	//short target_x = 0;

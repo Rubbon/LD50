@@ -59,10 +59,6 @@ void Game::Tick() {
 		}
 	}
 
-	if (Input::KeyPressed(SDL_SCANCODE_A)) {
-		LEVEL.AddEntity(CURSOR_X + CAMERA_X, CURSOR_Y + CAMERA_Y, ENT_WALKER);
-	}
-
 	//no tick
 	if (state == GS_GAMEOVER) {
 		SetMusicTo(SFX_NOSOUND);
@@ -210,7 +206,7 @@ void Game::Tick() {
 				else {
 					//demolish
 					//temp
-					if (LEVEL.GetTile(hovered_tile_x, hovered_tile_y)->type != TT_WATER) {
+					if (LEVEL.GetTile(hovered_tile_x, hovered_tile_y)->type != TT_WATER && !(GET_TILE_INFO(LEVEL.GetTile(hovered_tile_x, hovered_tile_y)->type).flags & TIF_ALIEN)) {
 						OnTileDestroy(hovered_tile_x, hovered_tile_y, LEVEL.GetTile(hovered_tile_x, hovered_tile_y), true);
 					}
 				}

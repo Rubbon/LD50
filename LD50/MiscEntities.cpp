@@ -274,6 +274,7 @@ void TrainTick(Entity* ent) {
 			ent->wait--;
 		}
 	}
+	std::cout << "train tick end" << std::endl;
 }
 
 void TrainDraw(Entity* ent) {

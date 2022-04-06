@@ -17,7 +17,7 @@ Chunk _noChunk = {};
 Entity _noEnt = {};
 
 void Level::Tick() {
-
+	std::cout << "level tick" << std::endl;
 	//city tick
 	if (GAME_TICK % 30 == 0) {
 		
@@ -31,7 +31,7 @@ void Level::Tick() {
 		if (activeCities <= 0) GAME.state = GS_GAMEOVER;
 	}
 
-
+	std::cout << "tile tick" << std::endl;
 	//tile tick
 	if (GAME_TICK % 2 == 0) {
 		for (i = 0; i < vTilesToTick.size(); i++) {
@@ -51,7 +51,7 @@ void Level::Tick() {
 	//for (i = 0; i < (LEVEL_W / CHUNK_SIZE) * (LEVEL_H / CHUNK_SIZE); i++) {
 	//	arrChunks[i].lsEntities.clear();
 	//}
-
+	std::cout << "entity tick" << std::endl;
 	//tick active entities
 	for (i = 0; i < vActiveEntities.size(); i++) {
 		//remove from active entity list if deleted
@@ -70,7 +70,7 @@ void Level::Tick() {
 
 		arrEntityFuncs[vActiveEntities[i]->entityIndex].Tick(vActiveEntities[i]);
 	}
-
+	std::cout << "level tick end" << std::endl << std::endl;
 }
 
 

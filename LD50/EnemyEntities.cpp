@@ -179,8 +179,8 @@ void E_UfoTick(Entity* ent) {
 
 
 		break;
-
 	}
+	//std::cout << "ufo tick end" << std::endl;
 }
 
 

@@ -37,7 +37,7 @@ public:
 
 	GameState state = GS_PLAY;
 
-	int playerCash = 400;
+	int playerCash = 4000;
 	short playerMissiles = 0;
 
 	//build menu

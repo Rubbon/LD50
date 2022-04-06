@@ -19,7 +19,6 @@ void AlienMastermind::Tick(){
 	TryDoingAttack();
 
 
-
 	//update hives
 	if (hiveTick <= 0) {
 
@@ -87,6 +86,7 @@ void AlienMastermind::Tick(){
 			}
 
 			//update for flanking?
+			//if (vAttackParties[i].start_time )
 
 		}
 
@@ -98,7 +98,6 @@ void AlienMastermind::Tick(){
 		}
 
 	}
-
 
 }
 
@@ -344,6 +343,7 @@ void AlienMastermind::TryDoingAttack() {
 
 			_party.gather_x = _targetX;
 			_party.gather_y = _targetY;
+			_party.start_time = GAME_TICK;
 
 			_party.TellEntitiesToGather();
 
