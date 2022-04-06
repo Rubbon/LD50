@@ -7,15 +7,14 @@
 
 
 void E_UfoInit(Entity* ent) {
-	ent->flags |= EFL_ALIEN;
+	ent->flags |= EFL_ALIEN | EFL_AIR;
 	ent->hp = 2;
 }
 
 
 void E_UfoTick(Entity* ent) {
-
 	ent->z = -6 + sin((GAME_TICK + ent->id)*0.05f) * 2;
-
+	//std::cout << "ufo tick" << std::endl;
 	//move to target pos
 	if (ent->x < ent->target_x) ent->x++;
 	else if (ent->x > ent->target_x) ent->x--;
@@ -30,29 +29,29 @@ void E_UfoTick(Entity* ent) {
 				//report what we see
 				if (ent->wait == 0 && ent->substate == 0) {
 					Tile* _tile = LEVEL.GetTile(ent->x >> 3, ent->y >> 3);
+					if (_tile != NULL) {
 
-					switch (_tile->type) {
+						switch (_tile->type) {
 						case TT_CITYBLOCK_BIG: case TT_CITYBLOCK_SMALL: case TT_CITY_BANK:
-							std::cout << "FOUND CITY " << std::endl;
+							//std::cout << "FOUND CITY " << std::endl;
 							LEVEL.arrCities[_tile->owner].flags |= CF_FOUND;
 							ent->substate = 1;
-						break;
+							break;
 						case TT_HQ_TL: case TT_HQ_TR: case TT_HQ_BL: case TT_HQ_BR:
-							std::cout << "FOUND HQ " << std::endl;
-							GAME.alienMastermind.foundHqPos = {(short)(ent->x >> 3), (short)(ent->y >> 3)};
+							//std::cout << "FOUND HQ " << std::endl;
+							GAME.alienMastermind.foundHqPos = { (short)(ent->x >> 3), (short)(ent->y >> 3) };
 							ent->substate = 1;
-						break;
+							break;
+						}
+
+						if (ent->substate != 0) break;
+
+						//report places of interest
+						if (GET_TILE_INFO(_tile->type).flags & TIF_HUMAN) {
+							//std::cout << "FOUND PLACE OF INTEREST " << std::endl;
+							GAME.alienMastermind.vAreasOfInterest.push_back({ (short)(ent->x >> 3), (short)(ent->y >> 3) });
+						}
 					}
-
-					if (ent->substate != 0) break;
-
-					//report places of interest
-					if (GET_TILE_INFO(_tile->type).flags & TIF_HUMAN) {
-						std::cout << "FOUND PLACE OF INTEREST " << std::endl;
-						GAME.alienMastermind.vAreasOfInterest.push_back({(short)(ent->x >> 3), (short)(ent->y >> 3)});
-					}
-
-
 				}
 
 
@@ -75,7 +74,7 @@ void E_UfoTick(Entity* ent) {
 						//consider reporting as empty plot if nothing was found
 						if (ent->substate == 0) {
 							if (rand() % 3 == 0) {
-								std::cout << "REPORTING EMPTY LAND " << std::endl;
+								//std::cout << "REPORTING EMPTY LAND " << std::endl;
 								GAME.alienMastermind.vEmptyPlots.push_back({ (short)(ent->x >> 3), (short)(ent->y >> 3) });
 							}
 						}
@@ -96,7 +95,21 @@ void E_UfoTick(Entity* ent) {
 			//if we're at destination, consider moving around a little - or shoot if something is near
 			if (ent->x == ent->target_x && ent->y == ent->target_y) {
 
+				if (ent->x < -4 || ent->y < -4 || ent->x >= 4 + LEVEL_W * 8 || ent->y >= 4 + LEVEL_H * 8) DeleteEntity(ent);
+
 				if (ent->wait <= 0) {
+
+					//there's a tile to attack!
+					if (GET_TILE_INFO(_tile->type).flags & TIF_HUMAN) {
+
+						Entity* _fx = SpawnFx(ent->x + 2, ent->y - 4, 0, 8);
+						SetFxSpr(_fx, { 0, 144, 8, 8 }, { 32, 225, 32, 255 });
+
+						HurtTile(1, ent->x >> 3, ent->y >> 3, _tile);
+						if (PosIsOnScreen(ent->x, ent->y)) Sound::PlayTempSoundAt(SND_LASER, ent->x, ent->y, 0.5f, 0.75f);
+						ent->wait += 80 + rand() % 64;
+						break;
+					}
 
 					//there's a unit to attack!
 					Entity* _oe = GetEntityInDistFlags(ent->x, ent->y, 72, EFL_HUMAN);
@@ -114,27 +127,31 @@ void E_UfoTick(Entity* ent) {
 						break;
 					}
 
-					//there's a tile to attack!
-					if (GET_TILE_INFO(_tile->type).flags & TIF_HUMAN) {
-
-						Entity* _fx = SpawnFx(ent->x + 2, ent->y - 4, 0, 8);
-						SetFxSpr(_fx, { 0, 144, 8, 8 }, {32, 225, 32, 255});
-
-						HurtTile(1, ent->x >> 3, ent->y >> 3, _tile);
-						if (PosIsOnScreen(ent->x, ent->y)) Sound::PlayTempSoundAt(SND_LASER, ent->x, ent->y, 0.5f, 0.75f);
-						ent->wait += 80 + rand() % 64;
-						break;
-					}
-
 					int _moveX = -1;
 					int _moveY = -1;
 
+					/*
 					//think about moving to nearby tile
 					for (int i = 0; i < 3 + rand() % 5; i++) {
 						_moveX = (ent->x >> 3) + (rand() % 6) - 3;
 						_moveY = (ent->y >> 3) + (rand() % 6) - 3;
 						//stop trying cause we found a tile to attack
 						if (GET_TILE_INFO(LEVEL.GetTile(_moveX, _moveY)->type).flags & TIF_HUMAN) break;
+					}
+					*/
+
+					//look for a building to smash
+					int _searchDist = 4;
+					int ix, iy;
+					for (ix = -_searchDist; ix < _searchDist; ix++) {
+						for (iy = -_searchDist; iy < _searchDist; iy++) {
+							if (GET_TILE_INFO(LEVEL.GetTile(ix + (ent->x >> 3), iy + (ent->y >> 3))->type).flags & TIF_HUMAN) {
+								_moveX = ix + (ent->x >> 3);
+								_moveY = iy + (ent->y >> 3);
+								break;
+								//std::cout << "found tile" << std::endl;
+							}
+						}
 					}
 
 					//think about moving randomly
@@ -197,9 +214,16 @@ void E_UfoHurt(Entity* ent, Entity* attacker) {
 			SetFxMotion(_fx, (-10 + rand() % 30) / 10.0f, -rand() % 2, -8);
 		}
 
+		//pop
+		_fx = SpawnFx(ent->x, ent->y - 8, ent->z, 8);
+		SetFxSpr(_fx, { 0, 200, 16, 16 }, { 255, 255, 255, 255 });
+		_fx = SpawnFx(ent->x, ent->y - 8, ent->z, 3);
+		SetFxSpr(_fx, { 0, 200, 16, 16 }, { 0, 0, 0, 255 });
+
+
 		//if recon, alert motherbase
 		if (ent->entityIndex == ENT_UFO && ent->state == ES_RECON && rand()%3 == 0) {
-			std::cout << "ADDED DEATH SPOT AS AREA OF INTEREST " << std::endl;
+			//std::cout << "ADDED DEATH SPOT AS AREA OF INTEREST " << std::endl;
 			GAME.alienMastermind.vAreasOfInterest.push_back({ (short)(ent->x >> 3), (short)(ent->y >> 3) });
 		}
 
@@ -242,13 +266,13 @@ void E_WalkerInit(Entity* ent) {
 	ent->target_x = ent->x >> 3;
 	ent->target_y = ent->y >> 3;
 
-	ent->hp = 16;
+	ent->hp = 14;
 
 }
 
 
 void E_WalkerTick(Entity* ent) {
-
+	//std::cout << "walker tick" << std::endl;
 	int _tx = ent->x >> 3;
 	int _ty = ent->y >> 3;
 
@@ -260,11 +284,12 @@ void E_WalkerTick(Entity* ent) {
 	if (GAME_TICK % _timer == 0) {
 
 		if (ent->state == 0) {
-
 			ent->z = 0;
 
 			//we ain't moving - check some stuff
 			if (_tx == ent->target_x && _ty == ent->target_y) {
+
+				if (ent->x < -4 || ent->y < -4 || ent->x >= 4 + LEVEL_W * 8 || ent->y >= 4 + LEVEL_H * 8) DeleteEntity(ent);
 
 				ent->animFrame = 0;
 
@@ -279,7 +304,6 @@ void E_WalkerTick(Entity* ent) {
 							if (GET_TILE_INFO(LEVEL.GetTile(ix + _tx, iy + _ty)->type).flags & TIF_HUMAN) {
 								ent->target_x = ix + _tx;
 								ent->target_y = iy + _ty;
-								std::cout << "found playe tile" << std::endl;
 								_foundTile = true;
 								break;
 							}
@@ -287,12 +311,11 @@ void E_WalkerTick(Entity* ent) {
 					}
 
 					if (!_foundTile) {
-						ent->target_x = _tx + (rand() % 5) - 2;
-						ent->target_y = _ty + (rand() % 5) - 2;
+						ent->target_x = _tx + (rand() % 6) - 3;
+						ent->target_y = _ty + (rand() % 6) - 3;
 					}
 
 					ent->wait = 64 + rand() % 32;
-
 				} else {
 					ent->wait--;
 				}
@@ -338,7 +361,6 @@ void E_WalkerTick(Entity* ent) {
 			}
 
 		} else {
-
 			ent->animFrame = 0;
 
 			//attack
@@ -358,7 +380,7 @@ void E_WalkerTick(Entity* ent) {
 					if (PosIsOnScreen(ent->x, ent->y))  Sound::PlayTempSound(SND_DEMOLISH, 0.3f, 1.25f);
 
 					//hurt the tile
-					HurtTile(1, _tx, _ty, _t);
+					HurtTile(1, _tx, _ty, _t, ent);
 
 					//done
 					if (GET_TILE_INFO(_t->type).flags & TIF_WALKABLE) {
@@ -427,11 +449,22 @@ void E_AlienUfoBulletTick(Entity* ent) {
 }
 
 void E_AlienUfoBulletDraw(Entity* ent) {
+
+	SDL_Colour _c1, _c2;
+
+	if (GAME_TICK % 20 == 0) {
+		_c1 = {255, 255, 255, 255};
+		_c2 = {32, 216, 32, 255};
+	} else {
+		_c1 = { 32, 216, 32, 255 };
+		_c2 = { 255, 255, 255, 255 };
+	}
+
 	//shadow
 	Graphics::DrawSpr(TEX_CHARS, { ent->x - 4 + (ent->z / 2) - CAMERA_X, ent->y - 4 - CAMERA_Y, 8, 8 }, { 0, 24, 8, 8 }, { 201, 196, 205, 255 });
 	//bullet
-	Graphics::DrawSpr(TEX_CHARS, { ent->x - 4 - CAMERA_X, ent->y - 4 + ent->z - CAMERA_Y, 8, 8 }, { 0, 32, 8, 8 });
-	Graphics::DrawSpr(TEX_CHARS, { ent->x - 4 - CAMERA_X, ent->y - 4 + ent->z - CAMERA_Y, 8, 8 }, { 0, 24, 8, 8 }, { 247, 104, 104, 255 });
+	Graphics::DrawSpr(TEX_CHARS, { ent->x - 4 - CAMERA_X, ent->y - 4 + ent->z - CAMERA_Y, 8, 8 }, { 0, 32, 8, 8 }, _c1);
+	Graphics::DrawSpr(TEX_CHARS, { ent->x - 4 - CAMERA_X, ent->y - 4 + ent->z - CAMERA_Y, 8, 8 }, { 0, 24, 8, 8 }, _c2);
 }
 
 
@@ -456,7 +489,7 @@ void E_HunterInit(Entity* ent) {
 
 void E_HunterTick(Entity* ent) {
 	//ent->z += sin(GAME_TICK * 0.1f);
-
+	//std::cout << "hunter tick" << std::endl;
 
 	//calc target
 	if ((ent->id + GAME_TICK) % 24 == 0) {

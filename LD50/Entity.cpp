@@ -17,6 +17,8 @@ const EntityFunctions arrEntityFuncs[] = {
 	{ NoFunc, E_AlienUfoBulletTick, E_AlienUfoBulletDraw }, // a.ien bullet
 	{ E_HunterInit, E_HunterTick, E_HunterDraw, E_UfoHurt }, // hunter
 	{ MilJetInit, MilJetTick, MilJetDraw, PlaneHurt }, // miljet
+	{ NoFunc, HelplessManTick, HelplessManDraw, PlaneHurt }, // helplessman
+	{ PlayerMissileInit, PlayerMissileTick, PlayerMissileDraw }, // missile
 
 };
 
@@ -74,7 +76,9 @@ void SortEntityIntoCorrectChunk(Entity* _ent) {
 
 
 short GetChunkIndexAtEntityPos(int x, int y) {
-	return ((x>>3) / CHUNK_SIZE) + ((y>>3) / CHUNK_SIZE) * (LEVEL_W / CHUNK_SIZE);
+	short _pos = ((x >> 3) / CHUNK_SIZE) + ((y >> 3) / CHUNK_SIZE) * ((LEVEL_W + 16) / CHUNK_SIZE);
+	if (_pos < 0 || _pos >((LEVEL_W + 16) / CHUNK_SIZE) * ((LEVEL_H + 16) / CHUNK_SIZE)) return -1;
+	return _pos;
 };
 
 
@@ -121,10 +125,10 @@ Entity* GetEntityInDistFlags(int x, int y, int dist, unsigned char flags) {
 	int _chx = ((x - CHUNK_SIZE * 4 ) >> 3) / CHUNK_SIZE;
 	int _chy = ((y - CHUNK_SIZE * 4) >> 3) / CHUNK_SIZE;
 
-	for (int ix = std::max(_chx, 0); ix < std::min(_chx + 2, (LEVEL_W / CHUNK_SIZE) - 1); ix++) {
-		for (int iy = std::max(_chy, 0); iy < std::min(_chy + 2, (LEVEL_H / CHUNK_SIZE) - 1); iy++) {
+	for (int ix = std::max(_chx, 0); ix < std::min(_chx + 2, ((LEVEL_W + 16) / CHUNK_SIZE) - 1); ix++) {
+		for (int iy = std::max(_chy, 0); iy < std::min(_chy + 2, ((LEVEL_H + 16) / CHUNK_SIZE) - 1); iy++) {
 
-			_ch = ix + iy * (LEVEL_W / CHUNK_SIZE);
+			_ch = ix + iy * ((LEVEL_W + 16) / CHUNK_SIZE);
 
 			for (int i = 0; i < LEVEL.arrChunks[_ch].lsEntities.size(); i++) {
 				_ent = LEVEL.arrChunks[_ch].lsEntities[i];
@@ -143,11 +147,40 @@ Entity* GetEntityInDistFlags(int x, int y, int dist, unsigned char flags) {
 }
 
 
+std::vector<Entity*> GetAllEntitiesInDistFlags(int x, int y, int dist, unsigned char flags) {
+	int _ch;
+	Entity* _ent;
+	std::vector<Entity*> vEntities;
+
+	int _chx = ((x - CHUNK_SIZE * 4) >> 3) / CHUNK_SIZE;
+	int _chy = ((y - CHUNK_SIZE * 4) >> 3) / CHUNK_SIZE;
+
+	for (int ix = std::max(_chx, 0); ix < std::min(_chx + 2, ((LEVEL_W + 16) / CHUNK_SIZE) - 1); ix++) {
+		for (int iy = std::max(_chy, 0); iy < std::min(_chy + 2, ((LEVEL_H + 16) / CHUNK_SIZE) - 1); iy++) {
+
+			_ch = ix + iy * ((LEVEL_W + 16) / CHUNK_SIZE);
+
+			for (int i = 0; i < LEVEL.arrChunks[_ch].lsEntities.size(); i++) {
+				_ent = LEVEL.arrChunks[_ch].lsEntities[i];
+				if (!(_ent->flags & flags)) continue;
+
+				if (abs(_ent->x - x) < dist && abs(_ent->y - y) < dist) {
+					vEntities.push_back(_ent);
+				}
+			}
+
+		}
+	}
+
+	return vEntities;
+}
+
+
 Entity* GetEntityInTileFlags(int x, int y, unsigned char flags) {
-	int _chunk = (x / CHUNK_SIZE) + (y / CHUNK_SIZE) * (LEVEL_W / CHUNK_SIZE);
+	int _chunk = (x / CHUNK_SIZE) + (y / CHUNK_SIZE) * ((LEVEL_W + 16) / CHUNK_SIZE);
 	Entity* _ent;
 
-	if (_chunk < 0 || _chunk >(LEVEL_W / CHUNK_SIZE) * (LEVEL_W / CHUNK_SIZE)) return NULL;
+	if (_chunk < 0 || _chunk >((LEVEL_W + 16) / CHUNK_SIZE) * ((LEVEL_W + 16) / CHUNK_SIZE)) return NULL;
 
 	for (int i = 0; i < LEVEL.arrChunks[_chunk].lsEntities.size(); i++) {
 		_ent = LEVEL.arrChunks[_chunk].lsEntities[i];

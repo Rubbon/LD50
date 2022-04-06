@@ -10,13 +10,16 @@
 unsigned char cityTick = 0;
 int  i;
 
-Tile _noTile = {TT_NONE};
+
+
+Tile _noTile = {TT_LAND};
 Chunk _noChunk = {};
+Entity _noEnt = {};
 
 void Level::Tick() {
 
 	//city tick
-	if (GAME_TICK % 60 == 0) {
+	if (GAME_TICK % 30 == 0) {
 		
 		if (arrCities[cityTick].flags & CF_ACTIVE) {
 			arrCities[cityTick].expandTick();
@@ -92,6 +95,7 @@ void Level::Draw() {
 
 	//cities draw their name TODO - DON'T DRAW WHEN OUTSIDE SCREEN
 	for (int i = 0; i < MAX_CITIES; i++) {
+		if (!(arrCities[i].flags & CF_ACTIVE)) continue;
 
 		int _xx = (-arrCities[i].name.length() * 4) + (arrCities[i].origin_x * 8) - CAMERA_X;
 
@@ -119,9 +123,9 @@ void Level::Draw() {
 	for (ix = _ctx; ix <= 1 + _ctx + (Graphics::SCREEN_W >> 3) / CHUNK_SIZE; ix++) {
 		if (ix < 0 || ix >= LEVEL_W / CHUNK_SIZE) continue;
 		for (iy = _cty; iy <= 1 + _cty + (Graphics::SCREEN_H >> 3) / CHUNK_SIZE; iy++) {
-			if (iy < 0 || iy >= LEVEL_H / CHUNK_SIZE) continue;
+			if (iy < 0 || iy >= (LEVEL_H + 16) / CHUNK_SIZE) continue;
 			
-			_chunk = &arrChunks[ix + iy * (LEVEL_W / CHUNK_SIZE)];
+			_chunk = &arrChunks[ix + iy * ((LEVEL_W + 16) / CHUNK_SIZE)];
 
 			//sort entities so they draw in the right order (might cause chunk border rendering issues)
 			std::sort(_chunk->lsEntities.begin(), _chunk->lsEntities.end(), EntitySorter());
@@ -190,13 +194,14 @@ Entity* Level::AddEntity(int x, int y, unsigned short entityIndex, bool runInit)
 	//there's too many entities
 	//todo - might need to handle when there's too many
 	puts("[ERROR] TOO MANY ENTITIES!!");
+	return &_noEnt;
 
 	//return &arrEntities[entityIterator];
 }
 
 Chunk* Level::GetChunkAtTilePos(int x, int y) {
-	int _pos = (x / CHUNK_SIZE) + (y / CHUNK_SIZE) * (LEVEL_W / CHUNK_SIZE);
-	if (_pos < 0 || _pos >(LEVEL_W / CHUNK_SIZE) * (LEVEL_H / CHUNK_SIZE)) return &_noChunk;
+	int _pos = (x / CHUNK_SIZE) + (y / CHUNK_SIZE) * ((LEVEL_W + 16) / CHUNK_SIZE);
+	if (_pos < 0 || _pos >(LEVEL_W / CHUNK_SIZE) * ((LEVEL_H + 16) / CHUNK_SIZE)) return &_noChunk;
 	return &arrChunks[_pos];
 }
 
@@ -221,7 +226,7 @@ void Level::RemoveEntityFromChunk(Entity* ent) {
 	//auto _posInChunk = std::find(_chunk->lsEntities.begin(), _chunk->lsEntities.end(), ent);
 	//if (_posInChunk != std::end(_chunk->lsEntities)) _chunk->lsEntities.erase(_posInChunk);
 
-	if (ent->currentChunk < 0 || ent->currentChunk >= (LEVEL_W / CHUNK_SIZE) * (LEVEL_H / CHUNK_SIZE)) return;
+	if (ent->currentChunk < 0 || ent->currentChunk >= ((LEVEL_W + 16) / CHUNK_SIZE) * ((LEVEL_H + 16) / CHUNK_SIZE)) return;
 
 	//doing it my own way to aovid crashes?
 	for (int i = 0; i < arrChunks[ent->currentChunk].lsEntities.size(); i++) {
@@ -239,6 +244,19 @@ void Level::AddEntityToChunk(Entity* ent) {
 }
 
 
+
+
+bool Level::CheckForTileTypeInRange(int x, int y, int range, unsigned char tif_type) {
+	int ix, iy;
+	Tile* _t;
+	for (ix = -range; ix <= range; ix++) {
+		for (iy = -range; iy <= range; iy++) {
+			_t = GetTile(x + ix, y + iy);
+			if (GET_TILE_INFO(_t->type).flags & tif_type) return true;
+		}
+	}
+	return false;
+}
 
 std::string LevelGenerator::GetCityName() {
 
@@ -334,7 +352,9 @@ void LevelGenerator::GenerateWorld(Level* level) {
 		if (height[i] > 0.33f && ((height[i - 1] > 0.33f || height[i + 1] > 0.33f) && (height[i - w] > 0.33f || height[i + w] > 0.33f))) {
 			level->arrTiles[i].type = TT_LAND;
 
-			if (i % LEVEL_W > 6 && i % LEVEL_W < LEVEL_W - 6 && i / LEVEL_H > 4 && i / LEVEL_H < LEVEL_H-4) vPositionsWeCanCheck.push_back({ (short)(i % LEVEL_W), (short)(i / LEVEL_W) });
+			if (i % LEVEL_W > 12 && i % LEVEL_W < LEVEL_W - 12 && i / LEVEL_W > 12 && i / LEVEL_W < LEVEL_H - 12) {
+				vPositionsWeCanCheck.push_back({ (short)(i % LEVEL_W), (short)(i / LEVEL_W) });
+			}
 		}
 
 		if (height[i] >= 0.36f && height[i] < 0.363f) level->arrTiles[i].type = TT_TREE;
@@ -437,6 +457,43 @@ void LevelGenerator::GenerateWorld(Level* level) {
 		vPositionsWeCanCheck.erase(vPositionsWeCanCheck.begin() + _posi);
 	}
 
+
+	Tile* _t2;
+
+	//add an alien place
+	for (int i = 0; i < 32; i++) {
+
+		_posi = rand() % vPositionsWeCanCheck.size();
+		_pos = vPositionsWeCanCheck[_posi];
+
+		//abort if cant build here
+		if (_t->type == TT_LAND) {		
+			if (level->CheckForTileTypeInRange(_pos.x, _pos.y, 6, TIF_HUMAN)) continue;
+			else break;
+		} else {
+			vPositionsWeCanCheck.erase(vPositionsWeCanCheck.begin() + _posi);
+		}
+	}
+
+
+	//add the hive
+	AlienHive _hive = {};
+	_hive.origin_x = _pos.x;
+	_hive.origin_y = _pos.y;
+	_hive.index = MAX_CITIES + 1;
+
+	//grow it a bit
+	for (int i = 0; i < rand() % 6; i++) {
+		_hive.growtick = 0;
+		_hive.Grow();
+	}
+
+	GAME.alienMastermind.vHives.push_back(_hive);
+
+	std::cout << "hive at " << _pos.x << ", " << _pos.y << std::endl;
+
+	vPositionsWeCanCheck.erase(vPositionsWeCanCheck.begin() + _posi);
+
 }
 
 
@@ -469,6 +526,7 @@ void LevelGenerator::PreGenerateCity(Level* level, int city_i) {
 
 			_t->type = _cityBlockType;
 			_t->owner = city_i;
+			_t->hp = GET_TILE_INFO(_cityBlockType).baseHp;
 			_city->myTiles.push_back({ (short)_placeX, (short)_placeY});
 			_maxTries++;
 

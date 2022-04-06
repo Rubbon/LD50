@@ -9,7 +9,6 @@
 float _spd = 0.05f;
 short reserveLanding = 0;
 
-
 enum PLayerJetState {
 	PJS_FLYING,
 	PJS_LANDING,
@@ -26,11 +25,14 @@ void PlayerJetInit(Entity* ent) {
 	ent->fx = ent->x;
 	ent->fy = ent->y;
 
-	ent->flags |= EFL_HUMAN;
+	ent->flags = EFL_HUMAN | EFL_AIR;
 	ent->state = PJS_FLYING;
 	//ent->zwig = 0;
 
-	ent->hp = 8;
+
+	ent->hp = 6;
+
+	GAME.playerMissiles = 8;
 
 }
 
@@ -83,6 +85,15 @@ void PlayerJetTick(Entity* ent) {
 			ent->ticker--;
 
 
+			//drop bomb
+			if (GAME.playerMissiles > 0) {
+				if (Input::MousePressed(MB_MIDDLE) || Input::KeyPressed(SDL_SCANCODE_LCTRL) || Input::KeyPressed(SDL_SCANCODE_RCTRL)) {
+					Entity* _ent = LEVEL.AddEntity(ent->x, ent->y + 2, ENT_JMISSILE);
+					GAME.playerMissiles--;
+				}
+			}
+
+
 			//reserve landing
 			if (Input::KeyPressed(SDL_SCANCODE_SPACE)) {
 				reserveLanding = 6;
@@ -91,12 +102,13 @@ void PlayerJetTick(Entity* ent) {
 			//land button
 			if (reserveLanding > 0) {
 				TileType _tileAtFeet = LEVEL.GetTile(ent->x >> 3, ent->y >> 3)->type;
-				Sound::PlayTempSoundAt(SND_LAND_JET, ent->x, ent->y, 0.5f);
 				if (_tileAtFeet >= TT_HQ_TL && _tileAtFeet <= TT_HQ_BR) {
+					Sound::PlayTempSoundAt(SND_LAND_JET, ent->x, ent->y, 0.5f);
 					ent->state = PJS_LANDING_HQ;
 				}
 
 				if (GET_TILE_INFO(_tileAtFeet).flags & TIF_WALKABLE) {
+					Sound::PlayTempSoundAt(SND_LAND_JET, ent->x, ent->y, 0.5f);
 					ent->state = PJS_LANDING;
 				}
 
@@ -174,6 +186,7 @@ void PlayerJetTick(Entity* ent) {
 					ent->state = PJS_LANDED;
 				} else {
 					GAME.jetBuildTimer = 64;
+					GAME.playerJet = NULL;
 					DeleteEntity(ent);
 				}
 
@@ -263,6 +276,13 @@ void PlayerJetHurt(Entity* ent, Entity* attacker) {
 
 	Sound::PlayTempSoundAt(SND_PLACE_BUILDING, ent->x, ent->y, 1.0f, 1.5f);
 
+	Entity* _fx;
+	//pop
+	_fx = SpawnFx(ent->x, ent->y - 8, ent->z, 8);
+	SetFxSpr(_fx, { 0, 200, 16, 16 }, { 255, 255, 255, 255 });
+	_fx = SpawnFx(ent->x, ent->y - 8, ent->z, 3);
+	SetFxSpr(_fx, { 0, 200, 16, 16 }, { 0, 0, 0, 255 });
+
 	if (ent->hp <= 0) {
 		ent->state = PJS_DEAD; //DeleteEntity(ent);
 		GAME.SetMusicTo(0);
@@ -272,6 +292,57 @@ void PlayerJetHurt(Entity* ent, Entity* attacker) {
 }
 
 
+
+
+
+
+void PlayerMissileInit(Entity* ent) {
+	ent->z = -6;
+	ent->dmg = 8;
+}
+
+
+void PlayerMissileTick(Entity* ent) {
+	if (GAME_TICK % 3 == 0) {
+		if (ent->z < 0) {
+			ent->z++;
+		} else {
+			//explode
+
+			//hurt tiles
+			int ix, iy;
+			int _dist = 1;
+			for (ix = -_dist; ix <= _dist; ix++) {
+				for (iy = -_dist; iy <= _dist; iy++) {
+					Tile* _t = LEVEL.GetTile((ent->x >> 3) + ix, (ent->y >> 3) + iy);
+					HurtTile(2, (ent->x >> 3) + ix, (ent->y >> 3) + iy, _t);
+				}
+			}
+
+			//hurt ents
+			std::vector<Entity*> _vEnts = GetAllEntitiesInDistFlags(ent->x, ent->y, 8);
+			for (int i = 0; i < _vEnts.size(); i++) {
+				if (!(_vEnts[i]->flags & EFL_AIR)) {
+					arrEntityFuncs[_vEnts[i]->entityIndex].OnHurt(_vEnts[i], ent);
+				}
+			}
+
+			DeleteEntity(ent);
+			if (PosIsOnScreen(ent->x, ent->y)) Sound::PlayTempSoundAt(SND_DEMOLISH, ent->x, ent->y, 0.75f, 0.8f);
+		}
+	}
+}
+
+
+void PlayerMissileDraw(Entity* ent) {
+
+	TileType _tileAtFeet = LEVEL.GetTile(ent->x >> 3, ent->y >> 3)->type;
+
+	//shadow
+	if (GET_TILE_INFO(_tileAtFeet).flags & TIF_WALKABLE || _tileAtFeet == TT_WATER) Graphics::DrawSpr(TEX_CHARS, { ent->x - 4 - (ent->z / 2) - CAMERA_X, ent->y + 1 - CAMERA_Y, 8, 3 }, { 0, 157, 8, 3 });
+
+	Graphics::DrawSpr(TEX_CHARS, { ent->x - 4 - CAMERA_X, ent->y - 4 + ent->z - CAMERA_Y, 8, 8 }, {0, 80, 8, 8});
+}
 
 
 
@@ -358,7 +429,7 @@ void JetBulletDraw(Entity* ent) {
 
 
 void MilJetInit(Entity* ent) {
-
+	ent->flags = EFL_HUMAN | EFL_AIR;
 }
 
 void MilJetTick(Entity* ent) {

@@ -290,7 +290,7 @@ void TrainDraw(Entity* ent) {
 
 
 void CityPlaneInit(Entity* ent) {
-	
+	ent->flags = EFL_HUMAN | EFL_AIR;
 }
 
 void CityPlaneTick(Entity* ent) {
@@ -367,4 +367,37 @@ void CityPlaneDraw(Entity* ent) {
 
 	Graphics::DrawSpr(TEX_CHARS, { ent->x - 4 - CAMERA_X, ent->y - 3 + ent->z - CAMERA_Y, 8, 8 }, ent->animSpr, { 255, 255, 255, 255 }, _flip);
 	Graphics::DrawSpr(TEX_CHARS, { ent->x - 4 - CAMERA_X, ent->y - 4 + ent->z - CAMERA_Y, 8, 8 }, ent->animSpr, { 104, 170, 255, 255 }, _flip);
+}
+
+
+
+
+
+
+
+void HelplessManTick(Entity* ent) {
+	if (PosIsOnScreen(ent->x, ent->y)) {
+		Entity* _ent = GetEntityInDistFlags(ent->x, ent->y, 8, EFL_HUMAN);
+		if (_ent != NULL) {
+			if (_ent->entityIndex == ENT_PLAYERJET && _ent->z >= 0) {
+				GAME.playerCash += 100 + rand() % 100;
+				DeleteEntity(ent);
+
+				Entity* _fx = SpawnFx(ent->x + 12, ent->y - 12, ent->z - 2, 64);
+				SetFxSpr(_fx, { 32, 96, 24, 8 }, { 0, 255, 255, 255 });
+				SetFxMotion(_fx, 0, -0.15f, 0);
+			}
+		}
+
+		if (GAME_TICK % 60 == 0) {
+			Entity* _fx = SpawnFx(ent->x + 8, ent->y - 12, ent->z - 2, 32);
+			SetFxSpr(_fx, { 40, 104, 16, 8 }, { 0, 255, 255, 255 });
+			SetFxMotion(_fx, 0, -0.15f, 0);
+		}
+
+	}
+}
+
+void HelplessManDraw(Entity* ent) {
+	Graphics::DrawSpr(TEX_CHARS, { ent->x - CAMERA_X, ent->y + ent->z - CAMERA_Y, 8, 8 }, {40 + ((GAME_TICK/20) % 2) * 8, 112, 8, 8});
 }

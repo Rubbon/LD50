@@ -17,3 +17,8 @@ void TrainDraw(Entity* ent);
 void CityPlaneInit(Entity* ent);
 void CityPlaneTick(Entity* ent);
 void CityPlaneDraw(Entity* ent);
+
+
+
+void HelplessManTick(Entity* ent);
+void HelplessManDraw(Entity* ent);

@@ -50,6 +50,10 @@ enum TileType {
 	TT_TRAIN_DEPOT,
 
 	TT_BEACON,
+	TT_SCANNER,
+
+	TT_ALIEN_HIVE,
+	TT_ALIEN_AA_GUN,
 
 };
 
@@ -87,6 +91,7 @@ enum TileInfoFlags {
 	TIF_WALKABLE = 0x08,
 	TIF_RAIL = 0x10,
 	TIF_PLAYER = 0x20,
+	TIF_CITY = 0x40,
 };
 
 //enum TileCategory {
@@ -159,6 +164,7 @@ struct City {
 	short maxResources;
 	short money = 0;
 	short maxMoney=60;
+	int popcount = 0;
 	int bankX=-1;
 	int bankY=-1;
 	short warnAboutAttackTimer = 0;

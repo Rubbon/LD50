@@ -57,7 +57,10 @@ void Game::Tick() {
 			if (state == GS_PLAY) SetMusicTo(BGM_INVASION);
 			else SetMusicTo(BGM_BUILDMODE);
 		}
+	}
 
+	if (Input::KeyPressed(SDL_SCANCODE_A)) {
+		LEVEL.AddEntity(CURSOR_X + CAMERA_X, CURSOR_Y + CAMERA_Y, ENT_WALKER);
 	}
 
 	//no tick
@@ -281,13 +284,16 @@ void Game::TickCamMovement() {
 	//}
 
 	//make sure we're not too far away from our build focus
+	const int _maxCamDist_x = 72;//96;
+	const int _maxCamDist_y = 64;//80;
+
 	if (playerJet != NULL) {
-		CAMERA_X = std::clamp(CAMERA_X, playerJet->x - SCREEN_W/2 - 96, playerJet->x - SCREEN_W/2 + 96);
-		CAMERA_Y = std::clamp(CAMERA_Y, playerJet->y - SCREEN_H/2 - 80, playerJet->y - SCREEN_H/2 + 80);	
+		CAMERA_X = std::clamp(CAMERA_X, playerJet->x - SCREEN_W/2 - _maxCamDist_x, playerJet->x - SCREEN_W/2 + _maxCamDist_x);
+		CAMERA_Y = std::clamp(CAMERA_Y, playerJet->y - SCREEN_H/2 - _maxCamDist_y, playerJet->y - SCREEN_H/2 + _maxCamDist_y);
 	} else {
 		if (LEVEL.playerHq.flags & CF_ACTIVE) {
-			CAMERA_X = std::clamp(CAMERA_X, (LEVEL.playerHq.origin_x * 8) - SCREEN_W / 2 - 96, (LEVEL.playerHq.origin_x * 8) - SCREEN_W / 2 + 96);
-			CAMERA_Y = std::clamp(CAMERA_Y, (LEVEL.playerHq.origin_y * 8) - SCREEN_H / 2 - 80, (LEVEL.playerHq.origin_y * 8) - SCREEN_H / 2 + 80);
+			CAMERA_X = std::clamp(CAMERA_X, (LEVEL.playerHq.origin_x * 8) - SCREEN_W / 2 - _maxCamDist_x, (LEVEL.playerHq.origin_x * 8) - SCREEN_W / 2 + _maxCamDist_x);
+			CAMERA_Y = std::clamp(CAMERA_Y, (LEVEL.playerHq.origin_y * 8) - SCREEN_H / 2 - _maxCamDist_y, (LEVEL.playerHq.origin_y * 8) - SCREEN_H / 2 + _maxCamDist_y);
 		}
 	}
 
@@ -394,6 +400,38 @@ void Game::DrawUi() {
 	if (state == GS_BUILD) {
 
 
+		//if hovering over city, draw expanded info
+		if (GET_TILE_INFO(LEVEL.GetTile(hovered_tile_x, hovered_tile_y)->type).flags & TIF_CITY) {
+			City* _city = &LEVEL.arrCities[LEVEL.GetTile(hovered_tile_x, hovered_tile_y)->owner];
+
+			std::string _txt;
+			SDL_Colour _c;
+			int _yy = 8 + (_city->origin_y * 8) - CAMERA_Y;
+
+			//expansion info
+			if (_city->resources > 0) {
+				_txt = "Expanding";
+				_c = {0, 205, 0, 255};
+			}
+			else {
+				_txt = "Not Expanding";
+				_c = { 205, 0, 0, 255 };
+			}
+
+			_xx = (-_txt.length() * 4) + (_city->origin_x * 8) - CAMERA_X;
+			Graphics::DrawText(1 + _xx, _yy + 1, _txt, 1, {0, 0, 0, 255});
+			Graphics::DrawText(_xx, _yy, _txt, 1, _c);
+
+			//pop info
+			_yy += 8;
+			_txt = "Population " + std::to_string(_city->popcount);
+
+			_xx = (-_txt.length() * 4) + (_city->origin_x * 8) - CAMERA_X;
+			Graphics::DrawText(1 + _xx, _yy + 1, _txt, 1, { 0, 0, 0, 255 });
+			Graphics::DrawText(_xx, _yy, _txt, 1, { 0, 205, 0, 255 });
+
+		}
+
 
 		//draw info about the thing you're gonna try to build
 		if (bm_hover != -1 || bm_selected_opt != -1) {
@@ -443,6 +481,15 @@ void Game::DrawUi() {
 
 	}
 
+	//PLAY MODE
+	if (state == GS_PLAY) {
+		//JET BOMBS
+		if (playerJet != NULL && !(playerJet->flags & EFL_DELETED)) {
+			Graphics::DrawText(81, SCREEN_H - 15, "MISSILES " + std::to_string(playerMissiles), 1, { 0, 0, 0, 255 });
+			Graphics::DrawText(80, SCREEN_H - 16, "MISSILES " + std::to_string(playerMissiles), 1, { 91, 255, 165, 255 });
+		}
+
+	}
 
 	//cash counter
 	Graphics::DrawText(17, SCREEN_H - 7, "$ " + std::to_string(playerCash), 1, {0, 0, 0, 255});

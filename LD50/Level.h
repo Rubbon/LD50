@@ -29,7 +29,7 @@ public:
 	std::vector<Pos> vTilesToTick;
 
 	//chunks
-	Chunk arrChunks[(LEVEL_W/CHUNK_SIZE) * (LEVEL_H/CHUNK_SIZE)];
+	Chunk arrChunks[((LEVEL_W+16)/CHUNK_SIZE) * ((LEVEL_H+16)/CHUNK_SIZE)];
 
 	//entities
 	Entity arrEntities[MAX_ENTITIES];
@@ -51,6 +51,8 @@ public:
 
 	Tile* GetTile(int x, int y);
 	Tile* GetTile(Pos pos);
+
+	bool CheckForTileTypeInRange(int x, int y, int range, unsigned char tif_type);
 
 	Entity* AddEntity(int x, int y, unsigned short entityIndex, bool runInit = true);
 

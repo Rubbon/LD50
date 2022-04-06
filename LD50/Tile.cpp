@@ -30,7 +30,7 @@ void TileTick(int x, int y, Tile* _tile) {
 				if (_ent != NULL) {
 					//make bullet
 					Entity* _bul = LEVEL.AddEntity((x * 8) + 2, (y * 8) + 2, ENT_JETBULLET, false);
-					Sound::PlayTempSoundAt(SND_BULLET, _ent->x, _ent->y);
+					if (PosIsOnScreen(x * 8, y * 8)) Sound::PlayTempSoundAt(SND_BULLET, _ent->x, _ent->y);
 					float _angle = atan2(_ent->y - _bul->y, _ent->x - _bul->x);
 					_bul->mx = 4 * cos(_angle);
 					_bul->my = 4 * sin(_angle);
@@ -92,6 +92,61 @@ void TileTick(int x, int y, Tile* _tile) {
 				}
 			}
 		break; }
+
+		case TT_SCANNER: {
+			if (_tile->timer <= 0) {
+
+				Entity* _ent = GetEntityInDistFlags((x * 8) + 4, (y * 8) + 4, 80, EFL_ALIEN);
+
+				if (_ent != NULL) {
+					GAME.AddNews("Aliens spotted around " + std::to_string(x) + ", " + std::to_string(y) + "!");
+				}
+
+				//see hive
+				if (_tile->ref != 128) {
+					if (LEVEL.CheckForTileTypeInRange(x, y, 6, TIF_ALIEN)) GAME.AddNews("Alien hive spotted growing around " + std::to_string(x) + ", " + std::to_string(y) + "!");
+					_tile->ref = 128;
+				}
+
+				_tile->timer = 256;
+			} else {
+				_tile->timer--;
+			}
+		break; }
+
+		case TT_ALIEN_AA_GUN: {
+			if ((x + y + GAME_TICK) % 40 == 0) {
+				
+				Entity* _ent = GetEntityInDistFlags((x * 8) + 4, (y * 8) + 4, 64, EFL_HUMAN);
+
+				if (_ent != NULL) {
+					//make bullet
+					Entity* _bul = LEVEL.AddEntity((x * 8) + 2, (y * 8) + 6, ENT_ALIENBULLET, false);
+					if (PosIsOnScreen(x * 8, y * 8)) Sound::PlayTempSoundAt(SND_BULLET, _ent->x, _ent->y);
+					float _angle = atan2(_ent->y - _bul->y, _ent->x - _bul->x);
+					_bul->mx = 3 * cos(_angle);
+					_bul->my = 3 * sin(_angle);
+					_bul->wait = 32;
+					_bul->z = _ent->z;
+					arrEntityFuncs[_bul->entityIndex].Init(_bul);
+				}
+
+
+				//consider spawning a walker
+				if (_tile->timer <= 0) {
+
+					if (rand() % 3 == 0) {
+						LEVEL.AddEntity(x * 8, y * 8, ENT_WALKER);
+					}
+
+					_tile->timer = 128 + rand() % 64;
+				} else {
+					_tile->timer --;
+				}
+
+			}
+		break; }
+
 
 
 	}
@@ -206,7 +261,8 @@ void TileDraw(int dx, int dy, int tx, int ty, Tile* _tile) {
 		case TT_AA_GUN:
 			DrawLand(dx, dy, tx, ty);
 			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, {((GAME_TICK / 96) % 2) * 8,96, 8, 8 });
-			break;
+		break;
+
 		case TT_WALL:
 			DrawLand(dx, dy, tx, ty);
 			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 64+_tile->timer*8, 96, 8, 8 });
@@ -221,6 +277,20 @@ void TileDraw(int dx, int dy, int tx, int ty, Tile* _tile) {
 			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 160, 88, 8, 8 });
 		break;
 
+		case TT_SCANNER:
+			DrawLand(dx, dy, tx, ty);
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 56 + ((GAME_TICK / 96) % 2) * 8, 104, 8, 8 });
+		break;
+
+		case TT_ALIEN_HIVE:
+			DrawLand(dx, dy, tx, ty);
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 8 + ((int)(tx + sin(ty - tx)) % 4) * 8, 144, 8, 8 });
+		break;
+
+		case TT_ALIEN_AA_GUN:
+			DrawLand(dx, dy, tx, ty);
+			Graphics::DrawSpr(TEX_CHARS, { dx, dy, 8, 8 }, { 24 + ((GAME_TICK / 96) % 2) * 8, 152, 8, 8 });
+		break;
 
 	}
 }
@@ -613,9 +683,23 @@ void TileOnBuilt(int x, int y, Tile* _tile) {
 
 
 void HurtTile(int dmg, int x, int y, Tile* _tile, Entity* _hurtBy) {
+
 	_tile->hp -= dmg;
 
+	if (GAME.newsticker_time <= -(SCREEN_W - 32)) {
+		if (_tile->type == TT_HQ_TL || _tile->type == TT_HQ_TR || _tile->type == TT_HQ_BL || _tile->type == TT_HQ_BR) GAME.AddNews("Your HQ is under attack at " + std::to_string(LEVEL.playerHq.origin_x) + ", " + std::to_string(LEVEL.playerHq.origin_y) + "!");
+	}
+
+	//pop
+	Entity* _fx;
+	_fx = SpawnFx(x * 8, y * 8, 0, 8);
+	SetFxSpr(_fx, { 0, 200, 16, 16 }, { 255, 255, 255, 255 });
+	_fx = SpawnFx(x * 8, y * 8, 0, 3);
+	SetFxSpr(_fx, { 0, 200, 16, 16 }, { 0, 0, 0, 255 });
+
+
 	if (_tile->hp <= 0) OnTileDestroy(x, y, _tile);
+
 }
 
 
@@ -634,16 +718,32 @@ void OnTileDestroy(int x, int y, Tile* _tile, bool demolished, bool multiDestroy
 			break; }
 
 		//no no no
-		case TT_CONSTRUCTION_SITE: break;
+		//case TT_CONSTRUCTION_SITE: case TT_WATER: break;
+		case TT_WATER: 
+			//splash
+			Entity* _fx;
+			for (int i = 0; i < 3; i++) {
+				_fx = SpawnFx(x*8, y*8, 0, 16 + rand() % 24, FXS_HAS_GRAVITY | FXS_DESTROY_ON_LAND);
+				SetFxSpr(_fx, { 16, 32, 8, 8 });
+				SetFxMotion(_fx, (-10 + rand() % 30) / 10.0f, -rand() % 2, -8);
+			}
+
+			_fx = SpawnFx(x * 8, y * 8, 0, 8);
+			SetFxSpr(_fx, { 8, 32, 8, 8 });
+		break;
 
 		case TT_CITYBLOCK_BIG: case TT_CITYBLOCK_SMALL: case TT_CITY_BANK:
-
 			if (demolished) {
 				LEVEL.arrCities[_tile->owner].friendliness -= 2;
 				LEVEL.arrCities[_tile->owner].money = 0;
 			} else {
 				//warn about attack
-				if (LEVEL.arrCities[_tile->owner].warnAboutAttackTimer <= 0) GAME.AddNews(LEVEL.arrCities[_tile->owner].name + " is under attack!");
+				if (GAME.newsticker_time <= -(SCREEN_W - 32)) {
+					if (LEVEL.arrCities[_tile->owner].warnAboutAttackTimer <= 0) {
+						GAME.AddNews(LEVEL.arrCities[_tile->owner].name + " is under attack at " + std::to_string(x) + ", " + std::to_string(y) + "!");
+						LEVEL.arrCities[_tile->owner].warnAboutAttackTimer = 1;
+					}
+				}
 			}
 
 			if (_tile->flags & TF_ONWATER) _tile->type = TT_WATER;
@@ -664,15 +764,15 @@ void TileDoDefaultDestroy(int x, int y, Tile* _tile, bool demolished, bool multi
 	if (multiDestroy) {
 		TileInfo _tileInfo = GET_TILE_INFO(_tile->type);
 		if (_tileInfo.multiTiles.x != 0 || _tileInfo.multiTiles.y != 0) {
-			OnTileDestroy(x + _tileInfo.multiTiles.x, y, LEVEL.GetTile(x + _tileInfo.multiTiles.x, y), false);
-			OnTileDestroy(x, y + _tileInfo.multiTiles.y, LEVEL.GetTile(x, y + _tileInfo.multiTiles.y), false);
-			OnTileDestroy(x + _tileInfo.multiTiles.x, y + _tileInfo.multiTiles.y, LEVEL.GetTile(x + _tileInfo.multiTiles.x, y + _tileInfo.multiTiles.y), false);
+			OnTileDestroy(x + _tileInfo.multiTiles.x, y, LEVEL.GetTile(x + _tileInfo.multiTiles.x, y), demolished, false);
+			OnTileDestroy(x, y + _tileInfo.multiTiles.y, LEVEL.GetTile(x, y + _tileInfo.multiTiles.y), demolished, false);
+			OnTileDestroy(x + _tileInfo.multiTiles.x, y + _tileInfo.multiTiles.y, LEVEL.GetTile(x + _tileInfo.multiTiles.x, y + _tileInfo.multiTiles.y), demolished, false);
 		}
 	}
 
 	if (_tile->flags & TF_ONWATER) _tile->type = TT_WATER;
 	else _tile->type = TT_CRATER;
-	_tile->owner = 0;
+	_tile->owner = 255;
 	if (PosIsOnScreen(x * 8, y * 8)) Sound::PlayTempSound(SND_DEMOLISH, 0.2f, 1.0f);
 }
 
@@ -684,7 +784,7 @@ void City::expandTick() {
 
 	if (warnAboutAttackTimer > 0) warnAboutAttackTimer--;
 
-	int _popCount = 0;
+	popcount = 0;
 	if (bankX != -1 && bankY!=-1) {
 		Tile* _bankPos = LEVEL.GetTile(bankX, bankY);
 		if (_bankPos->type != TT_CITY_BANK) {
@@ -695,23 +795,28 @@ void City::expandTick() {
 	
 	//remove from active duty if out of tiles
 	if (myTiles.size() <= 0) {
+		
+		//city is lost
+		GAME.AddNews(name + " was lost to the aliens!");
+
 		flags &= ~CF_ACTIVE;
 		LEVEL.activeCities--;
 	}
 
 	for (int i = 0; i < myTiles.size(); i++) {
 		Tile* _curTile = GAME.currentLevel.GetTile(myTiles[i].x, myTiles[i].y);
-		if (_curTile->owner != index) {
+		if (_curTile->owner != index || !(GET_TILE_INFO(_curTile->type).flags & TIF_CITY)) {
 			//check if city has been gooped by aliens
 			myTiles.erase(myTiles.begin() + i);
 			timer = 10;
 			if (friendliness>0) friendliness-=2;
 			if (maxResources > 0) maxResources--; 
+			continue;
 		}
-		if (_curTile->type == TT_CITYBLOCK_SMALL) _popCount += (4000 + (int)rand() % 999);
-		else if (_curTile->type == TT_CITYBLOCK_BIG) _popCount += (10000 + (int)rand() % 9999);
+		if (_curTile->type == TT_CITYBLOCK_SMALL) popcount += (4000 + (int)rand() % 999);
+		else if (_curTile->type == TT_CITYBLOCK_BIG) popcount += (10000 + (int)rand() % 9999);
 		else if (_curTile->type == TT_CITY_BANK) {
-			_popCount += (10000 + (int)rand() % 9999);
+			popcount += (10000 + (int)rand() % 9999);
 		}
 	}
 	
@@ -744,7 +849,7 @@ void City::expandTick() {
 			int _chance;
 			for (int i = 0; i < myTiles.size() * 2; i++) {
 				_t = LEVEL.GetTile(_placeX, _placeY);
-				if (_t->type == TT_LAND) {
+				if (_t->type == TT_LAND || _t->type == TT_CRATER) {
 					//TileType _cityBlockType = TT_CITYBLOCK_BIG; 
 					//if (i > myTiles.size()) _cityBlockType = TT_CITYBLOCK_SMALL;
 					_t = BuildTileAt(_placeX, _placeY, TT_CITYBLOCK_SMALL);
@@ -771,7 +876,7 @@ void City::expandTick() {
 							maxResources++;
 							break;
 						}
-						else if (_t->type == TT_CITYBLOCK_BIG && _popCount > 160000) {
+						else if (_t->type == TT_CITYBLOCK_BIG && popcount > 160000) {
 							if (!(flags & CF_HASBANK)) {
 								flags |= CF_HASBANK;
 								_t = BuildTileAt(_placeX, _placeY, TT_CITY_BANK);

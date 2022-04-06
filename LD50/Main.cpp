@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
 		//SCREEN_H = Graphics::WINDOW_H / Graphics::SCREEN_SCALE;
 
 		//create window
-		Graphics::window = SDL_CreateWindow("LD50 UFO", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Graphics::WINDOW_W, Graphics::WINDOW_H, SDL_WINDOW_RESIZABLE);
+		Graphics::window = SDL_CreateWindow("HutHut (LD50)", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Graphics::WINDOW_W, Graphics::WINDOW_H, SDL_WINDOW_RESIZABLE);
 		SDL_SetWindowMinimumSize(Graphics::window, 320, 240);
 
 		//create renderer
@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
 			SDL_ShowCursor(false);
 		}
 
-		std::cout << "+-----------------------+\n| TITLE HERE - Ver 0    |\n|                       |\n| For LD50, 2022        |\n| By Robin Field        |\n| And Billy Hobson      |\n|                       |\n| Thanks for playing!   |\n+-----------------------+" << std::endl;
+		std::cout << "+-----------------------+\n| HUTHUT     - Ver 0.15 |\n|                       |\n| For LD50, 2022        |\n| By Robin Field        |\n| And Billy Hobson      |\n|                       |\n| Thanks for playing!   |\n+-----------------------+" << std::endl;
 		std::cout << std::endl << std::endl << std::endl;
 		RUN_GAME = true;
 	}

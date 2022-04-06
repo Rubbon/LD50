@@ -16,6 +16,11 @@ void PlayerJetDraw(Entity* ent);
 void PlayerJetHurt(Entity* ent, Entity* attacker);
 
 
+void PlayerMissileInit(Entity* ent);
+void PlayerMissileTick(Entity* ent);
+void PlayerMissileDraw(Entity* ent);
+
+
 void JetBulletInit(Entity* ent);
 void JetBulletTick(Entity* ent);
 void JetBulletDraw(Entity* ent);

@@ -22,6 +22,17 @@ struct AlienParty {
 };
 
 
+struct AlienHive {
+	std::vector<Pos> vTiles;
+	int growtick = 0;
+	int index = 0;
+	short origin_x = 0;
+	short origin_y = 0;
+
+	void Grow();
+};
+
+
 class AlienMastermind {
 public:
 	std::vector<Entity*> vActiveAlienUnits;
@@ -29,6 +40,7 @@ public:
 	short warStage = 1;
 
 	std::vector<AlienParty> vAttackParties;
+	std::vector<AlienHive> vHives;
 
 	//areas recon found that have something in them
 	std::vector<Pos> vAreasOfInterest;
@@ -42,6 +54,9 @@ public:
 	std::vector<Pos> lastSearchedLocations = {};
 	//Entity* _reconUnit = NULL;
 	std::vector<Entity*> vReconUnits;
+
+
+	Entity* _helpessMan = NULL;
 
 	void Tick();
 

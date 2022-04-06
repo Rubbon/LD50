@@ -38,6 +38,7 @@ public:
 	GameState state = GS_PLAY;
 
 	int playerCash = 400;
+	short playerMissiles = 0;
 
 	//build menu
 	char bm_selected_opt = -1;
@@ -62,7 +63,7 @@ public:
 	//std::vector<std::string> vNewsBacklog;
 
 
-#define BUILD_OPTIONS 9
+#define BUILD_OPTIONS 10
 	char arrBuildOptions[BUILD_OPTIONS] = {
 		TT_AA_GUN,
 		TT_AIRFIELD_TL,
@@ -72,6 +73,7 @@ public:
 		TT_TRAIN_DEPOT,
 		TT_RAIL_STATION_H,
 		TT_RAIL_TRACK,
+		TT_SCANNER,
 		TT_NONE,
 	};
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "SDL.h"
+#include <vector>
 
 enum EntityName {
 	ENT_UFO,
@@ -12,6 +13,8 @@ enum EntityName {
 	ENT_ALIENBULLET,
 	ENT_E_ALIEN_HUNTER,
 	ENT_MILJET,
+	ENT_HELPLESSMAN,
+	ENT_JMISSILE,
 	//ENT_E_BIGUFO,
 
 };
@@ -126,6 +129,8 @@ extern void DeleteEntity(Entity* ent);
 extern int GetSprOffsetOnAngle(float angle);
 
 extern Entity* GetEntityInDistFlags(int x, int y, int dist, unsigned char flags);
+
+extern std::vector<Entity*> GetAllEntitiesInDistFlags(int x, int y, int dist, unsigned char flags = 0x00);
 
 extern Entity* GetEntityInTileFlags(int x, int y, unsigned char flags);
 
