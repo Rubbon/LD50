@@ -785,6 +785,7 @@ void City::expandTick() {
 	if (warnAboutAttackTimer > 0) warnAboutAttackTimer--;
 
 	popcount = 0;
+	
 	if (bankX != -1 && bankY!=-1) {
 		Tile* _bankPos = LEVEL.GetTile(bankX, bankY);
 		if (_bankPos->type != TT_CITY_BANK && _bankPos->ref != TT_CITY_BANK) {
@@ -860,12 +861,7 @@ void City::expandTick() {
 					break;
 				}
 				else {
-					_placeX += (rand() % 3) - 1;
-					_placeY += (rand() % 3) - 1;
-					if (_placeX == 0 && _placeY == 0) {
-						_placeX = -1;
-						_placeY = 1;
-					}
+					
 					//chance to upgrade existing city tile
 					_chance = (int)rand() % 10;
 					if (_chance > 6) {
@@ -877,7 +873,7 @@ void City::expandTick() {
 							maxResources++;
 							break;
 						}
-						else if (_t->type == TT_CITYBLOCK_BIG && popcount > 160000) {
+						else if (_t->type == TT_CITYBLOCK_BIG && popcount > 100000) {
 							if (!(flags & CF_HASBANK)) {
 								flags |= CF_HASBANK;
 								_t = BuildTileAt(_placeX, _placeY, TT_CITY_BANK);
@@ -891,17 +887,24 @@ void City::expandTick() {
 							}
 						}
 					}
+					_placeX += (rand() % 3) - 1;
+					_placeY += (rand() % 3) - 1;
+					if (_placeX == 0 && _placeY == 0) {
+						_placeX = -1;
+						_placeY = 1;
+					}
 				}
 			}
 		}
 		timer = 4;
-		/*
+		
 		std::cout << name << std::endl;
 		std::cout << std::to_string(resources) << std::endl;
 		std::cout << std::to_string(friendliness) << std::endl;
 		std::cout << std::to_string(money) << std::endl;
+		std::cout << "BANK POSITION: " << std::to_string(bankX) << " . " << std::to_string(bankY) << std::endl;
 		if (flags & CF_HASBANK)std::cout << "GOT A BANK" << std::endl;
 		else std::cout << "no bank :(" << std::endl;
-		*/
+		
 	}
 }
