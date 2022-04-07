@@ -9,7 +9,9 @@
 int reconTick = 32;
 int attackTick = 256;
 int warTick = 1600;
-int hiveTick = 0;
+int hiveTick = 80;
+
+int attackPartySize = 20;
 
 int lastAttackedHq = 0;
 
@@ -337,8 +339,16 @@ void AlienMastermind::TryDoingAttack() {
 
 				int _yy = 8*(rand()%LEVEL_H/2);
 				int	_xx = (rand() % 2) * LEVEL_W * 8;
+
+				//fluctuate attack parties
+				if (attackPartySize >= 2 + warStage) {
+					attackPartySize = 1 + rand() % 2;
+				} else {
+					attackPartySize = 1 + rand() % (2 + warStage);
+				}
+
 				//std::cout << "add ufos" << std::endl;
-				for (int i = 0; i < 3 + warStage * 2 + (rand() % warStage * 4); i++) {
+				for (int i = 0; i < attackPartySize + warStage * 2 + (rand() % warStage * 3); i++) {
 					_ent = LEVEL.AddEntity(_xx + (rand() % 16) - 8, 8 * (LEVEL_H / 4) + _yy + (rand() % 64) - 32, ENT_UFO);
 					_ent->state = ES_ATTACKER;
 					_party.vEntities.push_back(_ent);
