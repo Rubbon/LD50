@@ -378,7 +378,7 @@ void CityPlaneDraw(Entity* ent) {
 
 void HelplessManTick(Entity* ent) {
 	if (PosIsOnScreen(ent->x, ent->y)) {
-		Entity* _ent = GetEntityInDistFlags(ent->x, ent->y, 8, EFL_HUMAN);
+		Entity* _ent = GetEntityInDistFlags(ent->x + 4, ent->y + 4, 12, EFL_HUMAN);
 		if (_ent != NULL) {
 			if (_ent->entityIndex == ENT_PLAYERJET && _ent->z >= 0) {
 				GAME.playerCash += 100 + rand() % 100;

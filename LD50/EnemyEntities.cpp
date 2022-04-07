@@ -172,10 +172,9 @@ void E_UfoTick(Entity* ent) {
 						ent->target_y = _moveY*8;
 						ent->wait += 128 + rand() % 128;
 					}
+				} else {
+					ent->wait--;
 				}
-
-				ent->wait--;
-
 			}
 			
 

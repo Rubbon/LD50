@@ -493,6 +493,11 @@ void LevelGenerator::GenerateWorld(Level* level) {
 
 	GAME.alienMastermind.vHives.push_back(_hive);
 
+
+	//add a city as a target to begin with
+	level->arrCities[1].flags |= CF_FOUND;
+
+
 	//std::cout << "hive at " << _pos.x << ", " << _pos.y << std::endl;
 
 	vPositionsWeCanCheck.erase(vPositionsWeCanCheck.begin() + _posi);

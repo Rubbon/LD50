@@ -898,13 +898,13 @@ void City::expandTick() {
 		}
 		timer = 4;
 		
-		std::cout << name << std::endl;
-		std::cout << std::to_string(resources) << std::endl;
-		std::cout << std::to_string(friendliness) << std::endl;
-		std::cout << std::to_string(money) << std::endl;
-		std::cout << "BANK POSITION: " << std::to_string(bankX) << " . " << std::to_string(bankY) << std::endl;
-		if (flags & CF_HASBANK)std::cout << "GOT A BANK" << std::endl;
-		else std::cout << "no bank :(" << std::endl;
+		//std::cout << name << std::endl;
+		//std::cout << std::to_string(resources) << std::endl;
+		//std::cout << std::to_string(friendliness) << std::endl;
+		//std::cout << std::to_string(money) << std::endl;
+		//std::cout << "BANK POSITION: " << std::to_string(bankX) << " . " << std::to_string(bankY) << std::endl;
+		//if (flags & CF_HASBANK)std::cout << "GOT A BANK" << std::endl;
+		//else std::cout << "no bank :(" << std::endl;
 		
 	}
 }
