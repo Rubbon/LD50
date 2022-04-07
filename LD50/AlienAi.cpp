@@ -8,7 +8,7 @@
 
 int reconTick = 32;
 int attackTick = 256;
-int warTick = 1600;
+int warTick = 1300;
 int hiveTick = 80;
 
 int attackPartySize = 20;
@@ -71,7 +71,7 @@ void AlienMastermind::Tick(){
 		//war +
 		if (warStage < 14) warStage++;
 
-		warTick = 2600 + warStage * 120;
+		warTick = 2400 + warStage * 12;
 	} else {
 		warTick--;
 	}
