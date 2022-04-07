@@ -112,20 +112,22 @@ void E_UfoTick(Entity* ent) {
 					}
 
 					//there's a unit to attack!
-					Entity* _oe = GetEntityInDistFlags(ent->x, ent->y, 72, EFL_HUMAN);
-					if (_oe != NULL) {
+					if ((ent->id + GAME_TICK) % 6 == 0) {
+						Entity* _oe = GetEntityInDistFlags(ent->x, ent->y, 72, EFL_HUMAN);
+						if (_oe != NULL) {
 
-						//make bullet
-						Entity* _bul = LEVEL.AddEntity(ent->x, ent->y, ENT_ALIENBULLET);
-						float _angle = atan2(_oe->y - ent->y, _oe->x - _bul->x);
-						_bul->mx = 3 * cos(_angle);
-						_bul->my = 3 * sin(_angle);
-						_bul->wait = 16;
-						_bul->z = ent->z;
+							//make bullet
+							Entity* _bul = LEVEL.AddEntity(ent->x, ent->y, ENT_ALIENBULLET);
+							float _angle = atan2(_oe->y - ent->y, _oe->x - _bul->x);
+							_bul->mx = 3 * cos(_angle);
+							_bul->my = 3 * sin(_angle);
+							_bul->wait = 16;
+							_bul->z = ent->z;
 
-						if (PosIsOnScreen(ent->x, ent->y)) Sound::PlayTempSoundAt(SND_LASER, ent->x, ent->y, 0.5f, 1.5f);
-						ent->wait += 32 + rand() % 48;
-						break;
+							if (PosIsOnScreen(ent->x, ent->y)) Sound::PlayTempSoundAt(SND_LASER, ent->x, ent->y, 0.5f, 1.5f);
+							ent->wait += 32 + rand() % 48;
+							break;
+						}
 					}
 
 					int _moveX = -1;

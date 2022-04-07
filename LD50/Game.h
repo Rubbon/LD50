@@ -37,7 +37,7 @@ public:
 
 	GameState state = GS_PLAY;
 
-	int playerCash = 4000;
+	int playerCash = 400;
 	short playerMissiles = 0;
 
 	//build menu
@@ -94,7 +94,7 @@ public:
 	int hovered_tile_x = 0;
 	int hovered_tile_y = 0;
 
-	int gameTick = 0;
+	long int gameTick = 0;
 
 	void Init();
 	void Tick();

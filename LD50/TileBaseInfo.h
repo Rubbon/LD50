@@ -51,7 +51,7 @@ const TileInfo arrTileInfo[] = {
 		/* NAME */			"City", // big
 		/* BASE_HP */		5,
 		/* BUILD_SPR */		{8, 64, 16, 16},
-		/* BUILD_TIME */	3000,
+		/* BUILD_TIME */	2200,
 		/* FLAGS */			TIF_HUMAN | TIF_CITY,
 		/* BUILDCOST */		0,
 		/* MULTITILES */	{0,0},
@@ -96,7 +96,7 @@ const TileInfo arrTileInfo[] = {
 		/* NAME */			"Bank",
 		/* BASE_HP */		10,
 		/* BUILD_SPR */		{8, 64, 16, 16},
-		/* BUILD_TIME */	5000,
+		/* BUILD_TIME */	4000,
 		/* FLAGS */			TIF_HUMAN | TIF_CITY,
 		/* BUILDCOST */		0,
 		/* MULTITILES */	{0,0},

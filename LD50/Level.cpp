@@ -17,9 +17,8 @@ Chunk _noChunk = {};
 Entity _noEnt = {};
 
 void Level::Tick() {
-	std::cout << "level tick" << std::endl;
 	//city tick
-	if (GAME_TICK % 30 == 0) {
+	if (GAME_TICK % 30 == 6) {
 		
 		if (arrCities[cityTick].flags & CF_ACTIVE) {
 			arrCities[cityTick].expandTick();
@@ -31,46 +30,50 @@ void Level::Tick() {
 		if (activeCities <= 0) GAME.state = GS_GAMEOVER;
 	}
 
-	std::cout << "tile tick" << std::endl;
 	//tile tick
 	if (GAME_TICK % 2 == 0) {
-		for (i = 0; i < vTilesToTick.size(); i++) {
-			//remove if not tickable anymore
-			if (!(GET_TILE_INFO(GetTile(vTilesToTick[i])->type).flags & TIF_TICKABLE)) {
-				vTilesToTick.erase(vTilesToTick.begin() + i);
-				i--;
-				continue;
+		if (vTilesToTick.size() > 0) {
+			for (i = 0; i < vTilesToTick.size(); i++) {
+				//remove if not tickable anymore
+				if (!(GET_TILE_INFO(GetTile(vTilesToTick[i])->type).flags & TIF_TICKABLE)) {
+					vTilesToTick.erase(vTilesToTick.begin() + i);
+					//i--;
+					continue;
+				}
+
+				TileTick(vTilesToTick[i].x, vTilesToTick[i].y, GetTile(vTilesToTick[i]));
+
 			}
-
-			TileTick(vTilesToTick[i].x, vTilesToTick[i].y, GetTile(vTilesToTick[i]));
-
 		}
 	}
 
 	//force mpty chnks for freedom
-	//for (i = 0; i < (LEVEL_W / CHUNK_SIZE) * (LEVEL_H / CHUNK_SIZE); i++) {
+	//for (i = 0; i < std::size(arrChunks); i++) {
 	//	arrChunks[i].lsEntities.clear();
 	//}
-	std::cout << "entity tick" << std::endl;
+
+	//std::cout << "entity tick" << std::endl;
 	//tick active entities
 	for (i = 0; i < vActiveEntities.size(); i++) {
 		//remove from active entity list if deleted
 		if (vActiveEntities[i]->flags & EFL_DELETED) {
+			//std::cout << "remoinvg entity" << std::endl;
 			//remove from any chunk its in
-			//if (vActiveEntities[i]->currentChunk != -1) LEVEL.RemoveEntityFromChunk(vActiveEntities[i], &LEVEL.arrChunks[vActiveEntities[i]->currentChunk]);
+			if (vActiveEntities[i]->currentChunk != -1) LEVEL.RemoveEntityFromChunk(vActiveEntities[i]);
 			//remove from active duty
 			vActiveEntities.erase(vActiveEntities.begin() + i);
 			continue;
 		}
 
+		//std::cout << "sort chunks" << std::endl;
 		//add entities to chunks (depending on how slow, might do this less often)
 		SortEntityIntoCorrectChunk(vActiveEntities[i]);
 		//vActiveEntities[i]->currentChunk = GetChunkIndexAtEntityPos(vActiveEntities[i]->x, vActiveEntities[i]->y);
 		//AddEntityToChunk(vActiveEntities[i]);
-
+		//std::cout << "tick entities chunks" << std::endl;
 		arrEntityFuncs[vActiveEntities[i]->entityIndex].Tick(vActiveEntities[i]);
 	}
-	std::cout << "level tick end" << std::endl << std::endl;
+	//std::cout << "level tick end" << std::endl << std::endl;
 }
 
 
@@ -299,7 +302,7 @@ std::string LevelGenerator::GetCityName() {
 
 
 void LevelGenerator::GenerateWorld(Level* level) {
-
+	std::cout << "[GEN] Generating World" << std::endl;
 	const int w = LEVEL_W;
 	const int h = LEVEL_H;
 
@@ -493,7 +496,7 @@ void LevelGenerator::GenerateWorld(Level* level) {
 	//std::cout << "hive at " << _pos.x << ", " << _pos.y << std::endl;
 
 	vPositionsWeCanCheck.erase(vPositionsWeCanCheck.begin() + _posi);
-
+	std::cout << "[GEN] Finished World Gen!" << std::endl;
 }
 
 

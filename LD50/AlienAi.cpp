@@ -15,8 +15,11 @@ int lastAttackedHq = 0;
 
 void AlienMastermind::Tick(){
 
+
 	TryDoingRecon();
+
 	TryDoingAttack();
+
 
 
 	//update hives
@@ -24,12 +27,12 @@ void AlienMastermind::Tick(){
 
 		//see if we can make a new hive
 		int _r = rand() % MAX_CITIES;
-
+		
 		if (!(LEVEL.arrCities[_r].flags & CF_ACTIVE) && LEVEL.arrCities[_r].flags & CF_FOUND) {
 			if (LEVEL.arrCities[_r].origin_x != -1) {
 
 				//std::cout << "new hive" << std::endl;
-
+				
 				//add our alien city
 				AlienHive _hive = {};
 				_hive.index = _r;
@@ -45,12 +48,15 @@ void AlienMastermind::Tick(){
 		}
 
 
-	
-
-		for (int i = 0; i < vHives.size(); i++) {
-			//remove dead hives
-			if (vHives[i].vTiles.size() <= 0) vHives.erase(vHives.begin() + i);
-			vHives[i].Grow();
+		if (vHives.size() > 0) {
+			for (int i = 0; i < vHives.size(); i++) {
+				//remove dead hives
+				if (vHives[i].vTiles.size() <= 0) {
+					vHives.erase(vHives.begin() + i);
+					continue;
+				}
+				vHives[i].Grow();
+			}
 		}
 
 		hiveTick = 128 + rand() % 64;
@@ -61,9 +67,9 @@ void AlienMastermind::Tick(){
 
 	if (warTick <= 0) {
 		//war +
-		if (warStage < 16) warStage++;
+		if (warStage < 14) warStage++;
 
-		warTick = 2600 + warStage * 24;
+		warTick = 2600 + warStage * 120;
 	} else {
 		warTick--;
 	}
@@ -71,34 +77,41 @@ void AlienMastermind::Tick(){
 	//update parties
 	if (GAME_TICK % 3 == 0) {
 
-		for (int i = 0; i < vAttackParties.size(); i++) {
-			//remove if everyones gone
-			if (vAttackParties[i].vEntities.size() <= 0) {
-				vAttackParties.erase(vAttackParties.begin() + i);
-				continue;
-			}
-
-			//remove dead aliens
-			for (int e = 0; e < vAttackParties[i].vEntities.size(); e++) {
-				if (vAttackParties[i].vEntities[e]->flags & EFL_DELETED) {
-					vAttackParties[i].vEntities.erase(vAttackParties[i].vEntities.begin() + e);
+		/*
+		if (vAttackParties.size() > 0) {
+			for (int i = 0; i < vAttackParties.size(); i++) {
+				//remove if everyones gone
+				if (vAttackParties[i].vEntities.size() <= 0) {
+					vAttackParties.erase(vAttackParties.begin() + i);
+					continue;
 				}
+
+				//remove dead aliens
+				for (int e = 0; e < vAttackParties[i].vEntities.size(); e++) {
+					if (vAttackParties[i].vEntities[e]->flags & EFL_DELETED) {
+						vAttackParties[i].vEntities.erase(vAttackParties[i].vEntities.begin() + e);
+					}
+				}
+
+				//update for flanking?
+				//if (vAttackParties[i].start_time )
+
 			}
-
-			//update for flanking?
-			//if (vAttackParties[i].start_time )
-
 		}
+		*/
 
-		for (int i = 0; i < vActiveAlienUnits.size(); i++) {
-			//remove if dead
-			if (vActiveAlienUnits[i]->flags & EFL_DELETED) {
-				vActiveAlienUnits.erase(vActiveAlienUnits.begin() + i);
+		if (vActiveAlienUnits.size() > 0) {
+			for (int i = 0; i < vActiveAlienUnits.size(); i++) {
+				//remove if dead
+				if (vActiveAlienUnits[i]->flags & EFL_DELETED) {
+					vActiveAlienUnits.erase(vActiveAlienUnits.begin() + i);
+					continue;
+				}
 			}
 		}
 
 	}
-
+	
 }
 
 
@@ -115,9 +128,12 @@ void AlienMastermind::TryDoingRecon() {
 		Entity* _reconUnit;
 
 		//remove dead recons
-		for (int i = 0; i < vReconUnits.size(); i++) {
-			if ((vReconUnits[i]->flags & EFL_DELETED) || vReconUnits[i]->state != ES_RECON) {
-				vReconUnits.erase(vReconUnits.begin() + i);
+		if (vReconUnits.size() > 0) {
+			for (int i = 0; i < vReconUnits.size(); i++) {
+				if ((vReconUnits[i]->flags & EFL_DELETED) || vReconUnits[i]->state != ES_RECON) {
+					vReconUnits.erase(vReconUnits.begin() + i);
+					continue;
+				}
 			}
 		}
 
@@ -199,7 +215,7 @@ void AlienMastermind::TryDoingAttack() {
 			if (rand() % 7 == 0) {
 				int	_xx = (rand() % 2) * LEVEL_W * 8;
 				if (rand() % 8 == 0) {
-					if (vActiveAlienUnits.size() < warStage + 1) {
+					if (vActiveAlienUnits.size() < warStage*1.8) {
 						int _yy = 8 * (rand() % LEVEL_H / 2);
 						_ent = LEVEL.AddEntity(_xx, (8 * LEVEL_H / 4) + _yy + (rand() % 64) - 32, ENT_E_ALIEN_HUNTER);
 						vActiveAlienUnits.push_back(_ent);
@@ -227,13 +243,14 @@ void AlienMastermind::TryDoingAttack() {
 
 
 		//consider spawning some walkers somewhere random in water
-		if (rand() % 5 == 0) {
+		if ((rand() % 5 == 0) && vActiveAlienUnits.size() < warStage*1.6) {
 			for (int i = 0; i < warStage / 2; i++) {
 				int _xx = 24 + (rand() % (LEVEL_W - 48));
 				int _yy = 24 + (rand() % (LEVEL_H - 48));
 
 				if (LEVEL.GetTile(_xx, _yy)->type == TT_WATER) {
-					LEVEL.AddEntity(_xx * 8, _yy * 8, ENT_WALKER);
+					_ent = LEVEL.AddEntity(_xx * 8, _yy * 8, ENT_WALKER);
+					vActiveAlienUnits.push_back(_ent);
 					//std::cout << "random walker " << std::endl;
 				}
 			}
@@ -254,8 +271,6 @@ void AlienMastermind::TryDoingAttack() {
 
 	//attack something from outside world
 	if (attackTick <= 0) {
-
-		if (vAttackParties.size() < warStage + 1) {
 
 			int _targetX = -1;
 			int _targetY = -1;
@@ -315,42 +330,70 @@ void AlienMastermind::TryDoingAttack() {
 
 			//std::cout << "Sending out new attack party to " << _targetX	<< ", " << _targetY << std::endl;
 
-			//make new attack party
-			AlienParty _party = {};
+			if (vAttackParties.size() < warStage + 1) {
 
-			int _yy = 8*(rand()%LEVEL_H/2);
-			int	_xx = (rand() % 2) * LEVEL_W * 8;
-			//std::cout << "add ufos" << std::endl;
-			for (int i = 0; i < 3 + warStage * 2 + (rand() % warStage * 4); i++) {
-				_ent = LEVEL.AddEntity(_xx + (rand() % 16) - 8, 8 * (LEVEL_H / 4) + _yy + (rand() % 64) - 32, ENT_UFO);
-				_ent->state = ES_ATTACKER;
-				_party.vEntities.push_back(_ent);
-			}
-			//std::cout << "add walkers" << std::endl;
-			//cance of spawning walkers
-			if (warStage >= 2 && rand() % 3 == 0) {
-				_xx = (rand() % 2) * LEVEL_W * 8;
-				for (int i = 0; i < 1 + warStage + (rand() % warStage * 2); i++) {
-					_ent = LEVEL.AddEntity(_xx, 8*(LEVEL_H / 4) + _yy + (rand() % 64) - 32, ENT_WALKER);
+				//make new attack party
+				AlienParty _party = {};
+
+				int _yy = 8*(rand()%LEVEL_H/2);
+				int	_xx = (rand() % 2) * LEVEL_W * 8;
+				//std::cout << "add ufos" << std::endl;
+				for (int i = 0; i < 3 + warStage * 2 + (rand() % warStage * 4); i++) {
+					_ent = LEVEL.AddEntity(_xx + (rand() % 16) - 8, 8 * (LEVEL_H / 4) + _yy + (rand() % 64) - 32, ENT_UFO);
+					_ent->state = ES_ATTACKER;
 					_party.vEntities.push_back(_ent);
 				}
+				//std::cout << "add walkers" << std::endl;
+				//cance of spawning walkers
+				if (warStage >= 2 && rand() % 3 == 0) {
+					_xx = (rand() % 2) * LEVEL_W * 8;
+					for (int i = 0; i < 1 + (warStage / 2) + (rand() % warStage * 2); i++) {
+						_ent = LEVEL.AddEntity(_xx, 8*(LEVEL_H / 4) + _yy + (rand() % 64) - 32, ENT_WALKER);
+						_party.vEntities.push_back(_ent);
+					}
+				}
+
+				//add a recon
+				_ent = LEVEL.AddEntity(0, 0, ENT_UFO);
+				_ent->state = ES_RECON;
+				_party.vEntities.push_back(_ent);
+
+				_party.gather_x = _targetX;
+				_party.gather_y = _targetY;
+				_party.start_time = GAME_TICK;
+
+				_party.TellEntitiesToGather();
+
+				vAttackParties.push_back(_party);
+
+				attackTick = 1800 + (rand() % 256) - warStage * 3;
+
 			}
+			else {
+				//tell an old attack party to go somewhere else maybe
+				for (int i = 0; i < vAttackParties.size(); i++) {
 
-			//add a recon
-			_ent = LEVEL.AddEntity(0, 0, ENT_UFO);
-			_ent->state = ES_RECON;
-			_party.vEntities.push_back(_ent);
+					//remove dead aliens
+					for (int e = 0; e < vAttackParties[i].vEntities.size(); e++) {
+						if (vAttackParties[i].vEntities[e]->flags & EFL_DELETED) {
+							vAttackParties[i].vEntities.erase(vAttackParties[i].vEntities.begin() + e);
+						}
+					}
 
-			_party.gather_x = _targetX;
-			_party.gather_y = _targetY;
-			_party.start_time = GAME_TICK;
+					//remove if everyones gone
+					if (vAttackParties[i].vEntities.size() <= 0) {
+						vAttackParties.erase(vAttackParties.begin() + i);
+						continue;
+					}
 
-			_party.TellEntitiesToGather();
-
-			vAttackParties.push_back(_party);
-
-			attackTick = 1800 + (rand() % 256) - warStage * 3;
-		}
+					if (GAME_TICK - vAttackParties[i].start_time > 2000) {
+						vAttackParties[i].gather_x = _targetX;
+						vAttackParties[i].gather_x = _targetY;
+						vAttackParties[i].start_time = GAME_TICK;
+						vAttackParties[i].TellEntitiesToGather();
+					}
+				}
+			}
 
 
 	}

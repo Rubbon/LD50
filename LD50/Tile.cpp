@@ -782,15 +782,15 @@ void TileDoDefaultDestroy(int x, int y, Tile* _tile, bool demolished, bool multi
 
 void City::expandTick() {
 	//std::cout << timer << std::endl;
-
 	if (warnAboutAttackTimer > 0) warnAboutAttackTimer--;
 
 	popcount = 0;
 	if (bankX != -1 && bankY!=-1) {
 		Tile* _bankPos = LEVEL.GetTile(bankX, bankY);
-		if (_bankPos->type != TT_CITY_BANK) {
+		if (_bankPos->type != TT_CITY_BANK && _bankPos->ref != TT_CITY_BANK) {
 			flags &= ~CF_HASBANK;
-			bankX = -1; bankY = -1; //bank has been gooped
+			bankX = -1; 
+			bankY = -1; //bank has been gooped
 		}
 	}
 	
@@ -808,10 +808,10 @@ void City::expandTick() {
 		Tile* _curTile = GAME.currentLevel.GetTile(myTiles[i].x, myTiles[i].y);
 		if (_curTile->owner != index || !(GET_TILE_INFO(_curTile->type).flags & TIF_CITY)) {
 			//check if city has been gooped by aliens
-			myTiles.erase(myTiles.begin() + i);
 			timer = 10;
 			if (friendliness>0) friendliness-=2;
 			if (maxResources > 0) maxResources--; 
+			myTiles.erase(myTiles.begin() + i);
 			continue;
 		}
 		if (_curTile->type == TT_CITYBLOCK_SMALL) popcount += (4000 + (int)rand() % 999);
@@ -828,7 +828,7 @@ void City::expandTick() {
 		resources --;
 	}
 
-	if (money == maxMoney && flags&CF_HASBANK) {
+	if (money >= maxMoney && flags & CF_HASBANK) {
 		//send a plane to hq
 		Entity* _plane = LEVEL.AddEntity(origin_x * 8, origin_y * 8, ENT_CITYPLANE);
 		_plane->target_x = 8 + LEVEL.playerHq.origin_x * 8;

@@ -70,6 +70,7 @@ void SortEntityIntoCorrectChunk(Entity* _ent) {
 
 		//todo - remove me
 		//std::cout << "SORTED ENTITY #" << _ent->id << " INTO CHUNK " << _ent->currentChunk << std::endl;
+		//std::cout << "CHUNK #" << _ent->currentChunk << " HAS " << LEVEL.arrChunks[_ent->currentChunk].lsEntities.size() << " ENTITIES" << std::endl;
 
 	}
 }
@@ -77,7 +78,7 @@ void SortEntityIntoCorrectChunk(Entity* _ent) {
 
 short GetChunkIndexAtEntityPos(int x, int y) {
 	short _pos = ((x >> 3) / CHUNK_SIZE) + ((y >> 3) / CHUNK_SIZE) * ((LEVEL_W + 16) / CHUNK_SIZE);
-	if (_pos < 0 || _pos >((LEVEL_W + 16) / CHUNK_SIZE) * ((LEVEL_H + 16) / CHUNK_SIZE)) return -1;
+	if (_pos < 0 || _pos > std::size(LEVEL.arrChunks)) return -1;
 	return _pos;
 };
 

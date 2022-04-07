@@ -479,7 +479,7 @@ void MilJetTick(Entity* ent) {
 						_bul->z = ent->z;
 
 						if (PosIsOnScreen(ent->x, ent->y)) Sound::PlayTempSoundAt(SND_LASER, ent->x, ent->y, 0.4f, 2.0f);
-						ent->ticker += 112 + rand() % 32;
+						ent->ticker += 72 + rand() % 32;
 						break;
 					}
 				}

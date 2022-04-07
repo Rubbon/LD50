@@ -220,12 +220,12 @@ void Game::Tick() {
 	CAMERA_X = std::clamp(CAMERA_X, -16, -SCREEN_W + 16 + LEVEL_W * 8);
 	CAMERA_Y = std::clamp(CAMERA_Y, -16, -SCREEN_H + 16 + LEVEL_H * 8);
 
+
 	//alien mastermind thinks
 	if (GAME_TICK % 2 == 0) alienMastermind.Tick();
 
 	//update sound listener
 	Sound::SetListenerPos(CAMERA_X + SCREEN_W/2, CAMERA_Y + SCREEN_H/2);
-
 }
 
 
