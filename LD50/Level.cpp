@@ -47,10 +47,17 @@ void Level::Tick() {
 		}
 	}
 
-	//force mpty chnks for freedom
-	//for (i = 0; i < std::size(arrChunks); i++) {
-	//	arrChunks[i].lsEntities.clear();
-	//}
+	if (GAME_TICK % 2 == 1) {
+		//force mpty chnks for freedom
+		for (i = 0; i < std::size(arrChunks); i++) {
+			arrChunks[i].lsEntities.clear();
+		}
+
+		for (i = 0; i < vActiveEntities.size(); i++) {
+			vActiveEntities[i]->currentChunk = GetChunkIndexAtEntityPos(vActiveEntities[i]->x, vActiveEntities[i]->y);
+			AddEntityToChunk(vActiveEntities[i]);
+		}
+	}
 
 	//std::cout << "entity tick" << std::endl;
 	//tick active entities
@@ -59,7 +66,7 @@ void Level::Tick() {
 		if (vActiveEntities[i]->flags & EFL_DELETED) {
 			//std::cout << "remoinvg entity" << std::endl;
 			//remove from any chunk its in
-			if (vActiveEntities[i]->currentChunk != -1) LEVEL.RemoveEntityFromChunk(vActiveEntities[i]);
+			//if (vActiveEntities[i]->currentChunk != -1) LEVEL.RemoveEntityFromChunk(vActiveEntities[i]);
 			//remove from active duty
 			vActiveEntities.erase(vActiveEntities.begin() + i);
 			continue;
@@ -67,7 +74,7 @@ void Level::Tick() {
 
 		//std::cout << "sort chunks" << std::endl;
 		//add entities to chunks (depending on how slow, might do this less often)
-		SortEntityIntoCorrectChunk(vActiveEntities[i]);
+		//SortEntityIntoCorrectChunk(vActiveEntities[i]);
 		//vActiveEntities[i]->currentChunk = GetChunkIndexAtEntityPos(vActiveEntities[i]->x, vActiveEntities[i]->y);
 		//AddEntityToChunk(vActiveEntities[i]);
 		//std::cout << "tick entities chunks" << std::endl;
@@ -243,6 +250,7 @@ void Level::RemoveEntityFromChunk(Entity* ent) {
 
 
 void Level::AddEntityToChunk(Entity* ent) {
+	if (ent->currentChunk <= -1 || ent->currentChunk >= ((LEVEL_W + 16) / CHUNK_SIZE) * ((LEVEL_H + 16) / CHUNK_SIZE)) return;
 	arrChunks[ent->currentChunk].lsEntities.push_back(ent);
 }
 

@@ -298,7 +298,8 @@ void PlayerJetHurt(Entity* ent, Entity* attacker) {
 
 void PlayerMissileInit(Entity* ent) {
 	ent->z = -6;
-	ent->dmg = 8;
+	//ent->dmg = 8;
+	ent->dmg = 14;
 }
 
 
@@ -320,7 +321,7 @@ void PlayerMissileTick(Entity* ent) {
 			}
 
 			//hurt ents
-			std::vector<Entity*> _vEnts = GetAllEntitiesInDistFlags(ent->x, ent->y, 8);
+			std::vector<Entity*> _vEnts = GetAllEntitiesInDistFlags(ent->x, ent->y, 10, EFL_ALIEN); // 8 dist og
 			for (int i = 0; i < _vEnts.size(); i++) {
 				if (!(_vEnts[i]->flags & EFL_AIR)) {
 					arrEntityFuncs[_vEnts[i]->entityIndex].OnHurt(_vEnts[i], ent);

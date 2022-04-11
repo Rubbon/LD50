@@ -61,17 +61,19 @@ void SetFxSpr(Entity* ent, SDL_Rect sprRect, SDL_Colour blend) {
 
 void SortEntityIntoCorrectChunk(Entity* _ent) {
 	if (GetChunkIndexAtEntityPos(_ent->x, _ent->y) != _ent->currentChunk) {
+		//std::cout << "remove from chunk" << std::endl;
 		//remove from old, add to new
 		LEVEL.RemoveEntityFromChunk(_ent);// , &LEVEL.arrChunks[_ent->currentChunk]);
 
 		//set chunk to the new one
+		//std::cout << "add to chunk" << std::endl;
 		_ent->currentChunk = GetChunkIndexAtEntityPos(_ent->x, _ent->y);
 		LEVEL.AddEntityToChunk(_ent);
 
 		//todo - remove me
 		//std::cout << "SORTED ENTITY #" << _ent->id << " INTO CHUNK " << _ent->currentChunk << std::endl;
 		//std::cout << "CHUNK #" << _ent->currentChunk << " HAS " << LEVEL.arrChunks[_ent->currentChunk].lsEntities.size() << " ENTITIES" << std::endl;
-
+		//std::cout << "fin sort" << std::endl;
 	}
 }
 

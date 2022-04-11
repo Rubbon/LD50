@@ -224,7 +224,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{88, 88, 8, 8},
 		/* BUILD_TIME */	128,
 		/* FLAGS */			TIF_HUMAN | TIF_RAIL,
-		/* BUILDCOST */		150,
+		/* BUILDCOST */		50,
 		/* MULTITILES */	{0,0},
 	},
 	{
@@ -233,7 +233,7 @@ const TileInfo arrTileInfo[] = {
 		/* BUILD_SPR */		{88, 88, 8, 8},
 		/* BUILD_TIME */	128,
 		/* FLAGS */			TIF_HUMAN | TIF_RAIL,
-		/* BUILDCOST */		100,
+		/* BUILDCOST */		50,
 		/* MULTITILES */	{0,0},
 	},
 	{

@@ -207,6 +207,10 @@ void Game::Tick() {
 					//demolish
 					//temp
 					if (LEVEL.GetTile(hovered_tile_x, hovered_tile_y)->type != TT_WATER && !(GET_TILE_INFO(LEVEL.GetTile(hovered_tile_x, hovered_tile_y)->type).flags & TIF_ALIEN)) {
+						//get half the money back
+						if ((GET_TILE_INFO(LEVEL.GetTile(hovered_tile_x, hovered_tile_y)->type).flags & TIF_HUMAN)) {
+							playerCash += GET_TILE_INFO(LEVEL.GetTile(hovered_tile_x, hovered_tile_y)->type).buildCost / 2;
+						}
 						OnTileDestroy(hovered_tile_x, hovered_tile_y, LEVEL.GetTile(hovered_tile_x, hovered_tile_y), true);
 					}
 				}
@@ -314,7 +318,7 @@ void Game::Draw() {
 void Game::DrawUi() {
 
 	//news ticker
-	if (newsticker_time > -SCREEN_W) {
+	if (newsticker_time > -(SCREEN_W + (int)newsticker_text.length() * 8)) {
 		Graphics::DrawRect({ _borderW, borderTopSize, SCREEN_W - _borderW * 2, 8 }, { 0, 0, 0, 255 });
 		Graphics::DrawText(_borderW + newsticker_time, borderTopSize, newsticker_text, 1);
 		if (GAME_TICK % 2 == 0) newsticker_time--;

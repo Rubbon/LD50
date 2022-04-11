@@ -39,6 +39,7 @@ public:
 
 	int playerCash = 400;
 	short playerMissiles = 0;
+	short numberOfScanners = 0;
 
 	//build menu
 	char bm_selected_opt = -1;

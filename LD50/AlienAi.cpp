@@ -8,12 +8,17 @@
 
 int reconTick = 32;
 int attackTick = 256;
+int superAttackTick = 1400;
 int warTick = 1300;
 int hiveTick = 80;
 
 int attackPartySize = 20;
 
 int lastAttackedHq = 0;
+
+
+int superAttack_city = 0;
+
 
 void AlienMastermind::Tick(){
 
@@ -61,7 +66,7 @@ void AlienMastermind::Tick(){
 			}
 		}
 
-		hiveTick = 128 + rand() % 64;
+		hiveTick = 80 + rand() % 64;
 	} else {
 		hiveTick--;
 	}
@@ -75,6 +80,55 @@ void AlienMastermind::Tick(){
 	} else {
 		warTick--;
 	}
+
+
+	if (superAttackTick <= 0) {
+		//std::cout << "superattack" << std::endl;
+
+		if (superAttack_city != -1) {
+			//tell all units to attack this spot
+			for (int i = 0; i < vAttackParties.size(); i++) {
+				vAttackParties[i].gather_x = LEVEL.arrCities[superAttack_city].origin_x;
+				vAttackParties[i].gather_y = LEVEL.arrCities[superAttack_city].origin_y;
+			}
+			/*
+			for (int i = 0; i < vActiveAlienUnits.size(); i++) {
+				vActiveAlienUnits[i]->target_x = LEVEL.arrCities[superAttack_city].origin_x;
+				vActiveAlienUnits[i]->target_y = LEVEL.arrCities[superAttack_city].origin_y;
+			}
+			*/
+
+		}
+
+		superAttackTick = 1600 - warStage * 24;
+	}
+	else {
+
+		if (superAttackTick == 60) {
+			//choose a city to attack
+			superAttack_city = -1;
+
+			for (int i = 0; i < 6 + warStage; i++){
+				int _r = rand() % MAX_CITIES;
+				if ((LEVEL.arrCities[_r].flags & CF_FOUND) && (LEVEL.arrCities[_r].flags & CF_ACTIVE)) {
+					superAttack_city = _r;
+					break;
+				}
+			}
+
+			//warn if player has scanner
+			if (superAttack_city != -1) {
+				if (GAME.numberOfScanners > 0) GAME.AddNews("The aliens are gathering for a big attack on " + LEVEL.arrCities[superAttack_city].name + " at " + std::to_string(LEVEL.arrCities[superAttack_city].origin_x) + ", " + std::to_string(LEVEL.arrCities[superAttack_city].origin_y));
+			}
+
+			//spawn attack party early
+			attackTick = 30;
+
+		}
+
+		superAttackTick--;
+	}
+
 
 	//update parties
 	if (GAME_TICK % 3 == 0) {
@@ -471,7 +525,7 @@ void AlienHive::Grow() {
 			}
 		}
 
-		growtick = 8 + rand() % 12;
+		growtick = 1 + rand() % 3; // 8 + rand() % 12;
 	}
 	else {
 		growtick--;

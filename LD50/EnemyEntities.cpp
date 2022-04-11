@@ -8,7 +8,7 @@
 
 void E_UfoInit(Entity* ent) {
 	ent->flags |= EFL_ALIEN | EFL_AIR;
-	ent->hp = 2;
+	ent->hp = 3;
 }
 
 
@@ -264,7 +264,7 @@ const SDL_Rect arrAnimWalkerWalk[4] = { {0, 179, 9, 10}, {9, 179, 7, 10}, {0, 17
 
 
 void E_WalkerInit(Entity* ent) {
-	ent->flags |= EFL_ALIEN;
+	ent->flags = EFL_ALIEN;
 	ent->target_x = ent->x >> 3;
 	ent->target_y = ent->y >> 3;
 

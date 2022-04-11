@@ -678,6 +678,10 @@ void TileOnBuilt(int x, int y, Tile* _tile) {
 			_tile->ref = 0;
 		break;
 
+		case TT_SCANNER:
+			GAME.numberOfScanners ++;
+		break;
+
 	}
 }
 
@@ -687,7 +691,7 @@ void HurtTile(int dmg, int x, int y, Tile* _tile, Entity* _hurtBy) {
 
 	_tile->hp -= dmg;
 
-	if (GAME.newsticker_time <= -(SCREEN_W - 32)) {
+	if (GAME.newsticker_time <= -(SCREEN_W + (int)GAME.newsticker_text.length() * 8)) {
 		if (_tile->type == TT_HQ_TL || _tile->type == TT_HQ_TR || _tile->type == TT_HQ_BL || _tile->type == TT_HQ_BR) GAME.AddNews("Your HQ is under attack at " + std::to_string(LEVEL.playerHq.origin_x) + ", " + std::to_string(LEVEL.playerHq.origin_y) + "!");
 	}
 
@@ -739,7 +743,7 @@ void OnTileDestroy(int x, int y, Tile* _tile, bool demolished, bool multiDestroy
 				LEVEL.arrCities[_tile->owner].money = 0;
 			} else {
 				//warn about attack
-				if (GAME.newsticker_time <= -(SCREEN_W - 32)) {
+				if (GAME.newsticker_time <= -(SCREEN_W + (int)GAME.newsticker_text.length() * 8)) {
 					if (LEVEL.arrCities[_tile->owner].warnAboutAttackTimer <= 0) {
 						GAME.AddNews(LEVEL.arrCities[_tile->owner].name + " is under attack at " + std::to_string(x) + ", " + std::to_string(y) + "!");
 						LEVEL.arrCities[_tile->owner].warnAboutAttackTimer = 1;
@@ -753,7 +757,10 @@ void OnTileDestroy(int x, int y, Tile* _tile, bool demolished, bool multiDestroy
 			if (PosIsOnScreen(x * 8, y * 8)) Sound::PlayTempSound(SND_DEMOLISH, 0.2f, 1.0f);
 		break;
 
-
+		case TT_SCANNER:
+			TileDoDefaultDestroy(x, y, _tile, demolished, multiDestroy);
+			GAME.numberOfScanners--;
+		break;
 
 
 	}
